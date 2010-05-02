@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter id="about">
+  <title>About Fungal</title>
+
+  <para>The goal of the Fungal project is to provide a high-performance Java kernel
+    environment.</para>
+
+  <section id="theteam">
+    <title>The team</title>
+
+    <para>Jesper Pedersen acts as the lead for the Fungal project. He can be reached at jesper (dot) pedersen (at) comcast (dot) net.</para>
+    
+  </section>
+
+</chapter>

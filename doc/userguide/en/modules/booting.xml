@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter id="booting">
+   <title>Booting</title>
+
+   <section id="booting_kernel">
+     <title>Booting the kernel</title>
+
+      <para>The kernel is booted using a</para>
+      <programlisting>
+${&lt;name&gt;.home}/config/bootstrap.xml
+      </programlisting>
+
+      <para>file, where references to URLs for bean deployments.</para>
+
+      <para>The layout of bootstrap.xml is defined in</para>
+      <programlisting>
+${&lt;name&gt;.home}/config/bootstrap.xsd
+      </programlisting>
+
+      <para>The</para>
+
+      <programlisting>
+${&lt;name&gt;.home}/config/deployment.xsd
+      </programlisting>
+
+      <para>file defines how bean deployments are constructed.</para>
+
+      <para>In a bean deployment file there is support for the following constructs:</para>
+      
+      <itemizedlist>
+        <listitem>
+          <code>&lt;bean&gt;</code>
+          <para>which initialize a bean based on the class attribute.</para>
+        </listitem>
+        <listitem>
+          <code>&lt;property&gt;</code>
+          <para>which sets a property on the bean - being an object or a primitive.</para>
+        </listitem>
+        <listitem>
+          <code>&lt;inject&gt;</code>
+          <para>injects a bean or a property from a bean (defines an implicit dependency on the bean).</para>
+        </listitem>
+        <listitem>
+          <code>&lt;constructor&gt;</code>
+          <para>which defines the constructor method to use for a bean.</para>
+        </listitem>
+        <listitem>
+          <code>&lt;parameter&gt;</code>
+          <para>defines a parameter value for a constructor.</para>
+        </listitem>
+        <listitem>
+          <code>&lt;factory&gt;</code>
+          <para>defines a factory bean for a constructor.</para>
+        </listitem>
+        <listitem>
+          <code>&lt;depends&gt;</code>
+          <para>defines an explicit dependency to another bean.</para>
+        </listitem>
+        <listitem>
+          <code>&lt;install&gt;</code>
+          <para>defines an install method.</para>
+        </listitem>
+        <listitem>
+          <code>&lt;uninstall&gt;</code>
+          <para>defines an uninstall method.</para>
+        </listitem>
+        <listitem>
+          <code>&lt;incallback&gt;</code>
+          <para>defines a method which is invoked with all beans that has the type of the first parameter
+            when the installed.</para>
+        </listitem>
+        <listitem>
+          <code>&lt;uncallback&gt;</code>
+          <para>defines a method which is invoked with all beans that has the type of the first parameter
+            when the uninstalled.</para>
+        </listitem>
+        <listitem>
+          <code>&lt;map&gt;</code>
+          <para>defines a map data structure.</para>
+        </listitem>
+        <listitem>
+          <code>&lt;list&gt;</code>
+          <para>defines a list data structure.</para>
+        </listitem>
+        <listitem>
+          <code>&lt;set&gt;</code>
+          <para>defines a set data structure.</para>
+        </listitem>
+        <listitem>
+          <code>&lt;null&gt;</code>
+          <para>defines a null value.</para>
+        </listitem>
+        <listitem>
+          <code>&lt;this&gt;</code>
+          <para>defines a reference to the object instance.</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>In order to define locations relative to the install root of the Fungal
+        container configuration the variable</para>
+      <programlisting>
+${&lt;name&gt;.home}
+      </programlisting>
+      <para>can be used. An example would be <code>${jboss.jca.home}</code>.</para>
+
+      <para>There is support for accessing system properties using the "${property}" mechanism
+        with an optional default value</para>
+      <programlisting>
+${jboss.jca.host:localhost}
+      </programlisting>
+
+      <para>A configuration example would be</para>
+      <programlisting>
+&lt;!-- Transaction manager --&gt;
+&lt;bean name="TransactionManager" class="com.arjuna.ats.jbossatx.jta.TransactionManagerService"&gt;
+   &lt;property name="transactionTimeout"&gt;300&lt;/property&gt;
+   &lt;property name="objectStoreDir"&gt;${jboss.jca.home}/tmp/tx-object-store&lt;/property&gt;
+   &lt;property name="mbeanServer"&gt;&lt;inject bean="JMX" property="mbeanServer"/&gt;&lt;/property&gt;
+   &lt;property name="transactionStatusManagerInetAddress"&gt;${jboss.jca.host:localhost}&lt;/property&gt;
+   &lt;property name="transactionStatusManagerPort"&gt;4713&lt;/property&gt;
+   &lt;property name="recoveryInetAddress"&gt;${jboss.jca.host:localhost}&lt;/property&gt;
+   &lt;property name="recoveryPort"&gt;4712&lt;/property&gt;
+   &lt;property name="socketProcessIdPort"&gt;0&lt;/property&gt;    
+   &lt;depends&gt;NamingServer&lt;/depends&gt;
+ &lt;/bean&gt;
+      </programlisting>
+
+
+   </section>
+
+</chapter>

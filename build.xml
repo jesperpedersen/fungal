@@ -1,0 +1,433 @@
+<!--
+ * JBoss, Home of Professional Open Source.
+ * Copyright 2008, Red Hat Middleware LLC, and individual contributors
+ * as indicated by the @author tags. See the copyright.txt file in the
+ * distribution for a full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+<project name="fungal" 
+         default="jars" 
+         basedir="." 
+         xmlns:ivy="antlib:org.apache.ivy.ant">
+
+  <available classname="java.lang.Enum" property="HAVE_JDK_1.5"/>
+  <available classname="java.lang.management.LockInfo" property="HAVE_JDK_1.6"/>
+
+  <!-- ================================= 
+       Project              
+       ================================= -->
+  <property name="name" value="fungal"/>
+  <property name="major" value="0"/>
+  <property name="minor" value="8"/>
+  <property name="patch" value="0"/>
+  <property name="type" value="Beta1"/>
+
+  <!-- ================================= 
+       Repositories              
+       ================================= -->
+  <property name="central.repo" value="http://repo1.maven.org/maven2"/>
+  <property name="jboss.repo" value="http://repository.jboss.org/maven2"/>
+  
+  <!-- ================================= 
+       Properties              
+       ================================= -->
+  <property name="lib.dir" value="${basedir}/lib" />
+  <property name="build.dir" value="${basedir}/build" />
+  <property name="doc.dir" value="${basedir}/doc" />
+  <property name="target.dir" value="${basedir}/target" />
+  <property name="tools.dir" value="${basedir}/tools" />
+  <property name="reports.dir" value="${basedir}/reports" />
+  <property name="test.dir" value="${reports.dir}" />
+
+  <property name="javac.debug" value="on" />
+  <property name="javac.deprecation" value="on" />
+  <property name="javac.optimize" value="off" />
+
+  <property name="junit.printsummary" value="yes" />
+  <property name="junit.haltonerror" value="no" />
+  <property name="junit.haltonfailure" value="no" />
+  <property name="junit.fork" value="yes" />
+  <property name="junit.timeout" value="60000" />
+  <property name="junit.jvm" value="" />
+  <property name="junit.jvm.options" value="-Xms128m -Xmx512m -XX:MaxPermSize=256m" />
+  <property name="junit.batchtest.haltonerror" value="no" />
+  <property name="junit.batchtest.haltonfailure" value="no" />
+  <property name="junit.batchtest.fork" value="yes" />
+
+  <!-- ================================= 
+       Versions              
+       ================================= -->
+  <property name="version.ant" value="1.7.1"/>
+  <property name="version.apiviz" value="1.3.0.GA"/>
+  <property name="version.junit" value="4.8.1"/>
+
+  <!-- ================================= 
+       Paths              
+       ================================= -->
+  <path id="fungal.lib.path.id">
+    <fileset dir="${lib.dir}/fungal">
+      <include name="**/*.jar"/>
+    </fileset>
+    <fileset dir="${target.dir}">
+      <include name="**/*.jar"/>
+    </fileset>
+  </path>
+
+  <path id="test.lib.path.id">
+    <fileset dir="${lib.dir}/test">
+      <include name="**/*.jar"/>
+    </fileset>
+    <fileset dir="${target.dir}">
+       <include name="**/*.jar"/>
+    </fileset>
+  </path>
+
+  <path id="checkstyle.lib.path.id">
+    <fileset dir="${tools.dir}/checkstyle/lib"/>
+    <fileset dir="${lib.dir}/fungal">
+      <include name="**/*.jar"/>
+    </fileset>
+    <fileset dir="${target.dir}">
+      <include name="**/*.jar"/>
+    </fileset>
+  </path>
+
+  <path id="findbugs.lib.path.id">
+    <fileset dir="${tools.dir}/findbugs/lib"/>
+  </path>
+
+  <path id="cobertura.lib.path.id">
+    <fileset dir="${tools.dir}/cobertura/lib"/>
+  </path>
+
+  <path id="tattletale.lib.path.id">
+    <fileset dir="${tools.dir}/tattletale/lib"/>
+  </path>
+
+  <!-- ================================= 
+       Target: init              
+       ================================= -->
+  <target name="init">
+    <ivy:settings file="${basedir}/ivy.settings.xml"/>
+
+    <fail message="Fungal requires JDK6+" unless="HAVE_JDK_1.6"/>
+
+    <mkdir dir="${build.dir}" />
+    <mkdir dir="${target.dir}" />
+  </target>
+
+  <!-- ================================= 
+       Target: resolve              
+       ================================= -->
+  <target name="resolve" depends="init">
+    <ivy:retrieve pattern="${lib.dir}/[conf]/[artifact].[ext]" sync="true"/>
+  </target>
+  
+  <!-- ================================= 
+       Target: report              
+       ================================= -->
+  <target name="report" depends="resolve">
+    <ivy:report todir="${target.dir}"/>
+  </target>
+  
+  <!-- ================================= 
+       Target: jars
+       ================================= -->
+  <target name="jars" depends="resolve">
+    <ant dir="core" inheritRefs="true" target="jars"/>
+  </target>
+  
+  <!-- ================================= 
+       Target: docs
+       ================================= -->
+  <target name="docs" depends="jars">
+    <ant dir="core" inheritRefs="true" target="docs"/>
+  </target>
+  
+  <!-- ================================= 
+       Target: prepare test
+       ================================= -->
+  <target name="prepare-test" depends="jars">
+    <ant dir="core" inheritRefs="true" target="prepare-test"/>
+  </target>
+  
+  <!-- ================================= 
+       Target: test
+       ================================= -->
+  <target name="test" depends="prepare-test">
+    <ant dir="core" inheritRefs="true" target="test"/>
+  </target>
+  
+  <!-- ================================= 
+       Target: one-test
+       ================================= -->
+  <target name="one-test" depends="jars">
+    <condition property="module" else="core">
+      <equals arg1="${module}" arg2="" trim="true"/> 
+    </condition>
+
+    <ant dir="${module}" inheritRefs="true" target="one-test"/>
+  </target>
+
+  <!-- ================================= 
+       Target: module-test
+       ================================= -->
+  <target name="module-test" depends="jars">
+    <condition property="module" else="core">
+      <equals arg1="${module}" arg2="" trim="true"/> 
+    </condition>
+  	
+    <ant dir="${module}" inheritRefs="true" target="test"/>
+  </target>
+
+  <!-- ================================= 
+       Target: release
+       ================================= -->
+  <target name="release" depends="jars">
+    <delete dir="${build.dir}"/>
+
+    <mkdir dir="${build.dir}" />
+    <mkdir dir="${build.dir}/${name}-${major}.${minor}.${patch}.${type}" />
+    <mkdir dir="${build.dir}/${name}-${major}.${minor}.${patch}.${type}/doc" />
+    <mkdir dir="${build.dir}/${name}-${major}.${minor}.${patch}.${type}/doc/api" />
+
+    <ant dir="doc/userguide" target="pdf"/>
+    <ant dir="doc/developerguide" target="pdf"/>
+
+    <move flatten="true" todir="${build.dir}/${name}-${major}.${minor}.${patch}.${type}/doc">
+      <fileset dir="${build.dir}">
+        <include name="**/*.pdf"/>
+      </fileset>
+    </move>
+
+    <ant dir="core" inheritRefs="true" target="docs"/>
+    <move todir="${build.dir}/${name}-${major}.${minor}.${patch}.${type}/doc/api">
+      <fileset dir="${target.dir}/docs/core">
+        <include name="**/*"/>
+      </fileset>
+    </move>
+
+    <copy todir="${build.dir}/${name}-${major}.${minor}.${patch}.${type}">
+      <fileset dir="${target.dir}">
+        <include name="*.jar"/>
+      </fileset>
+    </copy>
+    <copy todir="${build.dir}/${name}-${major}.${minor}.${patch}.${type}/doc">
+      <fileset dir="${target.dir}">
+        <include name="*.xsd"/>
+      </fileset>
+    </copy>
+    <copy todir="${build.dir}/${name}-${major}.${minor}.${patch}.${type}/doc">
+      <fileset dir="${basedir}">
+        <include name="README"/>
+      </fileset>
+    </copy>
+
+    <delete includeemptydirs="true">
+      <fileset dir="${build.dir}" 
+               includes="**/*"
+               excludes="**/${name}-${major}.${minor}.${patch}.${type}/**"/>
+    </delete>
+    
+    <zip destfile="${name}-${major}.${minor}.${patch}.${type}.zip"
+         basedir="${build.dir}"/>
+    
+    <tar destfile="${name}-${major}.${minor}.${patch}.${type}.tar"
+         basedir="${build.dir}"/>
+    
+    <gzip zipfile="${name}-${major}.${minor}.${patch}.${type}.tar.gz" 
+          src="${name}-${major}.${minor}.${patch}.${type}.tar"/>
+    
+    <delete file="${name}-${major}.${minor}.${patch}.${type}.tar"/>
+    
+  </target>
+
+  <!-- ================================= 
+       Target: checkstyle
+       ================================= -->
+  <target name="checkstyle" depends="jars">
+    <taskdef name="checkstyle"
+             classname="com.puppycrawl.tools.checkstyle.CheckStyleTask"
+             classpathref="checkstyle.lib.path.id"/>
+
+    <mkdir dir="${reports.dir}/checkstyle" />
+
+    <checkstyle config="${tools.dir}/checkstyle/checkstyle.xml"
+                failOnViolation="false"
+                classpathref="checkstyle.lib.path.id">
+      <fileset dir="${basedir}"
+               includes="**/*.java"/>
+      <formatter type="plain"/>
+      <formatter type="xml" toFile="${reports.dir}/checkstyle/checkstyle-result.xml"/>
+    </checkstyle>
+  </target>
+
+  <!-- ================================= 
+       Target: findbugs
+       ================================= -->
+  <target name="findbugs" depends="jars">
+    <taskdef name="findbugs"
+             classname="edu.umd.cs.findbugs.anttask.FindBugsTask"
+             classpathref="findbugs.lib.path.id"/>
+
+    <mkdir dir="${reports.dir}/findbugs" />
+
+    <findbugs home="${basedir}/tools/findbugs/lib/"
+              output="html"
+              outputFile="${reports.dir}/findbugs/findbugs.html" 
+              excludeFilter="${basedir}/tools/findbugs/filter.xml"
+              reportLevel="low">
+      <auxClasspath>
+        <fileset dir="${lib.dir}/fungal">
+          <include name="*.jar"/>
+        </fileset>
+      </auxClasspath>
+      <class location="${target.dir}/fungal-cli.jar" />
+      <class location="${target.dir}/fungal.jar" />
+    </findbugs>
+
+    <findbugs home="${basedir}/tools/findbugs/lib/"
+              output="xml:withMessages"
+              outputFile="${reports.dir}/findbugs/findbugs.xml" 
+              excludeFilter="${basedir}/tools/findbugs/filter.xml"
+              reportLevel="low">
+      <auxClasspath>
+        <fileset dir="${lib.dir}/fungal">
+          <include name="*.jar"/>
+        </fileset>
+      </auxClasspath>
+      <class location="${target.dir}/fungal-cli.jar" />
+      <class location="${target.dir}/fungal.jar" />
+    </findbugs>
+  </target>
+
+  <!-- ================================= 
+       Target: cobertura
+       ================================= -->
+  <target name="cobertura" depends="prepare-test">
+    <taskdef resource="tasks.properties"
+             classpathref="cobertura.lib.path.id"/>
+
+    <mkdir dir="${reports.dir}/cobertura" />
+    <mkdir dir="${reports.dir}/cobertura/tests" />
+
+    <delete file="${reports.dir}/cobertura/cobertura.ser"/>
+    <delete dir="${build.dir}/instrumented"/>
+    
+    <mkdir dir="${build.dir}/instrumented" />
+    <copy todir="${build.dir}/instrumented">
+      <fileset dir="${target.dir}">
+        <include name="*.jar"/>
+      </fileset>
+    </copy>
+
+    <cobertura-instrument todir="${build.dir}/instrumented"
+                          datafile="${reports.dir}/cobertura/cobertura.ser">
+      <fileset dir="${target.dir}">
+        <include name="*.jar" />
+      </fileset>
+    </cobertura-instrument>
+
+    <junit dir="core/src/test"
+           printsummary="${junit.printsummary}"
+           haltonerror="${junit.haltonerror}"
+           haltonfailure="${junit.haltonfailure}"
+           fork="yes"
+           timeout="${junit.timeout}">
+      
+      <jvmarg line="${junit.jvm.options}"/>
+      <sysproperty key="test.dir" value="${test.dir}"/>
+      <sysproperty key="net.sourceforge.cobertura.datafile" file="${reports.dir}/cobertura/cobertura.ser" />
+
+      <classpath>
+        <fileset dir="${build.dir}/instrumented" includes="*.jar" />
+        <pathelement location="${build.dir}/fungal/test"/>
+        <fileset dir="${lib.dir}/test" includes="*.jar" />
+      </classpath>
+      <classpath refid="cobertura.lib.path.id" />
+      
+      <formatter type="xml"/>
+      
+      <batchtest todir="${reports.dir}/cobertura/tests">
+        <fileset dir="${build.dir}/fungal/test">
+          <include name="**/*TestCase.class"/>
+        </fileset>
+      </batchtest>
+    </junit>
+
+    <cobertura-report format="html" 
+                      destdir="${reports.dir}/cobertura/html" 
+                      datafile="${reports.dir}/cobertura/cobertura.ser">
+      <fileset dir="core/src/main/java">
+        <include name="**/*.java" />
+      </fileset>
+    </cobertura-report>
+
+    <cobertura-report format="xml" 
+                      destdir="${reports.dir}/cobertura/xml" 
+                      datafile="${reports.dir}/cobertura/cobertura.ser">
+      <fileset dir="core/src/main/java">
+        <include name="**/*.java" />
+      </fileset>
+    </cobertura-report>
+  </target>
+
+  <!-- ================================= 
+       Target: tattletale
+       ================================= -->
+  <target name="tattletale" depends="jars">
+    <taskdef name="report"
+             classname="org.jboss.tattletale.ant.ReportTask"
+             classpathref="tattletale.lib.path.id"/>
+
+    <mkdir dir="${reports.dir}/tattletale"/>
+
+    <report source="${target.dir}/"
+            destination="${reports.dir}/tattletale"
+            configuration="${tools.dir}/tattletale/configuration.properties"
+            filter="${tools.dir}/tattletale/filter.properties"
+            profiles="java6"/>
+  </target>
+
+  <!-- ================================= 
+       Target: clean              
+       ================================= -->
+  <target name="clean">
+    <delete>
+      <fileset dir="${basedir}" defaultexcludes="no">
+        <include name="**/*~"/>
+        <include name="**/*.bak"/>
+      </fileset>
+    </delete>
+    <delete>
+      <fileset dir="${lib.dir}" includes="**/*.jar"/>
+    </delete>
+    <delete dir="${build.dir}"/>
+    <delete dir="${target.dir}"/>
+    <delete dir="${reports.dir}"/>
+    <delete file="${name}-${major}.${minor}.${patch}.${type}.zip" />
+    <delete file="${name}-${major}.${minor}.${patch}.${type}.tar.gz" />
+  </target>
+  
+  <!-- ================================= 
+       Target: clean-cache              
+       ================================= -->
+  <target name="clean-cache">
+    <ivy:cleancache />
+  </target>
+
+</project>

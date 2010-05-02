@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter id="building">
+  <title>Building</title>
+
+  <section id="prerequisites">
+    <title>Prerequisites</title>
+    
+    <section id="jdk">
+      <title>Java Development Kit (JDK)</title>
+      <para>You must have one of the following JDKs installed in order to build the project:</para>
+
+      <itemizedlist spacing="compact">
+         <listitem>
+            <para>Sun JDK 1.6.x</para>
+         </listitem>
+         <listitem>
+            <para>Sun JDK 1.7.x</para>
+         </listitem>
+      </itemizedlist>
+
+      <para>Remember to ensure that "javac" and "java" are in your path (or symlinked).</para>
+
+      <programlisting>
+JAVA_HOME=/location/to/javahome
+export JAVA_HOME
+
+PATH=$JAVA_HOME/bin:$PATH
+export PATH
+      </programlisting>
+
+    </section>
+
+    <section id="ant">
+      <title>Apache Ant</title>
+      <para>You must have Apache Ant 1.7.1+ installed on your system.</para>
+      <para>Remember to ensure that "ant" are in your path (or symlinked).</para>
+
+      <programlisting>
+ANT_HOME=/location/to/anthome
+export ANT_HOME
+
+PATH=$ANT_HOME/bin:$PATH
+export PATH
+      </programlisting>
+
+    </section>
+
+    <section id="ivy">
+      <title>Apache Ivy</title>
+      <para>You must have Apache Ivy 2.1.0+ installed in your Apache Ant installation.</para>
+
+      <programlisting>
+cp ivy.jar $ANT_HOME/lib
+      </programlisting>
+
+    </section>
+
+    <section id="subversion">
+      <title>Git</title>
+      <para>You must have Git 1.6+ installed on your system.</para>
+      <para>Remember to ensure that "git" are in your path (or symlinked).</para>
+    </section>
+ 
+  </section>
+
+  <section id="obtainingthesource">
+    <title>Obtaining the source code</title>
+
+    <section id="anonsvn">
+      <title>Anonymous Git access</title>
+      <para>The anonymous Git repository is located under:</para>
+
+      <programlisting>
+git checkout git://github.com/fungal.git
+      </programlisting>
+      
+    </section>
+
+    <section id="developersvn">
+      <title>Developer Git access</title>
+      <para>The developer Git repository is located under:</para>
+      
+      <programlisting>
+git checkout git://github.com/fungal.git
+      </programlisting>
+      
+    </section>
+
+    <section id="gitbranches">
+      <title>Git branches</title>
+      <para>We have the following branches for the project:</para>
+      <itemizedlist>
+         <listitem>
+            <para>trunk</para>
+            <para>The head of development targeting the next upcoming release.</para>
+         </listitem>
+      </itemizedlist>
+    </section>
+
+  </section>
+
+  <section id="compiling">
+    <title>Compiling the source code</title>
+    <para>In order to build the Fungal project you execute:</para>
+    <programlisting>
+ant &lt;target&gt;
+    </programlisting>
+    <para>where target is one of</para>
+    <itemizedlist>
+      <listitem>
+        <para>jars</para>
+        <para>Builds the JAR archives in the distribution.</para>
+      </listitem>
+      <listitem>
+        <para>test</para>
+        <para>Builds the JAR archives in the distribution and runs all the test cases.</para>
+      </listitem>
+      <listitem>
+        <para>docs</para>
+        <para>Builds the API documentation for the project.</para>
+      </listitem>
+      <listitem>
+        <para>release</para>
+        <para>Builds a release of the project.</para>
+      </listitem>
+      <listitem>
+        <para>clean</para>
+        <para>Cleans the project of temporary files.</para>
+      </listitem>
+      <listitem>
+        <para>clean-cache</para>
+        <para>Cleans the Apache Ivy repository.</para>
+      </listitem>
+    </itemizedlist>
+    <para>See the full list of targets in the main build.xml file.</para>
+
+    <para>An example to build the Fungal JAR files:</para>
+    <programlisting>
+ant clean jars
+    </programlisting>
+
+  </section>
+</chapter>

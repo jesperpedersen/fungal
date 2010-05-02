@@ -1,0 +1,110 @@
+<!--
+ * JBoss, Home of Professional Open Source.
+ * Copyright 2008, Red Hat Middleware LLC, and individual contributors
+ * as indicated by the @author tags. See the copyright.txt file in the
+ * distribution for a full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+<project name="fungal-core" 
+         default="compile" 
+         xmlns:ivy="antlib:org.apache.ivy.ant">
+
+  <!-- ================================= 
+       Properties              
+       ================================= -->
+  <property name="build.core.dir" value="${build.dir}/core" />
+
+  <!-- ================================= 
+       Target: init
+       ================================= -->
+  <target name="init">
+    <mkdir dir="${build.core.dir}" />
+    <mkdir dir="${build.core.dir}/impl" />
+  </target>
+
+  <!-- ================================= 
+       Target: compile
+       ================================= -->
+  <target name="compile" depends="init">
+    <javac srcdir="src/main"
+           destdir="${build.core.dir}/impl"
+           classpathref="fungal.lib.path.id"
+           debug="${javac.debug}"
+           deprecation="${javac.deprecation}"
+           optimize="${javac.optimize}">
+      <compilerarg value="-Xlint"/>
+    </javac> 
+  </target>
+
+  <!-- ================================= 
+       Target: jars 
+       ================================= -->
+  <target name="jars" depends="compile">
+    <jar destfile="${target.dir}/fungal.jar"
+         basedir="${build.core.dir}/impl"
+         excludes="**/*.java,**/cli/**">
+      <manifest>
+        <attribute name="Implementation-Title" value="The Fungal kernel"/>
+        <attribute name="Implementation-Version" value="${major}.${minor}.${patch}.${type}"/>
+        <attribute name="Implementation-Vendor" value="The Fungal kernel project (http://fungal.github.com)"/>
+        <attribute name="Implementation-Vendor-Id" value="com.github.fungal"/>
+      </manifest>
+    </jar>
+    <jar destfile="${target.dir}/fungal-cli.jar"
+         basedir="${build.core.dir}/impl"
+         includes="**/cli/**"
+         excludes="**/*.java">
+      <manifest>
+        <attribute name="Implementation-Title" value="The Fungal kernel - CLI"/>
+        <attribute name="Implementation-Version" value="${major}.${minor}.${patch}.${type}"/>
+        <attribute name="Implementation-Vendor" value="The Fungal kernel project (http://fungal.github.com)"/>
+        <attribute name="Implementation-Vendor-Id" value="com.github.fungal"/>
+      </manifest>
+    </jar>
+    <copy todir="${target.dir}" overwrite="true">
+      <fileset dir="src/main/resources"
+               includes="**/*.xsd"/>
+    </copy>
+  </target>
+
+  <!-- ================================= 
+       Target: docs
+       ================================= -->
+  <target name="docs" depends="compile">
+    <mkdir dir="${target.dir}/docs/core"/>
+    <javadoc packagenames="com.*"
+             sourcepath="src/main/java"
+             destdir="${target.dir}/docs/core"
+             doclet="org.jboss.apiviz.APIviz"
+             docletpathref="fungal.lib.path.id"
+             author="true"
+             version="true"
+             windowtitle="Fungal - Core"
+             doctitle="Fungal - Core"
+             use="true"
+             additionalparam="-author -version"
+             classpath="${build.core.dir}/impl"
+             classpathref="fungal.lib.path.id"
+             bottom="Copyright &#169; 2010 The Fungal Project (http://fungal.github.com/)">
+      <link offline="true" href="http://java.sun.com/j2se/5/docs/api/" packagelistLoc="${java.home}/../docs/api"/>
+    </javadoc>
+    <copy todir="${target.dir}/docs/core" overwrite="true">
+      <fileset dir="${tools.dir}/api"/>
+    </copy>
+  </target>
+
+</project>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3CR3//EN"
+        "../../../tools/docbook/support/docbook-dtd/docbookx.dtd" [
+        <!ENTITY about SYSTEM "modules/about.xml">
+        <!ENTITY introduction SYSTEM "modules/introduction.xml">
+        <!ENTITY download SYSTEM "modules/download.xml">
+        <!ENTITY nc_installation SYSTEM "modules/installation.xml">
+        <!ENTITY configuration SYSTEM "modules/configuration.xml">
+        <!ENTITY booting SYSTEM "modules/booting.xml">
+        <!ENTITY lifecycle SYSTEM "modules/lifecycle.xml">
+        <!ENTITY deployment SYSTEM "modules/deployment.xml">
+        <!ENTITY classloading SYSTEM "modules/classloading.xml">
+        <!ENTITY remote SYSTEM "modules/remote.xml">
+        <!ENTITY usage SYSTEM "modules/usage.xml">
+        <!ENTITY community SYSTEM "modules/community.xml">
+        <!ENTITY troubleshooting SYSTEM "modules/troubleshooting.xml">
+        ]>
+<book lang="en">
+   <bookinfo>
+      <title>Fungal User's Guide</title>
+      <subtitle>A High-Performance Java Kernel</subtitle>
+   </bookinfo>
+
+   <toc></toc>
+
+   &about;
+
+   &introduction;
+
+   &download;
+
+   &nc_installation;
+
+   &configuration;
+
+   &booting;
+
+   &lifecycle;
+
+   &deployment;
+
+   &classloading;
+
+   &remote;
+
+   &usage;
+
+   &community;
+
+   &troubleshooting;
+
+</book>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter id="lifecycle">
+   <title>Lifecycle</title>
+
+   <section id="bean_lifecycle">
+     <title>Lifecycle of beans</title>
+
+      <para>There is support for lifecycle methods. These include</para>
+
+      <itemizedlist>
+        <listitem>
+          <code>public void create()</code>
+          <para>Called after a bean has been constructed.</para>
+        </listitem>
+        <listitem>
+          <code>public void start()</code>
+          <para>Called after create.</para>
+        </listitem>
+        <listitem>
+          <code>public void stop()</code>
+          <para>Called when bean is stopped.</para>
+        </listitem>
+        <listitem>
+          <code>public void destroy()</code>
+          <para>Called after stop.</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>The lifecycle methods can be ignored by using the following constructs:</para>
+
+      <itemizedlist>
+        <listitem>
+          <code>&lt;ignoreCreate/&gt;</code>
+          <para>which ignores the <code>create</code> method.</para>
+        </listitem>
+        <listitem>
+          <code>&lt;ignoreStart/&gt;</code>
+          <para>which ignores the <code>start</code> method.</para>
+        </listitem>
+        <listitem>
+          <code>&lt;ignoreStop/&gt;</code>
+          <para>which ignores the <code>stop</code> method.</para>
+        </listitem>
+        <listitem>
+          <code>&lt;ignoreDestroy/&gt;</code>
+          <para>which ignores the <code>destroy</code> method.</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>Furthermore all <code>install</code> methods defined for the bean are called after the <code>start</code>
+        method. All <code>uninstall</code> methods defined for the bean are called before the <code>stop</code>
+        method.</para>
+
+   </section>
+
+</chapter>

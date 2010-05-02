@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter id="introduction">
+   <title>Introduction</title>
+
+   <para>The Fungal kernel is a Plain Old Java Object (POJO) based kernel which
+     can build a container environment for Java services.</para>
+
+   <para>The focus of the Fungal kernel is simplicity and high performance.</para>
+
+   <para>The Fungal kernel has no dependencies on any 3rd party libraries as the kernel is
+     built directly on the Java 6 API.</para>
+
+   <section id="highlights">
+     <title>Highlights</title>
+
+     <para>Highlights of the Fungal kernel:</para>
+     
+     <itemizedlist spacing="compact">
+       <listitem>
+         100% Pure Java 6 implementation
+       </listitem>
+       <listitem>
+         Bean definition language
+       </listitem>
+       <listitem>
+         Lifecycle of beans
+       </listitem>
+       <listitem>
+         Parallel deployment
+       </listitem>
+       <listitem>
+         Dependency management
+       </listitem>
+       <listitem>
+         Classloader architecture
+       </listitem>
+       <listitem>
+         Deployer framework
+       </listitem>
+       <listitem>
+         Hot deployment
+       </listitem>
+       <listitem>
+         Communication protocol
+       </listitem>
+       <listitem>
+         Core services
+       </listitem>
+     </itemizedlist>
+     
+   </section>
+
+</chapter>

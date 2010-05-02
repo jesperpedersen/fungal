@@ -1,0 +1,26 @@
+The Fungal kernel
+=================
+
+This is the home of the Fungal kernel project which implements 
+a Plain Old Java Object (POJO) kernel environment.
+
+Highlights of features:
+-----------------------
+* 100% Pure Java 6 implementation
+* Bean definition language
+* Lifecycle of beans
+* Parallel deployment
+* Dependency management
+* Classloader architecture
+* Deployer framework
+* Hot deployment
+* Communication protocol
+* Core services
+
+Homepage:
+---------
+http://fungal.github.com
+
+Project:
+--------
+http://github.com/fungal

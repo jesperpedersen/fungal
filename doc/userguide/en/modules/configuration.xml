@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter id="configuration">
+   <title>Configuration</title>
+
+   <section id="kernel_configuration">
+     <title>Kernel configuration</title>
+
+      <para>The kernel is configured through the</para>
+      <programlisting>
+com.github.fungal.api.configuration.KernelConfiguration
+      </programlisting>
+
+      <para>class, which allows the developer to configure the kernel
+        in the most optimal way for the container configuration.</para>
+
+      <para>It is a best practice to give the configuration a name using the
+        <code>name</code> method, otherwise the kernel will use the default
+        name of <code>fungal</code>.</para>
+
+      <para>Based on the kernel configuration a number of system properties are
+        set</para>
+
+      <table frame="all">
+        <title>Kernel system properties</title>
+        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+          <colspec colname="c1"/>
+          <colspec colname="c2" colwidth="3*"/>
+          <thead>
+            <row>
+              <entry align="left">Name</entry>
+              <entry align="left">Description</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>&lt;name&gt;.home</entry>
+              <entry>The root of the container configuration</entry>
+            </row>
+            <row>
+              <entry>&lt;name&gt;.bindaddress</entry>
+              <entry>The network bind address of the container configuration</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+
+      <para>Furthermore, the kernel makes use the Java system property <code>java.io.tmpdir</code>
+        for temporary files if needed.</para>
+
+   </section>
+
+</chapter>

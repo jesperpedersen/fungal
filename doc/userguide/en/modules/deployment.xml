@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter id="deployment">
+   <title>Deployment</title>
+
+    <section id="fungal_deployers">
+      <title>Deployers</title>
+
+      <para>Fungal features a very simple deployers mechanism.</para>
+
+      <para>Each deployer is defined as a bean in a bean deployment XML file and they
+        must implement the</para>
+      <programlisting>
+com.github.fungal.deployers.Deployer
+      </programlisting>
+      <para>interface.</para>
+
+      <para>The interface contains the</para>
+      <programlisting>
+/**
+ * Deploy
+ * @param url The URL for the deployment
+ * @param parent The parent classloader
+ * @return The deployment; or null if no deployment was made
+ * @exception DeployException Thrown if an error occurs
+ */
+public Deployment deploy(URL url, ClassLoader parent) throws DeployException;
+      </programlisting>
+      <para>method which is invoked once with each of the files in the
+        $CONF_HOME/deploy/ directory.</para>
+
+      <para>The <code>Deployment</code> interface returned represents the
+        deployment unit or <code>null</code> if a deployment unit wasn't
+        created.</para>
+
+      <para>The implementation of the deployer bean must be thread-safe. This can be done by
+        using the <code>synchronized</code> keyword on the <code>deploy</code> method.</para>
+
+      <section id="fungal_deployers_advanced">
+        <title>Advanced deployers</title>
+
+        <para>The kernel supports deploying multiple artifacts of the same type at the same time
+          for optimal performance.</para>
+
+        <para>If a deployer supports this mechanism it must implement the</para>
+          <programlisting>
+com.github.fungal.deployers.CloneableDeployer
+          </programlisting>
+          <para>interface.</para>
+
+          <para>The interface contains the</para>
+          <programlisting>
+/**
+ * Clone the deployer
+ * @return A copy of the deployer
+ * @exception CloneNotSupportedException Thrown if the copy operation isn't supported
+ */
+public Deployer clone() throws CloneNotSupportedException;
+          </programlisting>
+          <para>method which constructs a new instance of the deployer.</para>
+
+          <para>Implementing this interface means that the <code>deploy</code> method doesn't have
+            to be <code>synchronized</code>. However any state that should be shared between
+            all the deployer instances should be <code>static</code> and have atomic access.</para>
+
+      </section>
+
+    </section>
+
+
+   <section id="archive_deployment">
+     <title>Archive deployment</title>
+
+      <para>Fungal uses multiple threads during the booting sequence.</para>
+
+      <para>When multiple threads are used in the kernel a dependency mechanism between beans is
+        needed. The kernel keeps track of each bean deployment and assigns a status</para>
+
+      <itemizedlist>
+        <listitem>
+          <para><code>NOT_STARTED</code></para>
+          <para>The bean hasn't started.</para>
+        </listitem>
+        <listitem>
+          <para><code>STARTING</code></para>
+          <para>The bean is starting.</para>
+        </listitem>
+        <listitem>
+          <para><code>STARTED</code></para>
+          <para>The bean has fully started.</para>
+        </listitem>
+        <listitem>
+          <para><code>STOPPING</code></para>
+          <para>The bean is stopping.</para>
+        </listitem>
+        <listitem>
+          <para><code>ERROR</code></para>
+          <para>The bean is in error.</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>Caveats: The kernel currently doesn't detect cyclic dependencies between deployment units.</para>
+
+      <para>Furthermore the dependencies between beans are recorded in order to be able to safely shutdown
+        deployments.</para>
+
+      <para>The Fungal kernel can deploy the archives in the <code>deploy</code> directory in parallel if specified
+        by the <code>KernelConfiguration.parallelDeploy()</code> method. Otherwise are all the deployment units
+        booted in sequence as defined by the <code>File.listFiles()</code> method.</para>
+
+      <para>The Fungal kernel features a hot deployer, which scans the deployment directory at the specified
+        intervals for new, changed or removed deployment units. The properties of the hot deployer can
+        be controlled through the <code>KernelConfiguration</code> object or through JMX.</para>
+
+   </section>
+
+</chapter>
