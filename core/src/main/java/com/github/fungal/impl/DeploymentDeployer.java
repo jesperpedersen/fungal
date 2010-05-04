@@ -44,6 +44,7 @@ import com.github.fungal.deployment.Unmarshaller;
 import com.github.fungal.deployment.ValueType;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
@@ -802,20 +803,39 @@ public final class DeploymentDeployer implements CloneableDeployer
          if (it.getProperty() != null)
          {
             Method method = null;
+            Field field = null;
+
+            String baseName = it.getProperty().substring(0, 1).toUpperCase(Locale.US);
+
+            if (it.getProperty().length() > 1)
+               baseName += it.getProperty().substring(1);
+
             try
             {
-               String getMethodName = "get" + 
-                  it.getProperty().substring(0, 1).toUpperCase(Locale.US) + it.getProperty().substring(1);
+               String getMethodName = "get" + baseName;
                method = injectionObject.getClass().getMethod(getMethodName, (Class[])null);
             }
             catch (NoSuchMethodException nsme)
             {
-               String isMethodName = "is" + 
-                  it.getProperty().substring(0, 1).toUpperCase(Locale.US) + it.getProperty().substring(1);
-               method = injectionObject.getClass().getMethod(isMethodName, (Class[])null);
+               try
+               {
+                  String isMethodName = "is" + baseName;
+                  method = injectionObject.getClass().getMethod(isMethodName, (Class[])null);
+               }
+               catch (NoSuchMethodException insme)
+               {
+                  field = injectionObject.getClass().getField(it.getProperty());
+               }
             }
 
-            return method.invoke(injectionObject, (Object[])null);
+            if (method != null)
+            {
+               return method.invoke(injectionObject, (Object[])null);
+            }
+            else
+            {
+               return field.get(injectionObject);
+            }
          }
          else
          {
