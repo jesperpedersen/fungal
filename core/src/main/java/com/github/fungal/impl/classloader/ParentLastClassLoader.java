@@ -71,6 +71,10 @@ public class ParentLastClassLoader extends KernelClassLoader
       {
          // Default to parent
       }
+      catch (NoClassDefFoundError ncdfe)
+      {
+         // Default to parent
+      }
 
       return loadClass(name, false);
    }
