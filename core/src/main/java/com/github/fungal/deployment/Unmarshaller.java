@@ -372,6 +372,10 @@ public class Unmarshaller
                {
                   result.getContent().add(readSet(xmlStreamReader));
                }
+               else if ("map".equals(name))
+               {
+                  result.getContent().add(readMap(xmlStreamReader));
+               }
                else if ("list".equals(name))
                {
                   result.getContent().add(readList(xmlStreamReader));
