@@ -67,7 +67,7 @@ class ExportClassLoaderRepository
     */
    private ExportClassLoaderRepository()
    {
-      nonExportClassLoader = new NonExportClassLoader();
+      nonExportClassLoader = SecurityActions.createNonExportClassLoader();
       idCounter = new AtomicInteger(0);
       classLoaders = new ConcurrentHashMap<Integer, ArchiveClassLoader>();
       packages = new ConcurrentHashMap<String, SortedMap<String, Set<Integer>>>();
@@ -317,7 +317,8 @@ class ExportClassLoaderRepository
                            packages.put(s, sm);
                         }
                      
-                        ArchiveClassLoader acl = new ArchiveClassLoader(identifier, url, exportPackages);
+                        ArchiveClassLoader acl = 
+                           SecurityActions.createArchiveClassLoader(identifier, url, exportPackages);
 
                         classLoaders.put(acl.getId(), acl);
 

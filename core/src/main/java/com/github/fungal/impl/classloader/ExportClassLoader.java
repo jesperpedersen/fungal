@@ -366,11 +366,11 @@ public class ExportClassLoader extends KernelClassLoader
 
       urls = eclr.getNonExportClassLoader().getURLs();
 
-      if (result == null)
-         result = new ArrayList<URL>(urls.length);
-
       if (urls != null)
       {
+         if (result == null)
+            result = new ArrayList<URL>(urls.length);
+
          for (URL u : urls)
          {
             result.add(u);
@@ -379,11 +379,11 @@ public class ExportClassLoader extends KernelClassLoader
 
       urls = super.getURLs();
 
-      if (result == null)
-         result = new ArrayList<URL>(urls.length);
-
       if (urls != null)
       {
+         if (result == null)
+            result = new ArrayList<URL>(urls.length);
+
          for (URL u : urls)
          {
             result.add(u);

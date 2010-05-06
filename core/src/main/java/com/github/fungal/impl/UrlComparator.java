@@ -20,6 +20,7 @@
 
 package com.github.fungal.impl;
 
+import java.io.Serializable;
 import java.net.URL;
 import java.util.Comparator;
 
@@ -27,8 +28,11 @@ import java.util.Comparator;
  * Url comparator
  * @author <a href="mailto:jesper.pedersen@comcast.net">Jesper Pedersen</a>
  */
-class UrlComparator implements Comparator<URL>
+class UrlComparator implements Comparator<URL>, Serializable
 {
+   /** Serial version uid */
+   private static final long serialVersionUID = 1L;
+
    /**
     * Constructor
     */

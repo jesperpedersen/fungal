@@ -49,7 +49,7 @@ public class ParentLastClassLoader extends KernelClassLoader
    {
       super(new URL[0], parent);
 
-      this.children = new URLClassLoader(urls, ClassLoader.getSystemClassLoader());
+      this.children = SecurityActions.createURLClassLoader(urls, ClassLoader.getSystemClassLoader());
    }
 
    /**

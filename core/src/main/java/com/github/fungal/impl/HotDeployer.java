@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -145,8 +144,7 @@ public final class HotDeployer implements HotDeployerMBean, Runnable
    public void start()
    {
       running.set(true);
-      
-      Future<?> f = kernel.getExecutorService().submit(this);
+      kernel.getExecutorService().submit(this);
    }
 
    /**

@@ -60,7 +60,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -134,7 +133,7 @@ public final class DeploymentDeployer implements CloneableDeployer
                                                         beansLatch, parent);
                deployers.add(deployer);
 
-               Future<?> result = kernel.getExecutorService().submit(deployer);
+               kernel.getExecutorService().submit(deployer);
             }
 
             beansLatch.await();

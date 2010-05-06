@@ -1,123 +1,19 @@
 <FindBugsFilter>
 
-  <!-- javax.resource filter -->
+  <!-- com.github.fungal.impl -->
   <Match>
-    <Class name="javax.resource.Referenceable"/>
-    <Bug code="Nm"/>
-  </Match>
-  <Match>
-    <Class name="javax.resource.cci.ResultSet"/>
-    <Bug code="Nm"/>
-  </Match>
-  <Match>
-    <Class name="javax.resource.spi.InvalidPropertyException"/>
-    <Bug code="EI,EI2,Se"/>
-  </Match>
-  <Match>
-    <Class name="javax.resource.spi.security.PasswordCredential"/>
-    <Bug code="EI"/>
-  </Match>
-  <Match>
-    <Class name="javax.resource.spi.work.HintsContext"/>
-    <Bug code="Se"/>
+    <Class name="com.github.fungal.impl.DeploymentDeployer$BeanDeployer"/>
+    <Bug code="PZLA"/>
   </Match>
 
-  <!--  org.jboss.jca.common filter -->
+  <!-- com.github.fungal.impl.classloader -->
   <Match>
-    <Class name="org.jboss.jca.common.api.ThreadPool"/>
-    <Bug code="Nm"/>
-  </Match>
-
-  <!--  org.jboss.jca.core filter -->
-  <Match>
-    <Class name="org.jboss.jca.core.api.ConnectionManager"/>
-    <Bug code="Nm"/>
+    <Class name="com.github.fungal.impl.classloader.ExportClassLoaderRepository"/>
+    <Bug code="ST"/>
   </Match>
   <Match>
-    <Class name="org.jboss.jca.core.api.WorkManager"/>
-    <Bug code="Nm"/>
-  </Match>
-
-  <!--  org.jboss.jca.deployers filter -->
-  <Match>
-    <Class name="org.jboss.jca.deployers.fungal.RADeployer"/>
-    <Bug code="DLS"/>
-  </Match>
-
-  <!--  org.jboss.jca.fungal filter -->
-  <Match>
-    <Class name="org.jboss.jca.fungal.impl.DeploymentDeployer"/>
-    <Bug code="DLS,UPM"/>
-  </Match>
-  <Match>
-    <Class name="org.jboss.jca.fungal.impl.KernelImpl"/>
-    <Bug code="DLS,UPM"/>
-  </Match>
-  <Match>
-    <Class name="org.jboss.jca.fungal.impl.remote.Communication"/>
-    <Bug code="UPM"/>
-  </Match>
-  <Match>
-    <Class name="org.jboss.jca.fungal.impl.remote.CommunicationServer"/>
-    <Bug code="DLS,UPM"/>
-  </Match>
-
-  <!--  org.jboss.jca.sjc filter -->
-  <Match>
-    <Class name="org.jboss.jca.sjc.Main"/>
-    <Bug code="UPM"/>
-  </Match>
-  <Match>
-    <Class name="org.jboss.jca.sjc.Main$LifeThread"/>
-    <Bug code="UW,Wa"/>
-  </Match>
-
-  <!--  org.jboss.jca.standalone filter -->
-  <Match>
-    <Class name="org.jboss.jca.standalone.Main"/>
-    <Bug code="UPM"/>
-  </Match>
-
-  <!--  org.jboss.jca.web filter -->
-  <Match>
-    <Class name="org.jboss.jca.web.WARDeployer"/>
-    <Bug code="IS"/>
-  </Match>
-  <Match>
-    <Class name="org.jboss.jca.web.WARDeployment"/>
-    <Bug code="UrF"/>
-  </Match>
-  <Match>
-    <Class name="org.jboss.jca.web.console.HtmlAdaptorServlet"/>
-    <Bug code="DLS"/>
-  </Match>
-  <Match>
-    <Class name="org.jboss.jca.web.console.HtmlAdaptorServlet$1"/>
-    <Bug code="SIC"/>
-  </Match>
-  <Match>
-    <Class name="org.jboss.jca.web.console.HtmlAdaptorServlet$2"/>
-    <Bug code="SIC"/>
-  </Match>
-  <Match>
-    <Class name="org.jboss.jca.web.console.HtmlAdaptorServlet$3"/>
-    <Bug code="SIC"/>
-  </Match>
-  <Match>
-    <Class name="org.jboss.jca.web.console.HtmlAdaptorServlet$4"/>
-    <Bug code="SIC"/>
-  </Match>
-  <Match>
-    <Class name="org.jboss.jca.web.console.HtmlAdaptorServlet$5"/>
-    <Bug code="SIC"/>
-  </Match>
-  <Match>
-    <Class name="org.jboss.jca.web.console.OpResultInfo"/>
-    <Bug code="EI,EI2"/>
-  </Match>
-  <Match>
-    <Class name="org.jboss.jca.web.console.Server"/>
-    <Bug code="RCN"/>
+    <Class name="com.github.fungal.impl.classloader.SecurityActions"/>
+    <Bug code="DP"/>
   </Match>
 
 </FindBugsFilter>

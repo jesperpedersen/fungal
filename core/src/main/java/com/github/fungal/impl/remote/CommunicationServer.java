@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -84,7 +83,7 @@ public class CommunicationServer implements Runnable
             Socket socket = ss.accept();
 
             Runnable r = new Communication(socket, kernel.getMainDeployer(), kernel.getHotDeployer());
-            Future<?> result = kernel.getExecutorService().submit(r);
+            kernel.getExecutorService().submit(r);
          }
          catch (IOException ioe)
          {
