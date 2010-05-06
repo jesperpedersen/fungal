@@ -50,7 +50,7 @@ public final class HotDeployer implements HotDeployerMBean, Runnable
 
    private AtomicBoolean running;
    private List<URL> deployments;
-   private Map<URL, Long> modifiedTimestamp;
+   private Map<String, Long> modifiedTimestamp;
 
    /**
     * Constructor
@@ -74,7 +74,7 @@ public final class HotDeployer implements HotDeployerMBean, Runnable
       this.kernel = kernel;
       this.running = new AtomicBoolean(false);
       this.deployments = new ArrayList<URL>();
-      this.modifiedTimestamp = new HashMap<URL, Long>();
+      this.modifiedTimestamp = new HashMap<String, Long>();
    }
 
    /**
@@ -91,7 +91,7 @@ public final class HotDeployer implements HotDeployerMBean, Runnable
       try
       {
          File f = new File(deployment.toURI());
-         modifiedTimestamp.put(deployment, Long.valueOf(f.lastModified()));
+         modifiedTimestamp.put(deployment.toString(), Long.valueOf(f.lastModified()));
       }
       catch (URISyntaxException use)
       {
@@ -109,7 +109,7 @@ public final class HotDeployer implements HotDeployerMBean, Runnable
          throw new IllegalArgumentException("Deployment is null");
 
       deployments.remove(deployment);
-      modifiedTimestamp.remove(deployment);
+      modifiedTimestamp.remove(deployment.toString());
    }
 
    /**
@@ -178,7 +178,7 @@ public final class HotDeployer implements HotDeployerMBean, Runnable
                URL url = f.toURI().toURL();
                if (removeDeployments.contains(url))
                {
-                  long modified = modifiedTimestamp.get(url).longValue();
+                  long modified = modifiedTimestamp.get(url.toString()).longValue();
 
                   if (f.lastModified() == modified)
                   {
