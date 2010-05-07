@@ -1,0 +1,18 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Chapter&nbsp;13.&nbsp;Troubleshooting</title><link rel="stylesheet" href="css/html.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.65.1"><link rel="home" href="index.html" title="Fungal User's Guide"><link rel="up" href="index.html" title="Fungal User's Guide"><link rel="previous" href="community.html" title="Chapter&nbsp;12.&nbsp;Community"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter&nbsp;13.&nbsp;Troubleshooting</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="community.html">Prev</a>&nbsp;</td><th width="60%" align="center">&nbsp;</th><td width="20%" align="right">&nbsp;</td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="troubleshooting"></a>Chapter&nbsp;13.&nbsp;Troubleshooting</h2></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="ithinkihavefoundabug"></a>13.1.&nbsp;I think I have found a bug</h2></div></div><div></div></div><p>If you think you have found a bug you should verify this by posting to our forum first.</p><p>Our forum is located at </p><p>You can also search our issue tracking system located at </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="iwouldliketoimplementafeature"></a>13.2.&nbsp;I would like to implement a feature</h2></div></div><div></div></div><p>So you have found an area where you are missing a feature and would like to submit a patch for it, great !</p><p>There are a couple of steps to get a feature included</p><p>First, you should create a new thread in our development forum where you describe the feature, its design and
+        implementation.</p><p>Once there is an agreement on the feature and the design you should proceed with creating the patch.</p><p>To maximize your chances of getting the feature in the official build as soon as possible make sure that
+        you run through the following steps:</p><pre class="programlisting">
+ant clean test
+ant clean checkstyle
+ant clean findbugs
+ant clean cobertura
+      </pre><p>All these should show that,</p><div class="orderedlist"><ol type="1"><li>
+          All your test cases for the feature is passing
+        </li><li>
+          Your code is correctly formatted accoording to project rules
+        </li><li>
+          There isn't any bug reports from the Findbugs environment
+        </li><li>
+          There is full code coverage based on the Cobertura report
+        </li></ol></div><p>when done, create a pull request. See the developer guide for additional details.</p><p>Happy Coding !</p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="community.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="index.html">Up</a></td><td width="40%" align="right">&nbsp;</td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;12.&nbsp;Community&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;</td></tr></table></div></body></html>

@@ -1,0 +1,29 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Chapter&nbsp;11.&nbsp;Usage</title><link rel="stylesheet" href="css/html.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.65.1"><link rel="home" href="index.html" title="Fungal User's Guide"><link rel="up" href="index.html" title="Fungal User's Guide"><link rel="previous" href="remote.html" title="Chapter&nbsp;10.&nbsp;Remote communition"><link rel="next" href="community.html" title="Chapter&nbsp;12.&nbsp;Community"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter&nbsp;11.&nbsp;Usage</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="remote.html">Prev</a>&nbsp;</td><th width="60%" align="center">&nbsp;</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="community.html">Next</a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="usage"></a>Chapter&nbsp;11.&nbsp;Usage</h2></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="usage_kernel"></a>11.1.&nbsp;Basic usage</h2></div></div><div></div></div><p>The Fungal kernel is constructed and started using</p><pre class="programlisting">
+import com.github.fungal.api.Kernel;
+import com.github.fungal.api.KernelFactory;
+import com.github.fungal.api.configuration.KernelConfiguration;
+import com.github.fungal.api.deployer.MainDeployer;
+
+// Create a kernel configuration and start the kernel
+KernelConfiguration kernelConfiguration = new KernelConfiguration();
+kernelConfiguration = kernelConfiguration.name("jboss.jca");
+kernelConfiguration = kernelConfiguration.remoteAccess(false);
+kernelConfiguration = kernelConfiguration.hotDeployment(false);
+
+Kernel kernel = KernelFactory.create(kernelConfiguration);
+kernel.startup();
+
+// Get the reference to the main deployer
+MainDeployer mainDeployer = kernel.getMainDeployer();
+
+// Reference to my deployment
+URL myDeployment = ...;
+
+mainDeployer.deploy(myDeployment);
+      </pre><p>where the <tt class="code">KernelConfiguration</tt> object allows you to
+        configure the kernel setup. The <tt class="code">MainDeployer</tt> allows you
+        to deploy and undeploy deployment units that are supported.</p><p>The kernel is stopped using</p><pre class="programlisting">
+kernel.shutdown();
+      </pre><p>See the JavaDoc for additional details.</p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="remote.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="index.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="community.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;10.&nbsp;Remote communition&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;12.&nbsp;Community</td></tr></table></div></body></html>
