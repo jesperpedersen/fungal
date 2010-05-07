@@ -5,7 +5,7 @@
   <section id="location">
     <title>Location</title>
     
-    <para>The JIRA issue tracking for the project is located at </para>.
+    <para>The issue tracking for the project is located at <ulink url="http://github.com/jesperpedersen/fungal/issues">http://github.com/jesperpedersen/fungal/issues</ulink></para>.
 
   </section>
 
@@ -28,6 +28,10 @@
           <row>
             <entry>Core</entry>
             <entry>The core implementation of the project.</entry>
+          </row>
+          <row>
+            <entry>CLI</entry>
+            <entry>The command line client interface.</entry>
           </row>
         </tbody>
       </tgroup>
@@ -73,8 +77,6 @@
         </tbody>
       </tgroup>
     </table>
-
-    <para>The other categories in the JIRA installation are not used by this project.</para>
   </section>
 
   <section id="lifecycle">
@@ -82,7 +84,7 @@
     <para>All issues folows the following life cycle:</para>
 
     <table frame="all">
-      <title>JIRA Lifecycle</title>
+      <title>Issue lifecycle</title>
       <tgroup cols="2" align="left" colsep="1" rowsep="1">
         <colspec colname="c1"/>
         <colspec colname="c2" colwidth="4*"/>
@@ -127,7 +129,7 @@
     <para>All issues are assigned one of the following priorities:</para>
 
     <table frame="all">
-      <title>JIRA Priorities</title>
+      <title>Issue priorities</title>
       <tgroup cols="2" align="left" colsep="1" rowsep="1">
         <colspec colname="c1"/>
         <colspec colname="c2" colwidth="4*"/>

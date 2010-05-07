@@ -71,7 +71,7 @@ cp ivy.jar $ANT_HOME/lib
       <para>The anonymous Git repository is located under:</para>
 
       <programlisting>
-git checkout git://github.com/fungal.git
+git checkout git://github.com/jesperpedersen/fungal.git
       </programlisting>
       
     </section>
@@ -91,7 +91,7 @@ git checkout git://github.com/fungal.git
       <para>We have the following branches for the project:</para>
       <itemizedlist>
          <listitem>
-            <para>trunk</para>
+            <para>master</para>
             <para>The head of development targeting the next upcoming release.</para>
          </listitem>
       </itemizedlist>

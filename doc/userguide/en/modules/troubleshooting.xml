@@ -52,22 +52,10 @@ ant clean cobertura
         </listitem>
       </orderedlist>
 
-      <para>when done, create a JIRA task (Patch) in our JIRA environment. See the developer guide for
-        additional details.</para>
+      <para>when done, create a pull request. See the developer guide for additional details.</para>
 
       <para>Happy Coding !</para>
 
    </section>
-
-   <section id="howdoi">
-      <title>How do I ?</title>
-
-      <para>We can't cover every single issue in this guide, so feel free to drop by our forums to see if a solution
-        has already been provided. Otherwise feel free to ask your question there.</para>
-
-      <para>Our forum is located at </para>
-
-   </section>
-
    
 </chapter>

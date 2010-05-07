@@ -7,35 +7,14 @@
 
       <para>The website contains the latest information about the project and links to important information.</para>
 
-      <para>The website is located at <ulink url="http://fungal.github.com/">http://fungal.github.com</ulink></para>
-
-   </section>
-
-   <section id="userforum">
-      <title>User forum</title>
-
-      <para>The user forum is where we discuss matters about the usage of the Fungal project.</para>
-
-      <para>Our forum is located at </para>
-
-   </section>
-
-   <section id="developerforum">
-      <title>Developer forum</title>
-
-      <para>The developer forum is where we discuss the implementation of the Fungal project. This means the internals of the project and 
-        not how the project is used.</para>
-
-      <para>User questions doesn't belong here - they should go in the user forum instead.</para>
-
-      <para>The forum is located at </para>
+      <para>The website is located at <ulink url="http://jesperpedersen.github.com/fungal/">http://jesperpedersen.github.com/fungal/</ulink></para>
 
    </section>
 
    <section id="issuetracking">
       <title>Issue tracking</title>
 
-      <para>We are using JIRA to manage our issues in the project.</para>
+      <para>We are using the GitHub issue system to manage our issues in the project.</para>
 
       <para>These are divided into the following categories</para>
 
@@ -48,11 +27,7 @@
          </listitem>
       </itemizedlist>
 
-      <para>For all of these you should post your request to our user forum first.</para>
-
-      <para>The rest of the categories are for team use only.</para>
-
-      <para>Our issue tracking system located at </para>
+      <para>Our issue tracking system located at <ulink url="http://github.com/jesperpedersen/fungal/issues">http://github.com/jesperpedersen/fungal/issues</ulink></para>
 
    </section>
    

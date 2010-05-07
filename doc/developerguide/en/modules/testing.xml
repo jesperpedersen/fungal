@@ -7,43 +7,7 @@
     <para>The overall goals of our test environment is to execute tests that ensures that
     we have full coverage of the code in Fungal.</para>
 
-    <para>The full test suite is executed using</para>
-
-    <programlisting>
-ant test
-    </programlisting>
-
-    <para>A single test case can be executed using</para>
-
-    <programlisting>
-ant -Dmodule=embedded -Dtest=org.jboss.jca.embedded.unit.ShrinkWrapTestCase one-test
-    </programlisting>
-
-    <para>where <code>-Dmodule</code> specifies which module to execute the test case in. This parameter
-      defaults to <code>core</code>. The <code>-Dtest</code> parameter specifies the test case itself.</para>
-
-    <para>You can also execute all test cases of a single module using</para>
-
-    <programlisting>
-ant -Dmodule=embedded module-test
-    </programlisting>
-
-    <para>where <code>-Dmodule</code> specifies which module to execute the test cases in. This
-      parameter defaults to <code>core</code>.</para>
-
-    <para>The build script does not fail in case of test errors or failure.</para>
-
-    <para>
-      You can control the behavior by using the <code>junit.haltonerror</code> and <code>junit.haltonfailure</code> 
-      properties in the main <code>build.xml</code> file. Default value for both is <code>no</code>.
-    </para>
-
-    <para>
-      You can of course change them statically in the <code>build.xml</code> file or temporary using <code>-Djunit.haltonerror=yes</code>.
-      There are other <code>jnuit.*</code> properties defined in the main <code>build.xml</code> that can be controlled in the same
-      way.
-    </para>
-
+    <para>TBD</para>
   </section>
 
 
