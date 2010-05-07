@@ -16,4 +16,10 @@
     <Bug code="DP"/>
   </Match>
 
+  <!-- com.github.fungal.impl.remote.commands -->
+  <Match>
+    <Class name="com.github.fungal.impl.remote.commands.Help"/>
+    <Bug code="PZLA"/>
+  </Match>
+
 </FindBugsFilter>

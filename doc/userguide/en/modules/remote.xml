@@ -5,155 +5,271 @@
    <section id="remote_protocol">
      <title>Remote protocol</title>
 
-      <para>Fungal features a remote protocol to allow deployment
-        and undeployment of units.</para>
+      <para>Fungal features a remote protocol to allow for example deployment
+        and undeployment of archives.</para>
 
       <para>The protocol is based on the <code>java.io.ObjectInputStream</code> and 
         <code>java.io.ObjectOutputStream</code> format over a standard <code>java.net.Socket</code>
         connection.</para>
 
+      <para>The protocol consist of two parts</para>
+
+      <orderedlist>
+        <listitem>The name of the command</listitem>
+        <listitem>The arguments for the command</listitem>
+      </orderedlist>
+
+      <para>The arguments is optional if the command doesn't take any.</para>
+
+      <para>All commands return a <code>java.io.Serializable</code> which represents the 
+        result of running the command.</para>
+
+      <para>The name of the command is written using <code>writeUTF()</code> and read using
+        <code>readUTF()</code>.</para>
+
+      <para>Each of the arguments is written using <code>writeObject()</code> and read using
+        <code>readObject()</code>.</para>
+
       <para>The kernel must be configured with <code>KernelConfiguration.remoteAccess(true)</code>
         in order to enable remote access.</para>
+   </section>
 
-      <section id="fungal_remote_protocol_deploy">
-        <title>Deploy</title>
+   <section id="remote_protocol_builtin">
+     <title>Built-in commands</title>
 
-        <para>Deploys a file.</para>
+     <para>If remote access is enabled in the kernel then the following commands are enabled.</para>
 
-        <table frame="all">
-          <title>Deploy: Input</title>
-          <tgroup cols="4" align="left" colsep="1" rowsep="1">
-            <colspec colname="c1"/>
-            <colspec colname="c2"/>
-            <colspec colname="c3"/>
-            <colspec colname="c4" colwidth="4*"/>
-            <thead>
+     <section id="fungal_remote_protocol_help">
+       <title>Help</title>
+       
+       <para>Displays the available commands.</para>
+       
+       <table frame="all">
+         <title>Help: Input</title>
+         <tgroup cols="3" align="left" colsep="1" rowsep="1">
+           <colspec colname="c1"/>
+           <colspec colname="c2"/>
+           <colspec colname="c3" colwidth="4*"/>
+           <thead>
+             <row>
+               <entry align="left">Type</entry>
+               <entry align="left">Value</entry>
+               <entry align="left">Description</entry>
+             </row>
+           </thead>
+           <tbody>
               <row>
-                <entry align="left">Order</entry>
-                <entry align="left">Type</entry>
-                <entry align="left">Value</entry>
-                <entry align="left">Description</entry>
-              </row>
-            </thead>
-            <tbody>
-              <row>
-                <entry>1</entry>
-                <entry>int</entry>
-                <entry>0x00</entry>
-                <entry>Identification</entry>
-              </row>
-              <row>
-                <entry>2</entry>
                 <entry>UTF</entry>
+                <entry><code>help</code></entry>
+                <entry>Command name</entry>
+              </row>
+           </tbody>
+         </tgroup>
+       </table>
+       
+       <table frame="all">
+         <title>Help: Output</title>
+         <tgroup cols="3" align="left" colsep="1" rowsep="1">
+           <colspec colname="c1"/>
+           <colspec colname="c2"/>
+           <colspec colname="c3" colwidth="4*"/>
+           <thead>
+             <row>
+               <entry align="left">Type</entry>
+               <entry align="left">Value</entry>
+               <entry align="left">Description</entry>
+             </row>
+           </thead>
+           <tbody>
+             <row>
+               <entry>OBJECT</entry>
+               <entry>&lt;message&gt;</entry>
+               <entry>List of available commands</entry>
+             </row>
+           </tbody>
+         </tgroup>
+       </table>
+       
+     </section>
+
+     <section id="fungal_remote_protocol_deploy">
+       <title>Deploy</title>
+       
+       <para>Deploys a file.</para>
+       
+       <table frame="all">
+         <title>Deploy: Input</title>
+         <tgroup cols="3" align="left" colsep="1" rowsep="1">
+           <colspec colname="c1"/>
+           <colspec colname="c2"/>
+           <colspec colname="c3" colwidth="4*"/>
+           <thead>
+             <row>
+               <entry align="left">Type</entry>
+               <entry align="left">Value</entry>
+               <entry align="left">Description</entry>
+             </row>
+           </thead>
+           <tbody>
+              <row>
+                <entry>UTF</entry>
+                <entry><code>deploy</code></entry>
+                <entry>Command name</entry>
+              </row>
+              <row>
+                <entry>OBJECT</entry>
                 <entry>&lt;file url&gt;</entry>
-                <entry>Location of the deployment unit</entry>
+                <entry>Location of the deployment unit as an <code>java.net.URL</code></entry>
               </row>
-            </tbody>
-          </tgroup>
-        </table>
-
-        <table frame="all">
-          <title>Deploy: Output</title>
-          <tgroup cols="4" align="left" colsep="1" rowsep="1">
-            <colspec colname="c1"/>
-            <colspec colname="c2"/>
-            <colspec colname="c3"/>
-            <colspec colname="c4" colwidth="4*"/>
-            <thead>
-              <row>
-                <entry align="left">Order</entry>
-                <entry align="left">Type</entry>
-                <entry align="left">Value</entry>
-                <entry align="left">Description</entry>
-              </row>
-            </thead>
-            <tbody>
-              <row>
-                <entry>1</entry>
-                <entry>boolean</entry>
-                <entry>&lt;boolean&gt;</entry>
-                <entry>True if deployment were successful. False if error</entry>
-              </row>
-              <row>
-                <entry>2</entry>
-                <entry>UTF</entry>
-                <entry>&lt;message&gt;</entry>
-                <entry>Empty string if successful. Otherwise error description</entry>
-              </row>
-            </tbody>
-          </tgroup>
-        </table>
-
-      </section>
-
-      <section id="fungal_remote_protocol_undeploy">
+           </tbody>
+         </tgroup>
+       </table>
+       
+       <table frame="all">
+         <title>Deploy: Output</title>
+         <tgroup cols="3" align="left" colsep="1" rowsep="1">
+           <colspec colname="c1"/>
+           <colspec colname="c2"/>
+           <colspec colname="c3" colwidth="4*"/>
+           <thead>
+             <row>
+               <entry align="left">Type</entry>
+               <entry align="left">Value</entry>
+               <entry align="left">Description</entry>
+             </row>
+           </thead>
+           <tbody>
+             <row>
+               <entry>OBJECT</entry>
+               <entry>&lt;message&gt;</entry>
+               <entry>Empty string if successful. Otherwise error description</entry>
+             </row>
+           </tbody>
+         </tgroup>
+       </table>
+       
+     </section>
+     
+     <section id="fungal_remote_protocol_undeploy">
         <title>Undeploy</title>
 
         <para>Undeploys a file.</para>
 
-        <table frame="all">
-          <title>Undeploy: Input</title>
-          <tgroup cols="4" align="left" colsep="1" rowsep="1">
-            <colspec colname="c1"/>
-            <colspec colname="c2"/>
-            <colspec colname="c3"/>
-            <colspec colname="c4" colwidth="4*"/>
-            <thead>
+       <table frame="all">
+         <title>Undeploy: Input</title>
+         <tgroup cols="3" align="left" colsep="1" rowsep="1">
+           <colspec colname="c1"/>
+           <colspec colname="c2"/>
+           <colspec colname="c3" colwidth="4*"/>
+           <thead>
+             <row>
+               <entry align="left">Type</entry>
+               <entry align="left">Value</entry>
+               <entry align="left">Description</entry>
+             </row>
+           </thead>
+           <tbody>
               <row>
-                <entry align="left">Order</entry>
-                <entry align="left">Type</entry>
-                <entry align="left">Value</entry>
-                <entry align="left">Description</entry>
-              </row>
-            </thead>
-            <tbody>
-              <row>
-                <entry>1</entry>
-                <entry>int</entry>
-                <entry>0x01</entry>
-                <entry>Identification</entry>
-              </row>
-              <row>
-                <entry>2</entry>
                 <entry>UTF</entry>
+                <entry><code>undeploy</code></entry>
+                <entry>Command name</entry>
+              </row>
+              <row>
+                <entry>OBJECT</entry>
                 <entry>&lt;file url&gt;</entry>
-                <entry>Location of the deployment unit</entry>
+                <entry>Location of the deployment unit as an <code>java.net.URL</code></entry>
               </row>
-            </tbody>
-          </tgroup>
-        </table>
+           </tbody>
+         </tgroup>
+       </table>
+       
+       <table frame="all">
+         <title>Undeploy: Output</title>
+         <tgroup cols="3" align="left" colsep="1" rowsep="1">
+           <colspec colname="c1"/>
+           <colspec colname="c2"/>
+           <colspec colname="c3" colwidth="4*"/>
+           <thead>
+             <row>
+               <entry align="left">Type</entry>
+               <entry align="left">Value</entry>
+               <entry align="left">Description</entry>
+             </row>
+           </thead>
+           <tbody>
+             <row>
+               <entry>OBJECT</entry>
+               <entry>&lt;message&gt;</entry>
+               <entry>Empty string if successful. Otherwise error description</entry>
+             </row>
+           </tbody>
+         </tgroup>
+       </table>
 
-        <table frame="all">
-          <title>Undeploy: Output</title>
-          <tgroup cols="4" align="left" colsep="1" rowsep="1">
-            <colspec colname="c1"/>
-            <colspec colname="c2"/>
-            <colspec colname="c3"/>
-            <colspec colname="c4" colwidth="4*"/>
-            <thead>
+      </section>
+
+   </section>
+
+   <section id="remote_protocol_internal">
+     <title>Internal commands</title>
+
+     <para>The following internal commands are available.</para>
+
+     <section id="fungal_remote_protocol_getcommand">
+       <title>GetCommand</title>
+
+       <para>Get the parameter types for a command.</para>
+
+       <table frame="all">
+         <title>GetCommand: Input</title>
+         <tgroup cols="3" align="left" colsep="1" rowsep="1">
+           <colspec colname="c1"/>
+           <colspec colname="c2"/>
+           <colspec colname="c3" colwidth="4*"/>
+           <thead>
+             <row>
+               <entry align="left">Type</entry>
+               <entry align="left">Value</entry>
+               <entry align="left">Description</entry>
+             </row>
+           </thead>
+           <tbody>
               <row>
-                <entry align="left">Order</entry>
-                <entry align="left">Type</entry>
-                <entry align="left">Value</entry>
-                <entry align="left">Description</entry>
-              </row>
-            </thead>
-            <tbody>
-              <row>
-                <entry>1</entry>
-                <entry>boolean</entry>
-                <entry>&lt;boolean&gt;</entry>
-                <entry>True if undeployment were successful. False if error</entry>
-              </row>
-              <row>
-                <entry>2</entry>
                 <entry>UTF</entry>
-                <entry>&lt;message&gt;</entry>
-                <entry>Empty string if successful. Otherwise error description</entry>
+                <entry><code>getcommand</code></entry>
+                <entry>Command name</entry>
               </row>
-            </tbody>
-          </tgroup>
-        </table>
+              <row>
+                <entry>OBJECT</entry>
+                <entry>&lt;command&gt;</entry>
+                <entry>The name of the command</entry>
+              </row>
+           </tbody>
+         </tgroup>
+       </table>
+       
+       <table frame="all">
+         <title>GetCommand: Output</title>
+         <tgroup cols="3" align="left" colsep="1" rowsep="1">
+           <colspec colname="c1"/>
+           <colspec colname="c2"/>
+           <colspec colname="c3" colwidth="4*"/>
+           <thead>
+             <row>
+               <entry align="left">Type</entry>
+               <entry align="left">Value</entry>
+               <entry align="left">Description</entry>
+             </row>
+           </thead>
+           <tbody>
+             <row>
+               <entry>OBJECT</entry>
+               <entry>&lt;parameters&gt;</entry>
+               <entry>The list of parameter types (<code>Class[]</code>). Or <code>null</code> if none.</entry>
+             </row>
+           </tbody>
+         </tgroup>
+       </table>
 
       </section>
 

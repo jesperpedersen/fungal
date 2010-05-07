@@ -22,6 +22,7 @@ package com.github.fungal.api.configuration;
 
 import com.github.fungal.api.classloading.ClassLoaderFactory;
 import com.github.fungal.api.events.EventListener;
+import com.github.fungal.api.remote.Command;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ import java.util.List;
  * @author <a href="mailto:jesper.pedersen@comcast.net">Jesper Pedersen</a>
  * @see com.github.fungal.api.classloading.ClassLoaderFactory
  * @see com.github.fungal.api.events.EventListener
+ * @see com.github.fungal.api.remote.Command
  */
 public class KernelConfiguration
 {
@@ -81,6 +83,9 @@ public class KernelConfiguration
    /** Event listeners */
    private List<EventListener> eventListeners;
 
+   /** Commands */
+   private List<Command> commands;
+
    /**
     * Constructor
     */
@@ -101,6 +106,7 @@ public class KernelConfiguration
       hotDeployment = true;
       hotDeploymentInterval = 5;
       eventListeners = null;
+      commands = null;
    }
 
    /**
@@ -424,5 +430,32 @@ public class KernelConfiguration
          return Collections.emptyList();
 
       return Collections.unmodifiableList(eventListeners);
+   }
+
+   /**
+    * Add a command
+    * @param c The command
+    * @return The configuration
+    */
+   public KernelConfiguration command(Command c)
+   {
+      if (commands == null)
+         commands = new ArrayList<Command>(1);
+
+      commands.add(c);
+
+      return this;
+   }
+
+   /**
+    * Get the commands
+    * @return The value
+    */
+   public List<Command> getCommands()
+   {
+      if (commands == null)
+         return Collections.emptyList();
+
+      return Collections.unmodifiableList(commands);
    }
 }

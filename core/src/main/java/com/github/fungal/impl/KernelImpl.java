@@ -27,8 +27,13 @@ import com.github.fungal.api.configuration.KernelConfiguration;
 import com.github.fungal.api.deployer.MainDeployer;
 import com.github.fungal.api.events.Event;
 import com.github.fungal.api.events.EventListener;
+import com.github.fungal.api.remote.Command;
 import com.github.fungal.deployers.Deployment;
 import com.github.fungal.impl.remote.CommunicationServer;
+import com.github.fungal.impl.remote.commands.Deploy;
+import com.github.fungal.impl.remote.commands.GetCommand;
+import com.github.fungal.impl.remote.commands.Help;
+import com.github.fungal.impl.remote.commands.Undeploy;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,7 +57,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -453,13 +457,30 @@ public class KernelImpl implements Kernel
             hotDeployer.start();
       }
 
-      // Remote MBeanServer access
+      // Remote access
       if (kernelConfiguration.isRemoteAccess())
       {
          remote = new CommunicationServer(this,
                                           kernelConfiguration.getBindAddress(),
                                           kernelConfiguration.getRemotePort());
-         Future<?> f = threadPoolExecutor.submit(remote);
+
+         remote.registerCommand(new Help(remote));
+         remote.registerCommand(new GetCommand(remote));
+         remote.registerCommand(new Deploy(getMainDeployer(), getHotDeployer()));
+         remote.registerCommand(new Undeploy(getMainDeployer(), getHotDeployer()));
+
+         List<Command> commands = kernelConfiguration.getCommands();
+         if (commands != null && commands.size() > 0)
+         {
+            for (Command command : commands)
+            {
+               remote.registerCommand(command);
+            }
+         }
+
+         remote.start();
+
+         threadPoolExecutor.submit(remote);
       }
 
       // Memory information

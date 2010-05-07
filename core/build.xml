@@ -69,6 +69,7 @@
          includes="**/cli/**"
          excludes="**/*.java">
       <manifest>
+        <attribute name="Main-Class" value="com.github.fungal.cli.CLI"/>
         <attribute name="Implementation-Title" value="The Fungal kernel - CLI"/>
         <attribute name="Implementation-Version" value="${major}.${minor}.${patch}.${type}"/>
         <attribute name="Implementation-Vendor" value="The Fungal kernel project (http://fungal.github.com)"/>

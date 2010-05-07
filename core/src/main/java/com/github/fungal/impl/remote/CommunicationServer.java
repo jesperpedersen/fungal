@@ -20,12 +20,16 @@
 
 package com.github.fungal.impl.remote;
 
+import com.github.fungal.api.remote.Command;
 import com.github.fungal.impl.KernelImpl;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,9 +49,20 @@ public class CommunicationServer implements Runnable
    /** The kernel */
    private KernelImpl kernel;
 
+   /** The bind address */
+   private String bindAddress;
+
+   /** The bind port */
+   private int bindPort;
+
+   /** Is the server running ? */
    private AtomicBoolean running;
 
+   /** The server socket */
    private ServerSocket ss;
+
+   /** The available commands */
+   private ConcurrentMap<String, Command> commands;
 
    /**
     * Constructor
@@ -58,17 +73,88 @@ public class CommunicationServer implements Runnable
     */
    public CommunicationServer(KernelImpl kernel, String bindAddress, int bindPort) throws IOException
    {
-      this.kernel = kernel;
-
       if (bindAddress == null)
          bindAddress = "localhost";
 
-      InetSocketAddress address = new InetSocketAddress(bindAddress, bindPort); 
+      this.kernel = kernel;
+      this.bindAddress = bindAddress;
+      this.bindPort = bindPort;
+      this.running = new AtomicBoolean(false);
+      this.ss = null;
+      this.commands = new ConcurrentHashMap<String, Command>();
+   }
 
-      this.ss = new ServerSocket();
-      this.ss.bind(address);
+   /**
+    * Register command
+    * @param command The command
+    */
+   public void registerCommand(Command command)
+   {
+      if (command == null)
+         throw new IllegalArgumentException("Command is null");
 
-      this.running = new AtomicBoolean(true);
+      if (!commands.containsKey(command.getName()))
+      {
+         commands.put(command.getName(), command);
+      }
+   }
+
+   /**
+    * Get command names
+    * @return The command names
+    */
+   public Set<String> getCommandNames()
+   {
+      return commands.keySet();
+   }
+
+   /**
+    * Get command
+    * @param name The name of the command
+    * @return The command
+    */
+   public Command getCommand(String name)
+   {
+      return commands.get(name);
+   }
+
+   /**
+    * Start
+    * @exception Throwable Thrown if an error occurs
+    */
+   public void start() throws Throwable
+   {
+      if (!running.get())
+      {
+         InetSocketAddress address = new InetSocketAddress(bindAddress, bindPort); 
+
+         ss = new ServerSocket();
+         ss.bind(address);
+
+         running.set(true);
+      }
+   }
+
+   /**
+    * Stop
+    * @exception Throwable Thrown if an error occurs
+    */
+   public void stop() throws Throwable
+   {
+      running.set(false);
+
+      if (ss != null)
+      {
+         try
+         {
+            ss.close();
+         }
+         catch (IOException ioe)
+         {
+            if (log.isLoggable(Level.FINE))
+               log.fine(ioe.getMessage());
+         }
+      }
    }
 
    /**
@@ -82,29 +168,8 @@ public class CommunicationServer implements Runnable
          {
             Socket socket = ss.accept();
 
-            Runnable r = new Communication(socket, kernel.getMainDeployer(), kernel.getHotDeployer());
+            Runnable r = new Communication(this, socket);
             kernel.getExecutorService().submit(r);
-         }
-         catch (IOException ioe)
-         {
-            if (log.isLoggable(Level.FINE))
-               log.fine(ioe.getMessage());
-         }
-      }
-   }
-
-   /**
-    * Stop
-    */
-   public void stop()
-   {
-      running.set(false);
-
-      if (ss != null)
-      {
-         try
-         {
-            ss.close();
          }
          catch (IOException ioe)
          {

@@ -22,20 +22,18 @@ package com.github.fungal.cli;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.Socket;
+import java.net.URL;
 
 /**
- * The command line interface for the JCA/Fungal kernel
+ * The command line interface for the Fungal kernel
  * @author <a href="mailto:jesper.pedersen@comcast.net">Jesper Pedersen</a>
  */
 public class CLI
 {
-   /** Deploy */
-   private static final int DEPLOY = 0;
-
-   /** Undeploy */
-   private static final int UNDEPLOY = 1;
-
    /**
     * Constructor
     */
@@ -49,7 +47,7 @@ public class CLI
     */
    public static void main(String[] args)
    {
-      if (args.length < 2)
+      if (args.length < 1)
       {
          usage();
       }
@@ -61,7 +59,7 @@ public class CLI
             String host = null;
             int port = 1202;
             int counter = 0;
-            int command = -1;
+            String command = "";
 
             if ("-h".equals(args[counter]))
             {
@@ -77,41 +75,66 @@ public class CLI
                counter++;
             }
 
-            if ("deploy".equals(args[counter]))
-            {
-               command = DEPLOY;
-            }
-            else if ("undeploy".equals(args[counter]))
-            {
-               command = UNDEPLOY;
-            }
+            command = args[counter];
             counter++;
-
-            File file = new File(args[counter]);
 
             if (host == null)
                host = "localhost";
 
             socket = new Socket(host, port);
 
-            Communicator communicator = new Communicator();
+            ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+            
+            oos.writeUTF("getcommand");
+            oos.writeObject(command);
+            
+            oos.flush();
+            
+            ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+            
+            Serializable result = (Serializable)ois.readObject();
 
-            if (command == DEPLOY)
+            if (result == null || result instanceof Class[])
             {
-               communicator.deploy(socket, file.toURI().toURL());
-            }
-            else if (command == UNDEPLOY)
-            {
-               communicator.undeploy(socket, file.toURI().toURL());
+               Class[] parameterTypes = (Class[])result;
+               Serializable[] arguments = null;
+               if (parameterTypes != null)
+               {
+                  arguments = new Serializable[parameterTypes.length];
+                  for (int i = 0; i < parameterTypes.length; i++)
+                  {
+                     arguments[i] = getValue(parameterTypes[i], args[counter]);
+                     counter++;
+                  }
+               }
+
+               oos.writeUTF(command);
+
+               if (arguments != null)
+               {
+                  for (Serializable argument : arguments)
+                  {
+                     oos.writeObject(argument);
+                  }
+               }
+               
+               oos.flush();
+
+               result = (Serializable)ois.readObject();
+
+               if (result != null)
+               {
+                  System.out.println(result);
+               }
             }
             else
             {
-               System.err.println("Unknown command: " + command);
+               System.err.println(result);
             }
          }
-         catch (IOException ioe)
+         catch (Throwable t)
          {
-            ioe.printStackTrace(System.err);
+            t.printStackTrace(System.err);
          }
          finally
          {
@@ -126,6 +149,116 @@ public class CLI
             }
          }
       }
+   }
+
+   /**
+    * Get an instance of the type
+    * @param type The type
+    * @param value The string representation
+    */
+   private static Serializable getValue(Class<?> type, String value)
+   {
+      if (value == null)
+         return null;
+
+      if (String.class.equals(type))
+      {
+         return value;
+      }
+      else if (boolean.class.equals(type))
+      {
+         return Boolean.valueOf(value).booleanValue();
+      }
+      else if (Boolean.class.equals(type))
+      {
+         return Boolean.valueOf(value);
+      }
+      else if (byte.class.equals(type))
+      {
+         return Byte.valueOf(value).byteValue();
+      }
+      else if (Byte.class.equals(type))
+      {
+         return Byte.valueOf(value);
+      }
+      else if (char.class.equals(type))
+      {
+         return Character.valueOf(value.charAt(0)).charValue();
+      }
+      else if (Character.class.equals(type))
+      {
+         return Character.valueOf(value.charAt(0));
+      }
+      else if (double.class.equals(type))
+      {
+         return Double.valueOf(value).doubleValue();
+      }
+      else if (Double.class.equals(type))
+      {
+         return Double.valueOf(value);
+      }
+      else if (float.class.equals(type))
+      {
+         return Float.valueOf(value).floatValue();
+      }
+      else if (Float.class.equals(type))
+      {
+         return Float.valueOf(value);
+      }
+      else if (int.class.equals(type))
+      {
+         return Integer.valueOf(value).intValue();
+      }
+      else if (Integer.class.equals(type))
+      {
+         return Integer.valueOf(value);
+      }
+      else if (long.class.equals(type))
+      {
+         return Long.valueOf(value).longValue();
+      }
+      else if (Long.class.equals(type))
+      {
+         return Long.valueOf(value);
+      }
+      else if (short.class.equals(type))
+      {
+         return Short.valueOf(value).shortValue();
+      }
+      else if (Short.class.equals(type))
+      {
+         return Short.valueOf(value);
+      }
+      else if (URL.class.equals(type))
+      {
+         try
+         {
+            URL url = null;
+
+            if (!(value.startsWith("file:") || value.startsWith("http:")))
+            {
+               url = new File(value).toURI().toURL();
+            }
+            else
+            {
+               url = new URL(value);
+            }
+            
+            return url;
+         }
+         catch (Throwable t)
+         {
+            System.err.println(t);
+         }
+
+         return null;
+      }
+      else
+      {
+         System.err.println("Unknown type: " + type.getName() + " Value: " + value);
+      }
+
+      return null;
    }
 
    /**
@@ -144,7 +277,6 @@ public class CLI
 
       System.out.println(" Commands:");
       System.out.println(" ---------");
-      System.out.println(" deploy <file>");
-      System.out.println(" undeploy <file>");
+      System.out.println(" For a list of commands use \"help\"");
    }
 }

@@ -20,16 +20,15 @@
 
 package com.github.fungal.impl.remote;
 
-import com.github.fungal.api.deployer.MainDeployer;
-import com.github.fungal.impl.HotDeployer;
+import com.github.fungal.api.remote.Command;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.io.StringWriter;
 import java.net.Socket;
-import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,26 +44,21 @@ public class Communication implements Runnable
    /** Trace logging enabled */
    private static boolean trace = log.isLoggable(Level.FINEST);
 
+   /** The communication server */
+   private CommunicationServer cs;
+
    /** The socket */
    private Socket socket;
 
-   /** The main deployer */
-   private MainDeployer mainDeployer;
-
-   /** The hot deployer */
-   private HotDeployer hotDeployer;
-
    /**
     * Constructor
+    * @param cs The communication server
     * @param socket The socket
-    * @param mainDeployer The main deployer
-    * @param hotDeployer The hot deployer
     */
-   public Communication(Socket socket, MainDeployer mainDeployer, HotDeployer hotDeployer)
+   public Communication(CommunicationServer cs, Socket socket)
    {
+      this.cs = cs;
       this.socket = socket;
-      this.mainDeployer = mainDeployer;
-      this.hotDeployer = hotDeployer;
    }
 
    /**
@@ -76,36 +70,33 @@ public class Communication implements Runnable
       {
          ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
 
-         int command = ois.readInt();
+         String commandName = ois.readUTF();
+         Command command = cs.getCommand(commandName);
+         Serializable result = null;
 
-         if (command == 0)
+         if (command != null)
          {
-            URL url = new URL(ois.readUTF());
+            Class[] parameterTypes = command.getParameterTypes();
+            Serializable[] arguments = null;
 
-            if (hotDeployer != null)
-               hotDeployer.register(url);
+            if (parameterTypes != null)
+            {
+               arguments = new Serializable[parameterTypes.length];
+               for (int i = 0; i < parameterTypes.length; i++)
+               {
+                  arguments[i] = (Serializable)ois.readObject();
+               }
+            }
 
-            mainDeployer.deploy(url);
-         }
-         else if (command == 1)
-         {
-            URL url = new URL(ois.readUTF());
-
-            if (hotDeployer != null)
-               hotDeployer.unregister(url);
-
-            mainDeployer.undeploy(url);
+            result = command.invoke(arguments);
          }
          else
          {
-            throw new IOException("Unknown command: " + command);
+            result = new IOException("Unknown command: " + commandName);
          }
 
          ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-
-         oos.writeBoolean(true);
-         oos.writeUTF("");
-
+         oos.writeObject(result);
          oos.flush();
       }
       catch (Throwable t)
@@ -119,10 +110,7 @@ public class Communication implements Runnable
             t.printStackTrace(new PrintWriter(sw));
 
             ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-
-            oos.writeBoolean(false);
-            oos.writeUTF(sw.toString());
-            
+            oos.writeObject(sw.toString());
             oos.flush();
          }
          catch (IOException ioe)
