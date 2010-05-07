@@ -20,6 +20,7 @@
 
 package com.github.fungal.cli;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -108,24 +109,7 @@ public class CLI
                   }
                }
 
-               oos.writeUTF(command);
-
-               if (arguments != null)
-               {
-                  for (Serializable argument : arguments)
-                  {
-                     oos.writeObject(argument);
-                  }
-               }
-               
-               oos.flush();
-
-               result = (Serializable)ois.readObject();
-
-               if (result != null)
-               {
-                  System.out.println(result);
-               }
+               executeCommand(host, port, command, arguments);
             }
             else
             {
@@ -147,6 +131,63 @@ public class CLI
             {
                // Ignore
             }
+         }
+      }
+   }
+
+   /**
+    * Execute command
+    * @param host The host
+    * @param port The port
+    * @param command The command
+    * @param arguments The arguments
+    */
+   private static void executeCommand(String host, int port, String command, Serializable[] arguments)
+      throws Throwable
+   {
+      Socket socket = null;
+
+      try
+      {
+         socket = new Socket(host, port);
+
+         ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+         
+         oos.writeUTF(command);
+         
+         if (arguments != null)
+         {
+            for (Serializable argument : arguments)
+            {
+               oos.writeObject(argument);
+            }
+         }
+         
+         oos.flush();
+
+         ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+         
+         Serializable result = (Serializable)ois.readObject();
+
+         if (result != null)
+         {
+            System.out.println(result);
+         }
+      }
+      catch (EOFException ee)
+      {
+         // Nothing
+      }
+      finally
+      {
+         try
+         {
+            if (socket != null)
+               socket.close();
+         }
+         catch (IOException ignore)
+         {
+            // Ignore
          }
       }
    }
