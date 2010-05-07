@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>com.github.fungal</groupId>
+  <artifactId>fungal-cli</artifactId>
+  <version>0.8.0.Beta1</version>
+  <versioning>
+    <versions>
+      <version>0.8.0.Beta1</version>
+    </versions>
+    <lastUpdated>20100507144249</lastUpdated>
+  </versioning>
+</metadata>
