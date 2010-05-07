@@ -76,10 +76,10 @@ import javax.management.ObjectName;
 public class KernelImpl implements Kernel
 {
    /** The logger */
-   private static Logger log = Logger.getLogger("com.github.fungal.Fungal");
+   private static Logger log = null;
 
    /** Trace logging enabled */
-   private static boolean trace = log.isLoggable(Level.FINEST);
+   private static boolean trace = false;
 
    /** Version information */
    private static final String VERSION = "Fungal 0.8.0.Beta1";
@@ -265,6 +265,8 @@ public class KernelImpl implements Kernel
             el.event(this, Event.POST_CLASSLOADER);
          }
       }
+
+      initKernelLogging();
 
       if (kernelConfiguration.getBindAddress() != null)
       {
@@ -499,6 +501,15 @@ public class KernelImpl implements Kernel
             el.event(this, Event.STARTED);
          }
       }
+   }
+
+   /**
+    * Init kernel logging
+    */
+   private void initKernelLogging()
+   {
+      log = Logger.getLogger("com.github.fungal.Fungal");
+      trace = log.isLoggable(Level.FINEST);
    }
 
    /**
