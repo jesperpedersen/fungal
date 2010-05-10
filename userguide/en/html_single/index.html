@@ -85,7 +85,7 @@ ${jboss.jca.host:localhost}
         method. All <tt class="code">uninstall</tt> methods defined for the bean are called before the <tt class="code">stop</tt>
         method.</p></div></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="deployment"></a>Chapter&nbsp;8.&nbsp;Deployment</h2></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="fungal_deployers"></a>8.1.&nbsp;Deployers</h2></div></div><div></div></div><p>Fungal features a very simple deployers mechanism.</p><p>Each deployer is defined as a bean in a bean deployment XML file and they
         must implement the</p><pre class="programlisting">
-com.github.fungal.deployers.Deployer
+com.github.fungal.spi.deployers.Deployer
       </pre><p>interface.</p><p>The interface contains the</p><pre class="programlisting">
 /**
  * Deploy
@@ -101,7 +101,7 @@ public Deployment deploy(URL url, ClassLoader parent) throws DeployException;
         created.</p><p>The implementation of the deployer bean must be thread-safe. This can be done by
         using the <tt class="code">synchronized</tt> keyword on the <tt class="code">deploy</tt> method.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="fungal_deployers_advanced"></a>8.1.1.&nbsp;Advanced deployers</h3></div></div><div></div></div><p>The kernel supports deploying multiple artifacts of the same type at the same time
           for optimal performance.</p><p>If a deployer supports this mechanism it must implement the</p><pre class="programlisting">
-com.github.fungal.deployers.CloneableDeployer
+com.github.fungal.spi.deployers.CloneableDeployer
           </pre><p>interface.</p><p>The interface contains the</p><pre class="programlisting">
 /**
  * Clone the deployer
