@@ -18,22 +18,44 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.github.fungal.deployers;
+package com.github.fungal.api.util;
 
-import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 /**
- * The deployer interface for JCA/Fungal
+ * Privileged Blocks
  * @author <a href="mailto:jesper.pedersen@comcast.net">Jesper Pedersen</a>
  */
-public interface Deployer
-{
+class SecurityActions
+{ 
    /**
-    * Deploy
-    * @param url The URL
-    * @param parent The parent classloader
-    * @return The deployment; or null if no deployment was made
-    * @exception DeployException Thrown if an error occurs during deployment
+    * Constructor
     */
-   public Deployment deploy(URL url, ClassLoader parent) throws DeployException;
+   private SecurityActions()
+   {
+   }
+
+   /**
+    * Get a system property
+    * @param name The property name
+    * @return The property value
+    */
+   static String getSystemProperty(final String name)
+   {
+      if (System.getSecurityManager() == null)
+      {
+         return System.getProperty(name);
+      }
+      else
+      {
+         return (String)AccessController.doPrivileged(new PrivilegedAction<Object>() 
+         {
+            public Object run()
+            {
+               return System.getProperty(name);
+            }
+         });
+      }
+   }
 }

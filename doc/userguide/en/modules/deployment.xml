@@ -10,7 +10,7 @@
       <para>Each deployer is defined as a bean in a bean deployment XML file and they
         must implement the</para>
       <programlisting>
-com.github.fungal.deployers.Deployer
+com.github.fungal.spi.deployers.Deployer
       </programlisting>
       <para>interface.</para>
 
@@ -43,7 +43,7 @@ public Deployment deploy(URL url, ClassLoader parent) throws DeployException;
 
         <para>If a deployer supports this mechanism it must implement the</para>
           <programlisting>
-com.github.fungal.deployers.CloneableDeployer
+com.github.fungal.spi.deployers.CloneableDeployer
           </programlisting>
           <para>interface.</para>
 

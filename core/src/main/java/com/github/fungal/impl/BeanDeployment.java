@@ -20,7 +20,7 @@
 
 package com.github.fungal.impl;
 
-import com.github.fungal.deployers.Deployment;
+import com.github.fungal.spi.deployers.Deployment;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * A bean deployment for JCA/Fungal
+ * A bean deployment for Fungal
  * @author <a href="mailto:jesper.pedersen@comcast.net">Jesper Pedersen</a>
  */
 public class BeanDeployment implements Deployment

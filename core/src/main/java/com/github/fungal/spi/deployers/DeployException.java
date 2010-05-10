@@ -18,44 +18,33 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.github.fungal.util;
-
-import java.security.AccessController;
-import java.security.PrivilegedAction;
+package com.github.fungal.spi.deployers;
 
 /**
- * Privileged Blocks
+ * The deploy exception for Fungal
  * @author <a href="mailto:jesper.pedersen@comcast.net">Jesper Pedersen</a>
  */
-class SecurityActions
-{ 
+public class DeployException extends Exception
+{
+   /** Serial version UID */
+   static final long serialVersionUID = 3820032266224196804L;
+
    /**
-    * Constructor
+    * Constructs a new exception with the specified detail message.
+    * @param message The message
     */
-   private SecurityActions()
+   public DeployException(String message)
    {
+      super(message);
    }
 
    /**
-    * Get a system property
-    * @param name The property name
-    * @return The property value
+    * Constructs a new exception with the specified detail message and cause.
+    * @param message The message
+    * @param cause The cause
     */
-   static String getSystemProperty(final String name)
+   public DeployException(String message, Throwable cause)
    {
-      if (System.getSecurityManager() == null)
-      {
-         return System.getProperty(name);
-      }
-      else
-      {
-         return (String)AccessController.doPrivileged(new PrivilegedAction<Object>() 
-         {
-            public Object run()
-            {
-               return System.getProperty(name);
-            }
-         });
-      }
+      super(message, cause);
    }
 }

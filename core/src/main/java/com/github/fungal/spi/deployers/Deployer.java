@@ -18,33 +18,22 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.github.fungal.deployers;
+package com.github.fungal.spi.deployers;
+
+import java.net.URL;
 
 /**
- * The deploy exception for JCA/Fungal
+ * The deployer interface for Fungal
  * @author <a href="mailto:jesper.pedersen@comcast.net">Jesper Pedersen</a>
  */
-public class DeployException extends Exception
+public interface Deployer
 {
-   /** Serial version UID */
-   static final long serialVersionUID = 3820032266224196804L;
-
    /**
-    * Constructs a new exception with the specified detail message.
-    * @param message The message
+    * Deploy
+    * @param url The URL
+    * @param parent The parent classloader
+    * @return The deployment; or null if no deployment was made
+    * @exception DeployException Thrown if an error occurs during deployment
     */
-   public DeployException(String message)
-   {
-      super(message);
-   }
-
-   /**
-    * Constructs a new exception with the specified detail message and cause.
-    * @param message The message
-    * @param cause The cause
-    */
-   public DeployException(String message, Throwable cause)
-   {
-      super(message, cause);
-   }
+   public Deployment deploy(URL url, ClassLoader parent) throws DeployException;
 }

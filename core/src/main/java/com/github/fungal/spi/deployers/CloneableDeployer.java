@@ -18,10 +18,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.github.fungal.deployers;
+package com.github.fungal.spi.deployers;
 
 /**
- * The deployer interface for JCA/Fungal
+ * The deployer interface for Fungal
  * @author <a href="mailto:jesper.pedersen@comcast.net">Jesper Pedersen</a>
  */
 public interface CloneableDeployer extends Cloneable, Deployer

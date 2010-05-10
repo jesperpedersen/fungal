@@ -20,9 +20,9 @@
 
 package com.github.fungal.impl;
 
-import com.github.fungal.deployers.CloneableDeployer;
-import com.github.fungal.deployers.Deployer;
-import com.github.fungal.deployers.Deployment;
+import com.github.fungal.spi.deployers.CloneableDeployer;
+import com.github.fungal.spi.deployers.Deployer;
+import com.github.fungal.spi.deployers.Deployment;
 
 import java.net.URL;
 import java.util.ArrayList;

@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.github.fungal.util;
+package com.github.fungal.api.util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -47,7 +47,7 @@ public class Injection
     * @exception IllegalAccessException If the property method cannot be accessed
     * @exception InvocationTargetException If the property method cannot be executed
     */
-   public synchronized void inject(String propertyType, String propertyName, String propertyValue, Object object)
+   public void inject(String propertyType, String propertyName, String propertyValue, Object object)
       throws NoSuchMethodException, IllegalAccessException, InvocationTargetException
    {
       if (propertyType == null || propertyType.trim().equals(""))

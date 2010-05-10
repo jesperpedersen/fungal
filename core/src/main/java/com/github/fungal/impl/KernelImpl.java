@@ -28,12 +28,12 @@ import com.github.fungal.api.deployer.MainDeployer;
 import com.github.fungal.api.events.Event;
 import com.github.fungal.api.events.EventListener;
 import com.github.fungal.api.remote.Command;
-import com.github.fungal.deployers.Deployment;
 import com.github.fungal.impl.remote.CommunicationServer;
 import com.github.fungal.impl.remote.commands.Deploy;
 import com.github.fungal.impl.remote.commands.GetCommand;
 import com.github.fungal.impl.remote.commands.Help;
 import com.github.fungal.impl.remote.commands.Undeploy;
+import com.github.fungal.spi.deployers.Deployment;
 
 import java.io.File;
 import java.io.IOException;
@@ -82,7 +82,7 @@ public class KernelImpl implements Kernel
    private static boolean trace = false;
 
    /** Version information */
-   private static final String VERSION = "Fungal 0.8.0.Beta1";
+   private static final String VERSION = "Fungal 0.8.0.Beta2";
 
    /** Kernel configuration */
    private KernelConfiguration kernelConfiguration;

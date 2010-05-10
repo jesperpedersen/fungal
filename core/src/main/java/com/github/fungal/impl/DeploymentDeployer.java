@@ -20,10 +20,6 @@
 
 package com.github.fungal.impl;
 
-import com.github.fungal.deployers.CloneableDeployer;
-import com.github.fungal.deployers.DeployException;
-import com.github.fungal.deployers.Deployer;
-import com.github.fungal.deployers.Deployment;
 import com.github.fungal.deployment.BeanType;
 import com.github.fungal.deployment.ConstructorType;
 import com.github.fungal.deployment.DependsType;
@@ -42,6 +38,10 @@ import com.github.fungal.deployment.UncallbackType;
 import com.github.fungal.deployment.UninstallType;
 import com.github.fungal.deployment.Unmarshaller;
 import com.github.fungal.deployment.ValueType;
+import com.github.fungal.spi.deployers.CloneableDeployer;
+import com.github.fungal.spi.deployers.DeployException;
+import com.github.fungal.spi.deployers.Deployer;
+import com.github.fungal.spi.deployers.Deployment;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
