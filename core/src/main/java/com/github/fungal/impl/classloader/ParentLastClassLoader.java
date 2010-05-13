@@ -25,7 +25,6 @@ import com.github.fungal.api.classloading.KernelClassLoader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -37,8 +36,8 @@ import java.util.Vector;
  */
 public class ParentLastClassLoader extends KernelClassLoader
 {
-   /** Local URLClassLoader */
-   private URLClassLoader children;
+   /** Children class loader */
+   private ChildrenClassLoader children;
 
    /**
     * Constructor
@@ -49,7 +48,7 @@ public class ParentLastClassLoader extends KernelClassLoader
    {
       super(new URL[0], parent);
 
-      this.children = SecurityActions.createURLClassLoader(urls, ClassLoader.getSystemClassLoader());
+      this.children = SecurityActions.createChildrenClassLoader(urls, ClassLoader.getSystemClassLoader(), this);
    }
 
    /**
@@ -77,6 +76,44 @@ public class ParentLastClassLoader extends KernelClassLoader
       }
 
       return loadClass(name, false);
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException
+   {
+      return super.loadClass(name, resolve);
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public Class<?> findClass(String name) throws ClassNotFoundException
+   {
+      try
+      {
+         return children.findClass(name);
+      }
+      catch (Throwable t)
+      {
+         // Default to parent
+      }
+
+      return super.findClass(name);
+   }
+
+   /**
+    * Lookup a class
+    * @param name The fullt qualified class name
+    * @return The class
+    * @exception ClassNotFoundException Thrown if the class can't be found
+    */
+   Class<?> lookup(String name) throws ClassNotFoundException
+   {
+      return super.findClass(name);
    }
 
    /**
@@ -202,6 +239,9 @@ public class ParentLastClassLoader extends KernelClassLoader
 
       if (urls != null)
       {
+         if (result == null)
+            result = new ArrayList<URL>(urls.length);
+
          for (URL u : urls)
          {
             result.add(u);

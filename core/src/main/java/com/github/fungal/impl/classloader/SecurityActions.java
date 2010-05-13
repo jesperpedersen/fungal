@@ -97,4 +97,27 @@ class SecurityActions
          }
       });
    }
+
+   /**
+    * Create a ChildrenClassLoader
+    * @param urls The URLs
+    * @param parent The parent class loader
+    * @param delegate The delegate class loader
+    * @return The class loader
+    */
+   static ChildrenClassLoader createChildrenClassLoader(final URL[] urls, 
+                                                        final ClassLoader parent,
+                                                        final ParentLastClassLoader delegate)
+   {
+      if (System.getSecurityManager() == null)
+         return new ChildrenClassLoader(urls, parent, delegate);
+
+      return AccessController.doPrivileged(new PrivilegedAction<ChildrenClassLoader>() 
+      {
+         public ChildrenClassLoader run()
+         {
+            return new ChildrenClassLoader(urls, parent, delegate);
+         }
+      });
+   }
 }
