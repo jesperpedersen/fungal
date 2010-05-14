@@ -93,7 +93,7 @@ public class KernelConfiguration
    {
       name = "fungal";
       home = null;
-      classLoader = ClassLoaderFactory.TYPE_EXPORT;
+      classLoader = ClassLoaderFactory.TYPE_PARENT_FIRST;
       library = "lib";
       configuration = "config";
       system = "system";
@@ -152,7 +152,7 @@ public class KernelConfiguration
    }
 
    /**
-    * Set the kernel class loader type; default <code>ClassLoaderFactory.TYPE_EXPORT</code>
+    * Set the kernel class loader type; default <code>ClassLoaderFactory.TYPE_PARENT_FIRST</code>
     * @param type The type
     * @return The configuration
     */
