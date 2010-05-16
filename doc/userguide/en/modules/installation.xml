@@ -2,5 +2,32 @@
 <chapter id="installation">
    <title>Installation</title>
 
+   <para>This chapter describes how the Fungal kernel should be installed.</para>
+
+   <section id="installation_standalone">
+     <title>Standalone environments</title>
+   
+     <para>The Fungal kernel provides the foundation for standalone Java environments
+       where it enables deployment of the services which makes up those environments.</para>
+
+     <para>The Fungal kernel should be deployed as part of the application classloader for
+       the application. This is typically done by bundling all the classes Fungal that makes
+       up the kernel.</para>
+
+     <para>The bundle would also include the main class for the environment, which sets up the
+       kernel and its configuration and all utility classes such as kernel event listeners.</para>
+
+     <para>This setup can be done by simply <code>unjar</code>ing the <code>fungal.jar</code> archive</para>
+
+     <programlisting>
+unjar xf fungal.jar
+     </programlisting>
+
+     <para>and then copy the applications main class and its dependencies into the directory.</para>
+
+     <para>The application can then be started using a <code>Main-Class</code> attribute in the
+       <code>MANIFEST.MF</code> file or by specifying the main class on the command line.</para>
+
+   </section>
 
 </chapter>

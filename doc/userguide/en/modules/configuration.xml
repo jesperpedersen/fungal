@@ -47,6 +47,211 @@ com.github.fungal.api.configuration.KernelConfiguration
       <para>Furthermore, the kernel makes use the Java system property <code>java.io.tmpdir</code>
         for temporary files if needed.</para>
 
+      <section id="kernel_configuration_bindaddress">
+        <title><code>bindAddress</code></title>
+
+        <para>The <code>bindAddress</code> parameter specifies where the communication server
+          which handles remote access should be bound.</para>
+
+        <para>An example</para>
+        <programlisting>
+kernelConfiguration.bindAddress("localhost");
+        </programlisting>
+
+      </section>
+
+      <section id="kernel_configuration_classloader">
+        <title><code>classLoader</code></title>
+
+        <para>The <code>classLoader</code> parameter specifies the classloading model for the kernel.</para>
+
+        <para>An example</para>
+        <programlisting>
+kernelConfiguration.classLoader(ClassLoaderFactory.PARENT_FIRST);
+        </programlisting>
+
+      </section>
+
+      <section id="kernel_configuration_command">
+        <title><code>command</code></title>
+
+        <para>The <code>command</code> parameter allows the developer to install additional commands that
+          should be available remotely.</para>
+
+        <para>An example</para>
+        <programlisting>
+kernelConfiguration.command(new ShutdownCommand());
+        </programlisting>
+
+      </section>
+
+      <section id="kernel_configuration_configuration">
+        <title><code>configuration</code></title>
+
+        <para>The <code>configuration</code> parameter specifies the configuration directory for the environment where
+          all configuration files are located under <code>home</code>.</para>
+
+        <para>An example</para>
+        <programlisting>
+kernelConfiguration.configuration("config");
+        </programlisting>
+
+      </section>
+
+      <section id="kernel_configuration_deploy">
+        <title><code>deploy</code></title>
+
+        <para>The <code>deploy</code> parameter specifies the deploy directory for the environment where
+          all user deployment are located under <code>home</code>.</para>
+
+        <para>An example</para>
+        <programlisting>
+kernelConfiguration.deploy("deploy");
+        </programlisting>
+
+      </section>
+
+      <section id="kernel_configuration_eventlistener">
+        <title><code>eventListener</code></title>
+
+        <para>The <code>eventListener</code> parameter allows the developer to install additional 
+          kernel event listeners.</para>
+
+        <para>An example</para>
+        <programlisting>
+kernelConfiguration.eventListener(new PreClassLoaderEventListener());
+        </programlisting>
+
+      </section>
+
+      <section id="kernel_configuration_home">
+        <title><code>home</code></title>
+
+        <para>The <code>home</code> parameter specifies the top-level directory of the environment.</para>
+
+        <para>An example</para>
+        <programlisting>
+kernelConfiguration.home(new File(".").getParent().toURI().toURL());
+        </programlisting>
+
+      </section>
+
+      <section id="kernel_configuration_hotdeploy">
+        <title><code>hotDeploy</code></title>
+
+        <para>The <code>hotDeploy</code> parameter specifies if hot deployment should be enabled for 
+          the <code>deploy</code> directory.</para>
+
+        <para>An example</para>
+        <programlisting>
+kernelConfiguration.hotDeploy(true);
+        </programlisting>
+
+      </section>
+
+      <section id="kernel_configuration_hotdeployinterval">
+        <title><code>hotDeployInterval</code></title>
+
+        <para>The <code>hotDeployInterval</code> parameter specifies the number of seconds between
+          each scan.</para>
+
+        <para>An example</para>
+        <programlisting>
+kernelConfiguration.hotDeployInterval(5);
+        </programlisting>
+
+      </section>
+
+      <section id="kernel_configuration_library">
+        <title><code>library</code></title>
+
+        <para>The <code>library</code> parameter specifies the library directory where all the environment
+          libraries are located under <code>home</code>.</para>
+
+        <para>An example</para>
+        <programlisting>
+kernelConfiguration.library("lib");
+        </programlisting>
+
+      </section>
+
+      <section id="kernel_configuration_name">
+        <title><code>name</code></title>
+
+        <para>The <code>name</code> parameter specifies the unique name of the environment which is used
+          to generate for example a MBean name space and system properties.</para>
+
+        <para>An example</para>
+        <programlisting>
+kernelConfiguration.name("fungal");
+        </programlisting>
+
+      </section>
+
+      <section id="kernel_configuration_paralleldeploy">
+        <title><code>parallelDeploy</code></title>
+
+        <para>The <code>parallelDeploy</code> parameter specifies if deployments should be done in parallel
+          for the <code>deploy</code> and <code>system</code> directories.</para>
+
+        <para>An example</para>
+        <programlisting>
+kernelConfiguration.parallelDeploy(true);
+        </programlisting>
+
+      </section>
+
+      <section id="kernel_configuration_remoteaccess">
+        <title><code>remoteAccess</code></title>
+
+        <para>The <code>remoteAccess</code> parameter specifies if remote access to the kernel should
+          be enabled.</para>
+
+        <para>An example</para>
+        <programlisting>
+kernelConfiguration.remoteAccess(true);
+        </programlisting>
+
+      </section>
+
+      <section id="kernel_configuration_remoteport">
+        <title><code>remotePort</code></title>
+
+        <para>The <code>remotePort</code> parameter specifies the port number for remote access.</para>
+
+        <para>An example</para>
+        <programlisting>
+kernelConfiguration.remotePort(1202);
+        </programlisting>
+
+      </section>
+
+      <section id="kernel_configuration_system">
+        <title><code>system</code></title>
+
+        <para>The <code>system</code> parameter specifies the system directory where system deployments
+          are located under <code>home</code>.</para>
+
+        <para>An example</para>
+        <programlisting>
+kernelConfiguration.system("system");
+        </programlisting>
+
+      </section>
+
+      <section id="kernel_configuration_threadgroup">
+        <title><code>threadGroup</code></title>
+
+        <para>The <code>threadGroup</code> parameter specifies the thread group that should be used
+          for kernel threads.</para>
+
+        <para>An example</para>
+        <programlisting>
+kernelConfiguration.threadGroup(new MyThreadGroup());
+        </programlisting>
+
+      </section>
+
    </section>
 
 </chapter>
