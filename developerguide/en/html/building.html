@@ -6,15 +6,14 @@ export JAVA_HOME
 
 PATH=$JAVA_HOME/bin:$PATH
 export PATH
-      </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="ant"></a>3.1.2.&nbsp;Apache Ant</h3></div></div><div></div></div><p>You must have Apache Ant 1.7.1+ installed on your system.</p><p>Remember to ensure that "ant" are in your path (or symlinked).</p><pre class="programlisting">
+      </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="ant"></a>3.1.2.&nbsp;Apache Ant</h3></div></div><div></div></div><p>You must have Apache Ant 1.8.1+ installed on your system.</p><p>Remember to ensure that "ant" are in your path (or symlinked).</p><pre class="programlisting">
 ANT_HOME=/location/to/anthome
 export ANT_HOME
 
 PATH=$ANT_HOME/bin:$PATH
 export PATH
-      </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="ivy"></a>3.1.3.&nbsp;Apache Ivy</h3></div></div><div></div></div><p>You must have Apache Ivy 2.1.0+ installed in your Apache Ant installation.</p><pre class="programlisting">
-cp ivy.jar $ANT_HOME/lib
-      </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="subversion"></a>3.1.4.&nbsp;Git</h3></div></div><div></div></div><p>You must have Git 1.6+ installed on your system.</p><p>Remember to ensure that "git" are in your path (or symlinked).</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="obtainingthesource"></a>3.2.&nbsp;Obtaining the source code</h2></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="anonsvn"></a>3.2.1.&nbsp;Anonymous Git access</h3></div></div><div></div></div><p>The anonymous Git repository is located under:</p><pre class="programlisting">
+      </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="ivy"></a>3.1.3.&nbsp;Apache Ivy</h3></div></div><div></div></div><p>The Fungal project uses Apache Ivy for dependency management.</p><p>Apache Ivy is automatically downloaded and included in the development
+        environment, so no additional setup is required.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="subversion"></a>3.1.4.&nbsp;Git</h3></div></div><div></div></div><p>You must have Git 1.6+ installed on your system.</p><p>Remember to ensure that "git" are in your path (or symlinked).</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="obtainingthesource"></a>3.2.&nbsp;Obtaining the source code</h2></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="anonsvn"></a>3.2.1.&nbsp;Anonymous Git access</h3></div></div><div></div></div><p>The anonymous Git repository is located under:</p><pre class="programlisting">
 git checkout git://github.com/jesperpedersen/fungal.git
       </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="developersvn"></a>3.2.2.&nbsp;Developer Git access</h3></div></div><div></div></div><p>The developer Git repository is located under:</p><pre class="programlisting">
 git checkout git://github.com/fungal.git
