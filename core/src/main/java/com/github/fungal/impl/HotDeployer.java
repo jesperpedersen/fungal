@@ -24,6 +24,7 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -168,6 +169,7 @@ public final class HotDeployer implements HotDeployerMBean, Runnable
             List<URL> removeDeployments = new ArrayList<URL>(deployments);
             List<URL> changedDeployments = null;
             List<URL> newDeployments = null;
+            boolean postDeploy = false;
 
             File[] files = directory.listFiles();
 
@@ -188,6 +190,7 @@ public final class HotDeployer implements HotDeployerMBean, Runnable
                         changedDeployments = new ArrayList<URL>(1);
 
                      changedDeployments.add(url);
+                     postDeploy = true;
                   }
                }
                else
@@ -196,6 +199,7 @@ public final class HotDeployer implements HotDeployerMBean, Runnable
                      newDeployments = new ArrayList<URL>(1);
 
                   newDeployments.add(url);
+                  postDeploy = true;
                }
             }
 
@@ -217,6 +221,8 @@ public final class HotDeployer implements HotDeployerMBean, Runnable
 
             if (changedDeployments != null)
             {
+               Collections.sort(changedDeployments, new UrlComparator());
+
                for (URL url : changedDeployments)
                {
                   try
@@ -236,6 +242,8 @@ public final class HotDeployer implements HotDeployerMBean, Runnable
 
             if (newDeployments != null)
             {
+               Collections.sort(newDeployments, new UrlComparator());
+
                for (URL url : newDeployments)
                {
                   try
@@ -249,6 +257,9 @@ public final class HotDeployer implements HotDeployerMBean, Runnable
                   }
                }
             }
+
+            if (postDeploy)
+               kernel.postDeploy();
             
             long took = System.currentTimeMillis() - start;
             long sleep = interval * 1000L - took;

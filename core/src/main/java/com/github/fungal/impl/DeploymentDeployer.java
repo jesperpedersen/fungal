@@ -41,6 +41,7 @@ import com.github.fungal.deployment.ValueType;
 import com.github.fungal.spi.deployers.CloneableDeployer;
 import com.github.fungal.spi.deployers.DeployException;
 import com.github.fungal.spi.deployers.Deployer;
+import com.github.fungal.spi.deployers.DeployerPhases;
 import com.github.fungal.spi.deployers.Deployment;
 
 import java.lang.reflect.Constructor;
@@ -168,7 +169,7 @@ public final class DeploymentDeployer implements CloneableDeployer
    static class BeanDeployer implements Runnable
    {
       /** Supported types by parameters/properties */
-      private static final Set<Class<?>> SUPPORTED_TYPES = new HashSet<Class<?>>();
+      private static final Set<Class<?>> SUPPORTED_TYPES = new HashSet<Class<?>>(19);
 
       /** The bean */
       private BeanType bt;
@@ -626,6 +627,12 @@ public final class DeploymentDeployer implements CloneableDeployer
          if (instance instanceof Deployer)
          {
             ((MainDeployerImpl)kernel.getMainDeployer()).addDeployer((Deployer)instance);
+         }
+
+         // Register deployer phases
+         if (instance instanceof DeployerPhases)
+         {
+            kernel.addDeployerPhasesBean(bt.getName());
          }
 
          return instance;

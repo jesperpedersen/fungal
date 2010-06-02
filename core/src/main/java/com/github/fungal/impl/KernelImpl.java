@@ -33,6 +33,7 @@ import com.github.fungal.impl.remote.commands.Deploy;
 import com.github.fungal.impl.remote.commands.GetCommand;
 import com.github.fungal.impl.remote.commands.Help;
 import com.github.fungal.impl.remote.commands.Undeploy;
+import com.github.fungal.spi.deployers.DeployerPhases;
 import com.github.fungal.spi.deployers.Deployment;
 
 import java.io.File;
@@ -131,6 +132,9 @@ public class KernelImpl implements Kernel
 
    /** Callback beans */
    private ConcurrentMap<Object, List<Callback>> callbackBeans = new ConcurrentHashMap<Object, List<Callback>>();
+
+   /** DeployerPhases */
+   private Set<String> deployerPhasesBeans = Collections.synchronizedSet(new HashSet<String>());
 
    /** Hot deployer */
    private HotDeployer hotDeployer;
@@ -360,6 +364,9 @@ public class KernelImpl implements Kernel
          }
       }
 
+      // PreDeploy
+      preDeploy();
+
       // Deploy all files in system/
       if (systemDirectory != null && systemDirectory.exists() && systemDirectory.isDirectory())
       {
@@ -458,6 +465,9 @@ public class KernelImpl implements Kernel
          if (hotDeployer != null)
             hotDeployer.start();
       }
+
+      // PostDeploy
+      postDeploy();
 
       // Remote access
       if (kernelConfiguration.isRemoteAccess())
@@ -1117,6 +1127,57 @@ public class KernelImpl implements Kernel
          if (!f.delete())
             throw new IOException("Could not delete " + f);
       }
+   }
+
+   /**
+    * Add a bean as a DeployerPhases
+    * @param bean The bean name
+    */
+   void addDeployerPhasesBean(String bean)
+   {
+      deployerPhasesBeans.add(bean);
+   }
+
+   /**
+    * Pre deploy
+    */
+   private void preDeploy()
+   {
+      for (String beanName : deployerPhasesBeans)
+      {
+         DeployerPhases bean = (DeployerPhases)getBean(beanName);
+
+         try
+         {
+            bean.preDeploy();
+         }
+         catch (Throwable t)
+         {
+            log.log(Level.WARNING, t.getMessage(), t);
+         }
+      }
+   }
+
+   /**
+    * Post deploy
+    */
+   void postDeploy()
+   {
+      for (String beanName : deployerPhasesBeans)
+      {
+         DeployerPhases bean = (DeployerPhases)getBean(beanName);
+
+         try
+         {
+            bean.postDeploy();
+         }
+         catch (Throwable t)
+         {
+            log.log(Level.WARNING, t.getMessage(), t);
+         }
+      }
+
+      deployerPhasesBeans.clear();
    }
 
    /**

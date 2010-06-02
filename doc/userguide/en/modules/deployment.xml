@@ -62,6 +62,11 @@ public Deployer clone() throws CloneNotSupportedException;
             to be <code>synchronized</code>. However any state that should be shared between
             all the deployer instances should be <code>static</code> and have atomic access.</para>
 
+          <para>In order to receive callbacks before deployment begins and after it has ended a bean
+            can implement the <code>com.github.fungal.spi.deployers.DeployerPhases</code> interface.
+            Note that beans deployed as part of the <code>system</code> and <code>deploy</code> directories
+            will not receive the <code>preDeploy</code> notification.</para>
+
       </section>
 
     </section>
