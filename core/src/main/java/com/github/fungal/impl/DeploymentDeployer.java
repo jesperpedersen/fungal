@@ -970,12 +970,24 @@ public final class DeploymentDeployer implements CloneableDeployer
             
             if (mt.getClazz() == null)
             {
-               map = new HashMap();
+               map = new HashMap(mt.getEntry().size());
             }
             else
             {
                Class mapClass = Class.forName(mt.getClazz(), true, cl);
-               map = (Map)mapClass.newInstance();
+
+               if (mt.getClazz().equals("java.util.HashMap") ||
+                   mt.getClazz().equals("java.util.Hashtable") ||
+                   mt.getClazz().equals("java.util.LinkedHashMap") ||
+                   mt.getClazz().equals("java.util.WeakHashMap"))
+               {
+                  Constructor con = mapClass.getConstructor(int.class);
+                  map = (Map)con.newInstance(mt.getEntry().size());
+               }
+               else
+               {
+                  map = (Map)mapClass.newInstance();
+               }
             }
 
             Class keyClass = Class.forName(mt.getKeyClass(), true, cl);
@@ -999,12 +1011,22 @@ public final class DeploymentDeployer implements CloneableDeployer
             
             if (lt.getClazz() == null)
             {
-               list = new ArrayList();
+               list = new ArrayList(lt.getValue().size());
             }
             else
             {
                Class listClass = Class.forName(lt.getClazz(), true, cl);
-               list = (List)listClass.newInstance();
+
+               if (lt.getClazz().equals("java.util.ArrayList") ||
+                   lt.getClazz().equals("java.util.Vector"))
+               {
+                  Constructor con = listClass.getConstructor(int.class);
+                  list = (List)con.newInstance(lt.getValue().size());
+               }
+               else
+               {
+                  list = (List)listClass.newInstance();
+               }
             }
 
             Class elementClass = Class.forName(lt.getElementClass(), true, cl);
@@ -1025,12 +1047,21 @@ public final class DeploymentDeployer implements CloneableDeployer
             
             if (st.getClazz() == null)
             {
-               set = new HashSet();
+               set = new HashSet(st.getValue().size());
             }
             else
             {
                Class setClass = Class.forName(st.getClazz(), true, cl);
-               set = (Set)setClass.newInstance();
+
+               if (st.getClazz().equals("java.util.HashSet"))
+               {
+                  Constructor con = setClass.getConstructor(int.class);
+                  set = (Set)con.newInstance(st.getValue().size());
+               }
+               else
+               {
+                  set = (Set)setClass.newInstance();
+               }
             }
 
             Class elementClass = Class.forName(st.getElementClass(), true, cl);
