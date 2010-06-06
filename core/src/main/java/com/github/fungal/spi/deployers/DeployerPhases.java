@@ -37,4 +37,16 @@ public interface DeployerPhases
     * @exception Throwable Thrown to indicate an error
     */
    public void postDeploy() throws Throwable;
+
+   /**
+    * This method is called before the undeployment phase begins
+    * @exception Throwable Thrown to indicate an error
+    */
+   public void preUndeploy() throws Throwable;
+
+   /**
+    * This method is called after the undeployment phase has ended
+    * @exception Throwable Thrown to indicate an error
+    */
+   public void postUndeploy() throws Throwable;
 }

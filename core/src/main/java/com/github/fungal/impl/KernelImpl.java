@@ -89,16 +89,16 @@ public class KernelImpl implements Kernel
    private KernelConfiguration kernelConfiguration;
 
    /** Deployments */
-   private List<Deployment> deployments = Collections.synchronizedList(new LinkedList<Deployment>());
+   private List<Deployment> deployments = Collections.synchronizedList(new ArrayList<Deployment>(1));
 
    /** Beans */
-   private ConcurrentMap<String, Object> beans = new ConcurrentHashMap<String, Object>();
+   private ConcurrentMap<String, Object> beans = new ConcurrentHashMap<String, Object>(1);
 
    /** Bean status */
-   private ConcurrentMap<String, ServiceLifecycle> beanStatus = new ConcurrentHashMap<String, ServiceLifecycle>();
+   private ConcurrentMap<String, ServiceLifecycle> beanStatus = new ConcurrentHashMap<String, ServiceLifecycle>(1);
 
    /** Bean dependants */
-   private ConcurrentMap<String, Set<String>> beanDependants = new ConcurrentHashMap<String, Set<String>>();
+   private ConcurrentMap<String, Set<String>> beanDependants = new ConcurrentHashMap<String, Set<String>>(1);
 
    /** Bean deployments */
    private AtomicInteger beanDeployments;
@@ -125,16 +125,19 @@ public class KernelImpl implements Kernel
    private boolean temporaryEnvironment;
 
    /** Incallbacks */
-   private ConcurrentMap<Class<?>, List<Callback>> incallbacks = new ConcurrentHashMap<Class<?>, List<Callback>>();
+   private ConcurrentMap<Class<?>, List<Callback>> incallbacks = new ConcurrentHashMap<Class<?>, List<Callback>>(1);
 
    /** Uncallbacks */
-   private ConcurrentMap<Class<?>, List<Callback>> uncallbacks = new ConcurrentHashMap<Class<?>, List<Callback>>();
+   private ConcurrentMap<Class<?>, List<Callback>> uncallbacks = new ConcurrentHashMap<Class<?>, List<Callback>>(1);
 
    /** Callback beans */
-   private ConcurrentMap<Object, List<Callback>> callbackBeans = new ConcurrentHashMap<Object, List<Callback>>();
+   private ConcurrentMap<Object, List<Callback>> callbackBeans = new ConcurrentHashMap<Object, List<Callback>>(1);
 
-   /** DeployerPhases */
-   private Set<String> deployerPhasesBeans = Collections.synchronizedSet(new HashSet<String>());
+   /** DeployerPhases beans */
+   private Set<String> deployerPhasesBeans = Collections.synchronizedSet(new HashSet<String>(1));
+
+   /** New DeployerPhases beans */
+   private Set<String> newDeployerPhasesBeans = Collections.synchronizedSet(new HashSet<String>(1));
 
    /** Hot deployer */
    private HotDeployer hotDeployer;
@@ -605,9 +608,6 @@ public class KernelImpl implements Kernel
          remote.stop();
       }
 
-      // Shutdown thread pool
-      threadPoolExecutor.shutdown();
-
       // Shutdown all deployments
       if (deployments.size() > 0)
       {
@@ -638,6 +638,9 @@ public class KernelImpl implements Kernel
 
       // Release MBeanServer
       MBeanServerFactory.releaseMBeanServer(mbeanServer);
+
+      // Shutdown thread pool
+      threadPoolExecutor.shutdown();
 
       // Cleanup temporary environment
       if (temporaryEnvironment)
@@ -831,6 +834,7 @@ public class KernelImpl implements Kernel
          }
       }
 
+      deployerPhasesBeans.remove(name);
       beans.remove(name);
       beanStatus.remove(name);
    }
@@ -1135,21 +1139,28 @@ public class KernelImpl implements Kernel
     */
    void addDeployerPhasesBean(String bean)
    {
-      deployerPhasesBeans.add(bean);
+      newDeployerPhasesBeans.add(bean);
    }
 
    /**
     * Pre deploy
     */
-   private void preDeploy()
+   void preDeploy()
    {
+      if (newDeployerPhasesBeans.size() > 0)
+      {
+         deployerPhasesBeans.addAll(newDeployerPhasesBeans);
+         newDeployerPhasesBeans.clear();
+      }
+
       for (String beanName : deployerPhasesBeans)
       {
          DeployerPhases bean = (DeployerPhases)getBean(beanName);
 
          try
          {
-            bean.preDeploy();
+            if (bean != null && getBeanStatus(beanName) == ServiceLifecycle.STARTED)
+               bean.preDeploy();
          }
          catch (Throwable t)
          {
@@ -1163,21 +1174,68 @@ public class KernelImpl implements Kernel
     */
    void postDeploy()
    {
+      if (newDeployerPhasesBeans.size() > 0)
+      {
+         deployerPhasesBeans.addAll(newDeployerPhasesBeans);
+         newDeployerPhasesBeans.clear();
+      }
+
       for (String beanName : deployerPhasesBeans)
       {
          DeployerPhases bean = (DeployerPhases)getBean(beanName);
 
          try
          {
-            bean.postDeploy();
+            if (bean != null && getBeanStatus(beanName) == ServiceLifecycle.STARTED)
+               bean.postDeploy();
          }
          catch (Throwable t)
          {
             log.log(Level.WARNING, t.getMessage(), t);
          }
       }
+   }
 
-      deployerPhasesBeans.clear();
+   /**
+    * Pre undeploy
+    */
+   void preUndeploy()
+   {
+      for (String beanName : deployerPhasesBeans)
+      {
+         DeployerPhases bean = (DeployerPhases)getBean(beanName);
+
+         try
+         {
+            if (bean != null && getBeanStatus(beanName) == ServiceLifecycle.STARTED)
+               bean.preUndeploy();
+         }
+         catch (Throwable t)
+         {
+            log.log(Level.WARNING, t.getMessage(), t);
+         }
+      }
+   }
+
+   /**
+    * Post undeploy
+    */
+   void postUndeploy()
+   {
+      for (String beanName : deployerPhasesBeans)
+      {
+         DeployerPhases bean = (DeployerPhases)getBean(beanName);
+
+         try
+         {
+            if (bean != null && getBeanStatus(beanName) == ServiceLifecycle.STARTED)
+               bean.postUndeploy();
+         }
+         catch (Throwable t)
+         {
+            log.log(Level.WARNING, t.getMessage(), t);
+         }
+      }
    }
 
    /**
