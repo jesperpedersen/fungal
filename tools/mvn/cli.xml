@@ -4,7 +4,7 @@
   <artifactId>fungal-cli</artifactId>
   <packaging>jar</packaging>
   <name>Fungal - CLI</name>
-  <version>0.8.0.Beta5</version>
+  <version>0.8.0.Beta6</version>
   <description>Command line client for the Fungal kernel</description>
   <licenses>
     <license>
