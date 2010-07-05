@@ -1053,26 +1053,51 @@ public class KernelImpl implements Kernel
    {
       if (directory != null && directory.exists() && directory.isDirectory())
       {
-         List<URL> list = new LinkedList<URL>();
-
-         // Add directory
-         list.add(directory.toURI().toURL());
-
-         // Add the contents of the directory too
-         File[] jars = directory.listFiles(new JarFilter());
-
-         if (jars != null)
-         {
-            for (int j = 0; j < jars.length; j++)
-            {
-               list.add(jars[j].getCanonicalFile().toURI().toURL());
-            }
-         }
-         
-         return list.toArray(new URL[list.size()]);      
+         List<URL> result = scanUrls(directory);
+         return result.toArray(new URL[result.size()]);      
       }
 
       return new URL[0];
+   }
+
+   /**
+    * Get the URLs for the directory and all libraries located in the directory and sub-directories
+    * @param f The file handler
+    * @return The URLs
+    * @exception MalformedURLException MalformedURLException
+    * @exception IOException IOException
+    */
+   private List<URL> scanUrls(File f) throws MalformedURLException, IOException
+   {
+      List<URL> result = new LinkedList<URL>();
+
+      if (f != null && f.exists())
+      {
+         if (f.isDirectory())
+         {
+            // Add directory
+            result.add(f.toURI().toURL());
+
+            // Add the contents of the directory too
+            File[] jars = f.listFiles();
+            
+            if (jars != null)
+            {
+               for (int j = 0; j < jars.length; j++)
+               {
+                  List<URL> deeper = scanUrls(jars[j]);
+                  result.addAll(deeper);
+               }
+            }
+         }
+         else
+         {
+            if (f.getName().endsWith(".jar"))
+               result.add(f.getCanonicalFile().toURI().toURL());
+         }
+      }
+
+      return result;
    }
 
    /**
