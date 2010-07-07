@@ -114,4 +114,41 @@
     </copy>
   </target>
 
+  <!-- ================================= 
+       Target: repo
+       ================================= -->
+  <target name="repo" depends="docs">
+    <jar destfile="${target.dir}/fungal-sources.jar"
+         basedir="src/main/java"
+         excludes="**/cli/**">
+      <manifest>
+        <attribute name="Implementation-Title" value="The Fungal kernel - Sources"/>
+        <attribute name="Implementation-Version" value="${major}.${minor}.${patch}.${type}"/>
+        <attribute name="Implementation-Vendor" value="The Fungal kernel project (http://fungal.github.com)"/>
+        <attribute name="Implementation-Vendor-Id" value="com.github.fungal"/>
+      </manifest>
+    </jar>
+
+    <jar destfile="${target.dir}/fungal-javadoc.jar"
+         basedir="${target.dir}/docs/core">
+      <manifest>
+        <attribute name="Implementation-Title" value="The Fungal kernel - JavaDoc"/>
+        <attribute name="Implementation-Version" value="${major}.${minor}.${patch}.${type}"/>
+        <attribute name="Implementation-Vendor" value="The Fungal kernel project (http://fungal.github.com)"/>
+        <attribute name="Implementation-Vendor-Id" value="com.github.fungal"/>
+      </manifest>
+    </jar>
+
+    <jar destfile="${target.dir}/fungal-cli-sources.jar"
+         basedir="src/main/java"
+         includes="**/cli/**">
+      <manifest>
+        <attribute name="Implementation-Title" value="The Fungal kernel - CLI - Sources"/>
+        <attribute name="Implementation-Version" value="${major}.${minor}.${patch}.${type}"/>
+        <attribute name="Implementation-Vendor" value="The Fungal kernel project (http://fungal.github.com)"/>
+        <attribute name="Implementation-Vendor-Id" value="com.github.fungal"/>
+      </manifest>
+    </jar>
+  </target>
+
 </project>

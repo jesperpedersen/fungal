@@ -273,6 +273,14 @@
   </target>
 
   <!-- ================================= 
+       Target: repo
+       ================================= -->
+  <target name="repo" depends="jars">
+    <delete dir="${build.dir}"/>
+    <ant dir="core" inheritRefs="true" target="repo"/>
+  </target>
+
+  <!-- ================================= 
        Target: checkstyle
        ================================= -->
   <target name="checkstyle" depends="jars">
