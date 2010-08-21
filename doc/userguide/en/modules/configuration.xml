@@ -111,6 +111,20 @@ kernelConfiguration.deploy("deploy");
 
       </section>
 
+      <section id="kernel_configuration_deploymentorder">
+        <title><code>deploymentOrder</code></title>
+
+        <para>The <code>deploymentOrder</code> parameter specifies the 
+          <code>com.github.fungal.api.configuration.DeploymentOrder</code> object which specifies the 
+          order of the file extension deployment.</para>
+
+        <para>An example</para>
+        <programlisting>
+kernelConfiguration.deploymentOrder(deploymentOrder);
+        </programlisting>
+
+      </section>
+
       <section id="kernel_configuration_eventlistener">
         <title><code>eventListener</code></title>
 

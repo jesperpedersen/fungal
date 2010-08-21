@@ -86,6 +86,9 @@ public class KernelConfiguration
    /** Commands */
    private List<Command> commands;
 
+   /** Deployment order */
+   private DeploymentOrder deploymentOrder;
+
    /**
     * Constructor
     */
@@ -107,6 +110,7 @@ public class KernelConfiguration
       hotDeploymentInterval = 5;
       eventListeners = null;
       commands = null;
+      deploymentOrder = null;
    }
 
    /**
@@ -457,5 +461,29 @@ public class KernelConfiguration
          return Collections.emptyList();
 
       return Collections.unmodifiableList(commands);
+   }
+
+   /**
+    * Set the deployment order
+    * @param d The deployment order
+    * @return The configuration
+    */
+   public KernelConfiguration deploymentOrder(DeploymentOrder d)
+   {
+      deploymentOrder = d;
+
+      return this;
+   }
+
+   /**
+    * Get the deployment order
+    * @return The value
+    */
+   public DeploymentOrder getDeploymentOrder()
+   {
+      if (deploymentOrder == null)
+         return new DeploymentOrder();
+
+      return deploymentOrder;
    }
 }

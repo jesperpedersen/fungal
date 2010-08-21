@@ -153,53 +153,56 @@ public class BeanDeployment implements Deployment
 
          Object bean = kernel.getBean(name);
 
-         List<Method> l = uninstall.get(name);
-         if (l != null)
+         if (bean != null)
          {
-            for (Method m : l)
+            List<Method> l = uninstall.get(name);
+            if (l != null)
+            {
+               for (Method m : l)
+               {
+                  try
+                  {
+                     m.invoke(bean, (Object[])null);
+                  }
+                  catch (InvocationTargetException ite)
+                  {
+                     throw ite.getTargetException();
+                  }
+               }
+            }
+
+            if (ignoreStops == null || !ignoreStops.contains(name))
             {
                try
                {
-                  m.invoke(bean, (Object[])null);
+                  Method stopMethod = bean.getClass().getMethod("stop", (Class[])null);
+                  stopMethod.invoke(bean, (Object[])null);
+               }
+               catch (NoSuchMethodException nsme)
+               {
+                  // No stop method
                }
                catch (InvocationTargetException ite)
                {
                   throw ite.getTargetException();
                }
             }
-         }
 
-         if (ignoreStops == null || !ignoreStops.contains(name))
-         {
-            try
+            if (ignoreDestroys == null || !ignoreDestroys.contains(name))
             {
-               Method stopMethod = bean.getClass().getMethod("stop", (Class[])null);
-               stopMethod.invoke(bean, (Object[])null);
-            }
-            catch (NoSuchMethodException nsme)
-            {
-               // No stop method
-            }
-            catch (InvocationTargetException ite)
-            {
-               throw ite.getTargetException();
-            }
-         }
-
-         if (ignoreDestroys == null || !ignoreDestroys.contains(name))
-         {
-            try
-            {
-               Method destroyMethod = bean.getClass().getMethod("destroy", (Class[])null);
-               destroyMethod.invoke(bean, (Object[])null);
-            }
-            catch (NoSuchMethodException nsme)
-            {
-               // No destroy method
-            }
-            catch (InvocationTargetException ite)
-            {
-               throw ite.getTargetException();
+               try
+               {
+                  Method destroyMethod = bean.getClass().getMethod("destroy", (Class[])null);
+                  destroyMethod.invoke(bean, (Object[])null);
+               }
+               catch (NoSuchMethodException nsme)
+               {
+                  // No destroy method
+               }
+               catch (InvocationTargetException ite)
+               {
+                  throw ite.getTargetException();
+               }
             }
          }
 

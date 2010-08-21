@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<appendix id="examples">
+
+  <title>Examples</title>
+
+  <section id="example_bean">
+    <title>Bean</title>
+
+    <para>Create an instance of <code>MyBean</code> using its default constructor.</para>
+
+    <programlisting>
+<![CDATA[
+<deployment>
+  <bean name="MyBean"
+        interface="com.mypackage.MyInterface"
+        class="com.mypackage.MyBean"/>
+</deployment>
+ ]]>
+    </programlisting>
+
+  </section>
+
+  <section id="example_constructor">
+    <title>Constructor</title>
+
+    <para>Create an instance of <code>MyBean</code> using its <code>String</code> constructor.</para>
+
+    <programlisting>
+<![CDATA[
+<deployment>
+  <bean name="MyBean"
+        class="com.mypackage.MyBean">
+    <constructor>
+      <parameter>MyString</parameter>
+    </constructor>
+  </bean>
+</deployment>
+ ]]>
+    </programlisting>
+
+    <para>Create an instance of <code>MyBean</code> using selecting its <code>String</code> constructor.</para>
+
+    <programlisting>
+<![CDATA[
+<deployment>
+  <bean name="MyBean"
+        class="com.mypackage.MyBean">
+    <constructor>
+      <parameter class="java.lang.String">MyString</parameter>
+    </constructor>
+  </bean>
+</deployment>
+ ]]>
+    </programlisting>
+
+    <para>Create an instance of <code>MyBean</code> using selecting its <code>String</code> constructor
+      and passing in <code>null</code>.</para>
+
+    <programlisting>
+<![CDATA[
+<deployment>
+  <bean name="MyBean"
+        class="com.mypackage.MyBean">
+    <constructor>
+      <parameter class="java.lang.String"><null/></parameter>
+    </constructor>
+  </bean>
+</deployment>
+ ]]>
+    </programlisting>
+
+    <para>Create an instance of <code>MyBean</code> using a static method on a 
+      factory passing in a <code>String</code>.</para>
+
+    <programlisting>
+<![CDATA[
+<deployment>
+  <bean name="MyBean"
+        interface="com.mypackage.MyInterface">
+    <constructor factoryClass="com.mypackage.MyBeanFactory"
+                 factoryMethod="create">
+      <parameter class="java.lang.String">MyString</parameter>
+    </constructor>
+  </bean>
+</deployment>
+ ]]>
+    </programlisting>
+
+    <para>Create an instance of <code>MyBean</code> using a method on a 
+      factory instance passing in a <code>String</code>.</para>
+
+    <programlisting>
+<![CDATA[
+<deployment>
+  <bean name="MyBeanFactory"
+        class="com.mypackage.MyBeanFactory"/>
+
+  <bean name="MyBean"
+        interface="com.mypackage.MyInterface">
+    <constructor factoryMethod="create">
+      <parameter class="java.lang.String">MyString</parameter>
+      <factory bean="MyBeanFactory"/>
+    </constructor>
+  </bean>
+</deployment>
+ ]]>
+    </programlisting>
+
+    <para>Injecting <code>MyConstructorBean</code> into the constructor.</para>
+
+    <programlisting>
+<![CDATA[
+<deployment>
+  <bean name="MyConstructorBean"
+        class="com.mypackage.MyConstructorBean">
+
+  <bean name="MyBean"
+        class="com.mypackage.MyBean">
+    <constructor>
+      <parameter><inject bean="MyConstructorBean"/></parameter>
+    </constructor>
+  </bean>
+</deployment>
+ ]]>
+    </programlisting>
+
+  </section>
+
+  <section id="example_property">
+    <title>Property</title>
+
+    <para>Setting properties on <code>MyBean</code></para>
+
+    <programlisting>
+<![CDATA[
+<deployment>
+  <bean name="MyBean"
+        class="com.mypackage.MyBean">
+    <property name="MyStringProperty">MyString</property>
+    <property name="MyDoubleProperty">0.0</property>
+    <property name="MyIntProperty">42</property>
+    <property name="MyBooleanProperty">true</property>
+  </bean>
+</deployment>
+ ]]>
+    </programlisting>
+
+    <para>Setting a list property on <code>MyBean</code></para>
+
+    <programlisting>
+<![CDATA[
+<deployment>
+  <bean name="MyBean"
+        class="com.mypackage.MyBean">
+    <property name="MyListProperty">
+      <list class="java.util.ArrayList"
+            elementClass="java.lang.String">
+        <value>MyStringValue1</value>
+        <value>MyStringValue2</value>
+        <value>MyStringValue3</value>
+      </list>
+    </property>
+  </bean>
+</deployment>
+ ]]>
+    </programlisting>
+
+    <para>Setting a set property on <code>MyBean</code></para>
+
+    <programlisting>
+<![CDATA[
+<deployment>
+  <bean name="MyBean"
+        class="com.mypackage.MyBean">
+    <property name="MySetProperty">
+      <set class="java.util.HashSet"
+           elementClass="java.lang.String">
+        <value>MyStringValue1</value>
+        <value>MyStringValue2</value>
+        <value>MyStringValue3</value>
+      </set>
+    </property>
+  </bean>
+</deployment>
+ ]]>
+    </programlisting>
+
+    <para>Setting a map property on <code>MyBean</code></para>
+
+    <programlisting>
+<![CDATA[
+<deployment>
+  <bean name="MyBean"
+        class="com.mypackage.MyBean">
+    <property name="MyMapProperty">
+      <map class="java.util.HashMap"
+           keyClass="java.lang.String"
+           valueClass="java.lang.String">
+        <entry>
+          <key>MyKey1</key>
+          <value>MyString1</value>
+        </entry>
+        <entry>
+          <key>MyKey2</key>
+          <value>MyString2</value>
+        </entry>
+      </map>
+    </property>
+  </bean>
+</deployment>
+ ]]>
+    </programlisting>
+
+    <para>Injecting <code>MyPropertyBean</code> on <code>MyBean</code></para>
+
+    <programlisting>
+<![CDATA[
+<deployment>
+  <bean name="MyPropertyBean"
+        class="com.mypackage.MyPropertyBean">
+
+  <bean name="MyBean"
+        class="com.mypackage.MyBean">
+    <property name="MyProperty"><inject bean="MyPropertyBean"/></property>
+  </bean>
+</deployment>
+ ]]>
+    </programlisting>
+
+    <para>Injecting <code>MyPropertyBean</code>'s <code>Property</code> on <code>MyBean</code></para>
+
+    <programlisting>
+<![CDATA[
+<deployment>
+  <bean name="MyPropertyBean"
+        class="com.mypackage.MyPropertyBean">
+
+  <bean name="MyBean"
+        class="com.mypackage.MyBean">
+    <property name="MyProperty"><inject bean="MyPropertyBean" property="Property"/></property>
+  </bean>
+</deployment>
+ ]]>
+    </programlisting>
+
+  </section>
+
+  <section id="example_depends">
+    <title>Depends</title>
+
+    <para>Create an explicit dependency on <code>MyDependency</code>.</para>
+
+    <programlisting>
+<![CDATA[
+<deployment>
+  <bean name="MyDependency"
+        class="com.mypackage.MyDependency"/>
+
+  <bean name="MyBean"
+        class="com.mypackage.MyBean">
+    <depends>MyDependency</depends>
+  </bean>
+</deployment>
+ ]]>
+    </programlisting>
+
+  </section>
+
+  <section id="example_installuninstall">
+    <title>Install / Uninstall</title>
+
+    <para>Specify an install and an uninstall method for <code>MyBean</code>.</para>
+
+    <programlisting>
+<![CDATA[
+<deployment>
+  <bean name="MyBean"
+        class="com.mypackage.MyBean">
+    <install method="myInstallMethod"/>
+    <uninstall method="myUninstallMethod"/>
+  </bean>
+</deployment>
+ ]]>
+    </programlisting>
+
+  </section>
+
+  <section id="example_ignore">
+    <title>IgnoreCreate / IgnoreStart / IgnoreStop / IgnoreDestroy</title>
+
+    <para>Ignore the <code>create</code>, <code>start</code>, <code>stop</code> and
+      <code>destroy</code> methods on <code>MyBean</code>.</para>
+
+    <programlisting>
+<![CDATA[
+<deployment>
+  <bean name="MyBean"
+        class="com.mypackage.MyBean">
+    <ignoreCreate/>
+    <ignoreStart/>
+    <ignoreStop/>
+    <ignoreDestroy/>
+  </bean>
+</deployment>
+ ]]>
+    </programlisting>
+
+  </section>
+
+
+</appendix>

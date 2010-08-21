@@ -25,7 +25,8 @@ import java.lang.reflect.Method;
 import java.util.Locale;
 
 /**
- * Injection utility
+ * Injection utility which can inject values into objects
+ *
  * @author <a href="mailto:jesper.pedersen@comcast.net">Jesper Pedersen</a>
  */
 public class Injection
@@ -39,7 +40,7 @@ public class Injection
 
    /**
     * Inject a value into an object property
-    * @param propertyType The property type
+    * @param propertyType The property type as a fully quilified class name
     * @param propertyName The property name
     * @param propertyValue The property value
     * @param object The object
@@ -50,15 +51,36 @@ public class Injection
    public void inject(String propertyType, String propertyName, String propertyValue, Object object)
       throws NoSuchMethodException, IllegalAccessException, InvocationTargetException
    {
-      if (propertyType == null || propertyType.trim().equals(""))
-         throw new IllegalArgumentException("PropertyType is undefined");
-
       if (propertyName == null || propertyName.trim().equals(""))
          throw new IllegalArgumentException("PropertyName is undefined");
 
       if (object == null)
          throw new IllegalArgumentException("Object is null");
 
+      String methodName = "set" + propertyName.substring(0, 1).toUpperCase(Locale.US);
+      if (propertyName.length() > 1)
+      {
+         methodName += propertyName.substring(1);
+      }
+
+      if (propertyType == null || propertyType.trim().equals(""))
+      {
+         Method[] methods = object.getClass().getMethods();
+         if (methods != null)
+         {
+            for (int i = 0; propertyType == null && i < methods.length; i++)
+            {
+               Method method = methods[i];
+               if (methodName.equals(method.getName()) && method.getParameterTypes().length == 1)
+               {
+                  propertyType = method.getParameterTypes()[0].getName();
+               }
+            }
+         }
+      }
+
+      if (propertyType == null || propertyType.trim().equals(""))
+         throw new IllegalArgumentException("PropertyType is undefined");
 
       Class parameterClass = null;
       Object parameterValue = null;
@@ -122,12 +144,6 @@ public class Injection
       {
          throw new IllegalArgumentException("Unknown property type: " + propertyType + " for " +
                                             "property " + propertyName);
-      }
-
-      String methodName = "set" + propertyName.substring(0, 1).toUpperCase(Locale.US);
-      if (propertyName.length() > 1)
-      {
-         methodName += propertyName.substring(1);
       }
 
       Method method = null;

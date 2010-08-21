@@ -22,14 +22,19 @@ package com.github.fungal.api;
 
 import com.github.fungal.api.classloading.KernelClassLoader;
 import com.github.fungal.api.deployer.MainDeployer;
+import com.github.fungal.spi.deployers.Deployment;
+
+import java.net.URL;
 
 import javax.management.MBeanServer;
 
 /**
  * The kernel API
+ *
  * @author <a href="mailto:jesper.pedersen@comcast.net">Jesper Pedersen</a>
  * @see com.github.fungal.api.classloading.KernelClassLoader
  * @see com.github.fungal.api.deployer.MainDeployer
+ * @see com.github.fungal.spi.deployers.Deployment;
  */
 public interface Kernel
 {
@@ -50,6 +55,13 @@ public interface Kernel
     * @return The class loader
     */
    public KernelClassLoader getKernelClassLoader();
+
+   /**
+    * Get a deployment unit
+    * @param url The unique URL for a deployment
+    * @return The deployment unit; <code>null</code> if no unit is found
+    */
+   public Deployment getDeployment(URL deployment);
 
    /**
     * Get a bean

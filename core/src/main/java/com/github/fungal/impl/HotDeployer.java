@@ -221,7 +221,7 @@ public final class HotDeployer implements HotDeployerMBean, Runnable
 
             if (changedDeployments != null)
             {
-               Collections.sort(changedDeployments, new UrlComparator());
+               Collections.sort(changedDeployments, kernel.getKernelConfiguration().getDeploymentOrder());
 
                for (URL url : changedDeployments)
                {
@@ -242,7 +242,7 @@ public final class HotDeployer implements HotDeployerMBean, Runnable
 
             if (newDeployments != null)
             {
-               Collections.sort(newDeployments, new UrlComparator());
+               Collections.sort(newDeployments, kernel.getKernelConfiguration().getDeploymentOrder());
 
                for (URL url : newDeployments)
                {

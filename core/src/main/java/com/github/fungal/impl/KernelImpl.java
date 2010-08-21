@@ -83,7 +83,7 @@ public class KernelImpl implements Kernel
    private static boolean trace = false;
 
    /** Version information */
-   private static final String VERSION = "Fungal 0.8.0.Beta7";
+   private static final String VERSION = "Fungal 0.8.0.RC1";
 
    /** Kernel configuration */
    private KernelConfiguration kernelConfiguration;
@@ -164,6 +164,25 @@ public class KernelImpl implements Kernel
    public MBeanServer getMBeanServer()
    {
       return mbeanServer;
+   }
+
+   /**
+    * Get a deployment unit
+    * @param url The unique URL for a deployment
+    * @return The deployment unit; <code>null</code> if no unit is found
+    */
+   public Deployment getDeployment(URL url)
+   {
+      if (deployments != null)
+      {
+         for (Deployment deployment : deployments)
+         {
+            if (deployment.getURL().toString().equals(url.toString()))
+               return deployment;
+         }
+      }
+
+      return null;
    }
 
    /**
@@ -390,7 +409,7 @@ public class KernelImpl implements Kernel
                   counter++;
             }
 
-            Collections.sort(l, new UrlComparator());
+            Collections.sort(l, kernelConfiguration.getDeploymentOrder());
 
             beanDeployments = new AtomicInteger(counter);
 
@@ -445,7 +464,7 @@ public class KernelImpl implements Kernel
                   hotDeployer.register(u);
             }
 
-            Collections.sort(l, new UrlComparator());
+            Collections.sort(l, kernelConfiguration.getDeploymentOrder());
 
             beanDeployments = new AtomicInteger(counter);
 
@@ -683,25 +702,6 @@ public class KernelImpl implements Kernel
    }
 
    /**
-    * Find a deployment unit
-    * @param url The unique URL for a deployment
-    * @return The deployment unit; <code>null</code> if no unit is found
-    */
-   Deployment findDeployment(URL url)
-   {
-      if (deployments != null)
-      {
-         for (Deployment deployment : deployments)
-         {
-            if (deployment.getURL().toString().equals(url.toString()))
-               return deployment;
-         }
-      }
-
-      return null;
-   }
-
-   /**
     * Shutdown a deployment unit
     * @param deployment The deployment unit
     * @exception Throwable If an error occurs
@@ -761,6 +761,15 @@ public class KernelImpl implements Kernel
    }
 
    /**
+    * Get the kernel configuration
+    * @return The configuration
+    */
+   KernelConfiguration getKernelConfiguration()
+   {
+      return kernelConfiguration;
+   }
+
+   /**
     * Get the bean status
     * @param name The bean name
     * @return The status
@@ -787,7 +796,15 @@ public class KernelImpl implements Kernel
     */
    void addBean(String name, Object bean)
    {
-      beans.put(name, bean);
+      if (!beans.containsKey(name))
+      {
+         beans.put(name, bean);
+      }
+      else
+      {
+         log.log(Level.SEVERE, "Bean [" + name + "] already exists (Existing=" + 
+                 beans.get(name) + ", New=" + bean + ")");
+      }
    }
 
    /**
@@ -800,37 +817,40 @@ public class KernelImpl implements Kernel
       {
          Object bean = beans.get(name);
 
-         if (callbackBeans.containsKey(bean))
+         if (bean != null)
          {
-            Iterator<Map.Entry<Class<?>, List<Callback>>> cit = uncallbacks.entrySet().iterator();
-            while (cit.hasNext())
+            if (callbackBeans.containsKey(bean))
             {
-               Map.Entry<Class<?>, List<Callback>> entry = cit.next();
-
-               Class<?> type = entry.getKey();
-               List<Callback> callbacks = entry.getValue();
-            
-               if (type.isInstance(bean))
+               Iterator<Map.Entry<Class<?>, List<Callback>>> cit = uncallbacks.entrySet().iterator();
+               while (cit.hasNext())
                {
-                  for (Callback cb : callbacks)
+                  Map.Entry<Class<?>, List<Callback>> entry = cit.next();
+
+                  Class<?> type = entry.getKey();
+                  List<Callback> callbacks = entry.getValue();
+            
+                  if (type.isInstance(bean))
                   {
-                     try
+                     for (Callback cb : callbacks)
                      {
-                        Method m = cb.getMethod();
-                        Object instance = cb.getInstance();
+                        try
+                        {
+                           Method m = cb.getMethod();
+                           Object instance = cb.getInstance();
                            
-                        m.invoke(instance, new Object[] {bean});
-                     }
-                     catch (Throwable t)
-                     {
-                        if (log.isLoggable(Level.FINE))
-                           log.fine(cb.toString());
+                           m.invoke(instance, new Object[] {bean});
+                        }
+                        catch (Throwable t)
+                        {
+                           if (log.isLoggable(Level.FINE))
+                              log.fine(cb.toString());
+                        }
                      }
                   }
                }
-            }
 
-            callbackBeans.remove(bean);
+               callbackBeans.remove(bean);
+            }
          }
       }
 

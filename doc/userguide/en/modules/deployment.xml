@@ -67,6 +67,32 @@ public Deployer clone() throws CloneNotSupportedException;
             Note that beans deployed as part of the <code>system</code> and <code>deploy</code> directories
             will not receive the <code>preDeploy</code> notification.</para>
 
+          <section id="fungal_deployers_advanced_multi">
+            <title>Multi stage deployers</title>
+
+            <para>A deployer chain can be split into multi stages by applying the
+              <code>com.github.fungal.spi.deployers.MultiStageDeployer</code> marker interface.</para>
+
+            <para>This will tell the kernel to keep processing the deployment until no more deployers
+              are found or a deployer which doesn't implement the marker interface is found.</para>
+
+            <para>In order to select which deployer is processed first the 
+              <code>com.github.fungal.spi.deployers.DeployerOrder</code> interface must be implemented.</para>
+
+            <para>The interface contains the method</para>
+            <programlisting>
+/**
+ * Get the order for the deployer. The lower the number the sooner
+ * the deployer will be scheduled in the deployment chain
+ * @return The value
+ */
+public int getOrder();
+            </programlisting>
+
+            <para>where the developer can return intergers which represent the order of the deployers.</para>
+
+          </section>
+
       </section>
 
     </section>

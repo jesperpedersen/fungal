@@ -20,15 +20,17 @@
 
 package com.github.fungal.impl;
 
+import com.github.fungal.spi.deployers.DeployerOrder;
+
 import java.io.Serializable;
-import java.net.URL;
 import java.util.Comparator;
 
 /**
- * Url comparator
+ * DeploymentOrderComparator sorts DeployerOrder instances
+ *
  * @author <a href="mailto:jesper.pedersen@comcast.net">Jesper Pedersen</a>
  */
-class UrlComparator implements Comparator<URL>, Serializable
+public class DeployerOrderComparator implements Comparator<DeployerOrder>, Serializable
 {
    /** Serial version uid */
    private static final long serialVersionUID = 1L;
@@ -36,7 +38,7 @@ class UrlComparator implements Comparator<URL>, Serializable
    /**
     * Constructor
     */
-   UrlComparator()
+   DeployerOrderComparator()
    {
    }
 
@@ -44,21 +46,21 @@ class UrlComparator implements Comparator<URL>, Serializable
     * Compare
     * @param o1 The first object
     * @param o2 The second object
-    * @return XML files first according to their natural ordering; then other files
-    *         according to their natural ordering
+    * @return <code>-1</code> if o1 should be invoked first, <code>1</code> if o2 should
+    *         be invoked first, otherwise <code>0</code>
     */
-   public int compare(URL o1, URL o2)
+   public int compare(DeployerOrder o1, DeployerOrder o2)
    {
-      if (o1.getFile().endsWith(".xml") && o2.getFile().endsWith(".xml"))
-         return o1.getFile().compareTo(o2.getFile());
-
-      if (o1.getFile().endsWith(".xml"))
+      if (o1.getOrder() < o2.getOrder())
+      {
          return -1;
-
-      if (o2.getFile().endsWith(".xml"))
+      }
+      else if (o1.getOrder() > o2.getOrder())
+      {
          return 1;
+      }
 
-      return o1.getFile().compareTo(o2.getFile());
+      return 0;
    }
 
    /**
@@ -77,10 +79,13 @@ class UrlComparator implements Comparator<URL>, Serializable
     */
    public boolean equals(Object o)
    {
+      if (o == this)
+         return true;
+
       if (o == null)
          return false;
 
-      if (!(o instanceof UrlComparator))
+      if (!(o instanceof DeployerOrderComparator))
          return false;
 
       return true;

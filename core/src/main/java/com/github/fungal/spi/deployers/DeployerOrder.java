@@ -18,42 +18,18 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.github.fungal.api.deployer;
-
-import com.github.fungal.spi.deployers.Deployment;
-
-import java.net.URL;
+package com.github.fungal.spi.deployers;
 
 /**
- * The main deployer for Fungal
+ * Identifies the priority of a deployer
  * @author <a href="mailto:jesper.pedersen@comcast.net">Jesper Pedersen</a>
  */
-public interface MainDeployer
+public interface DeployerOrder
 {
    /**
-    * Deploy uses the kernel class loader as the parent class loader
-    * @param url The URL for the deployment
-    * @exception Throwable If an error occurs
+    * Get the order for the deployer. The lower the number the sooner
+    * the deployer will be scheduled in the deployment chain
+    * @return The value
     */
-   public void deploy(URL url) throws Throwable;
-
-   /**
-    * Undeploy
-    * @param url The URL for the deployment
-    * @exception Throwable If an error occurs
-    */
-   public void undeploy(URL url) throws Throwable;
-
-   /**
-    * Register a deployment -- advanced usage
-    * @param deployment The deployment
-    */
-   public void registerDeployment(Deployment deployment);
-
-   /**
-    * Unregister a deployment -- advanced usage
-    * @param deployment The deployment
-    * @exception Throwable If an error occurs
-    */
-   public void unregisterDeployment(Deployment deployment) throws Throwable;
+   public int getOrder();
 }

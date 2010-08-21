@@ -125,6 +125,7 @@ ${jboss.jca.host:localhost}
  &lt;/bean&gt;
       </programlisting>
 
+      <para>See more examples of bean configuration in the "Examples" appendix.</para>
 
    </section>
 

@@ -22,12 +22,14 @@ package com.github.fungal.impl;
 
 import com.github.fungal.spi.deployers.CloneableDeployer;
 import com.github.fungal.spi.deployers.Deployer;
+import com.github.fungal.spi.deployers.DeployerOrder;
 import com.github.fungal.spi.deployers.Deployment;
+import com.github.fungal.spi.deployers.MultiStageDeployer;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * The main deployer for Fungal
@@ -35,7 +37,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public final class MainDeployerImpl implements Cloneable, MainDeployerImplMBean
 {
-   private static List<Deployer> deployers = new CopyOnWriteArrayList<Deployer>();
+   private static List<Deployer> deployers = Collections.synchronizedList(new ArrayList<Deployer>());
 
    private KernelImpl kernel;
    private List<Deployer> copy;
@@ -81,6 +83,7 @@ public final class MainDeployerImpl implements Cloneable, MainDeployerImplMBean
     * @param classLoader The parent class loader for the deployment
     * @exception Throwable If an error occurs
     */
+   @SuppressWarnings("unchecked")
    public synchronized void deploy(URL url, ClassLoader classLoader) throws Throwable
    {
       if (url == null)
@@ -91,40 +94,74 @@ public final class MainDeployerImpl implements Cloneable, MainDeployerImplMBean
 
       if (copy == null || copy.size() != deployers.size())
       {
-         copy = new ArrayList<Deployer>(deployers.size());
+         List sorted = new ArrayList();
+         List unsorted = new ArrayList();
+
          for (Deployer deployer : deployers)
          {
-            if (deployer instanceof CloneableDeployer)
+            if (deployer instanceof DeployerOrder)
             {
-               try
+               if (deployer instanceof CloneableDeployer)
                {
-                  copy.add(((CloneableDeployer)deployer).clone());
+                  try
+                  {
+                     sorted.add(((CloneableDeployer)deployer).clone());
+                  }
+                  catch (CloneNotSupportedException cnse)
+                  {
+                     // Add the deployer and assume synchronized access
+                     sorted.add(deployer);
+                  }
                }
-               catch (CloneNotSupportedException cnse)
+               else
                {
-                  // Add the deployer and assume synchronized access
-                  copy.add(deployer);
+                  // Assume synchronized access to deploy()
+                  sorted.add(deployer);
                }
             }
             else
             {
-               // Assume synchronized access to deploy()
-               copy.add(deployer);
+               if (deployer instanceof CloneableDeployer)
+               {
+                  try
+                  {
+                     unsorted.add(((CloneableDeployer)deployer).clone());
+                  }
+                  catch (CloneNotSupportedException cnse)
+                  {
+                     // Add the deployer and assume synchronized access
+                     unsorted.add(deployer);
+                  }
+               }
+               else
+               {
+                  // Assume synchronized access to deploy()
+                  unsorted.add(deployer);
+               }
             }
          }
+
+         Collections.sort(sorted, new DeployerOrderComparator());
+
+         copy = new ArrayList<Deployer>(deployers.size());
+         copy.addAll(sorted);
+         copy.addAll(unsorted);
       }
 
       boolean done = false;
+      int copySize = copy.size();
 
-      for (int i = 0; !done && i < copy.size(); i++)
+      for (int i = 0; !done && i < copySize; i++)
       {
          Deployer deployer = copy.get(i);
             
          Deployment deployment = deployer.deploy(url, classLoader);
          if (deployment != null)
          {
-            kernel.registerDeployment(deployment);
-            done = true;
+            registerDeployment(deployment);
+
+            if (!(deployer instanceof MultiStageDeployer))
+               done = true;
          }
       }
    }
@@ -139,9 +176,34 @@ public final class MainDeployerImpl implements Cloneable, MainDeployerImplMBean
       if (url == null)
          throw new IllegalArgumentException("URL is null");
 
-      Deployment deployment = kernel.findDeployment(url);
+      Deployment deployment = kernel.getDeployment(url);
       if (deployment != null)
-         kernel.shutdownDeployment(deployment);
+         unregisterDeployment(deployment);
+   }
+
+   /**
+    * Register a deployment -- advanced usage
+    * @param deployment The deployment
+    */
+   public synchronized void registerDeployment(Deployment deployment)
+   {
+      if (deployment == null)
+         throw new IllegalArgumentException("Deployment is null");
+
+      kernel.registerDeployment(deployment);
+   }
+
+   /**
+    * Unregister a deployment -- advanced usage
+    * @param deployment The deployment
+    * @exception Throwable If an error occurs
+    */
+   public synchronized void unregisterDeployment(Deployment deployment) throws Throwable
+   {
+      if (deployment == null)
+         throw new IllegalArgumentException("Deployment is null");
+
+      kernel.shutdownDeployment(deployment);
    }
 
    /**
