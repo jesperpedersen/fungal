@@ -1,0 +1,213 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Appendix&nbsp;B.&nbsp;Examples</title><link rel="stylesheet" href="css/html.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.65.1"><link rel="home" href="index.html" title="Fungal User's Guide"><link rel="up" href="index.html" title="Fungal User's Guide"><link rel="previous" href="schemas.html" title="Appendix&nbsp;A.&nbsp;Schemas"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Appendix&nbsp;B.&nbsp;Examples</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="schemas.html">Prev</a>&nbsp;</td><th width="60%" align="center">&nbsp;</th><td width="20%" align="right">&nbsp;</td></tr></table><hr></div><div class="appendix" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="examples"></a>Appendix&nbsp;B.&nbsp;Examples</h2></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="example_bean"></a>B.1.&nbsp;Bean</h2></div></div><div></div></div><p>Create an instance of <tt class="code">MyBean</tt> using its default constructor.</p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyBean"
+        interface="com.mypackage.MyInterface"
+        class="com.mypackage.MyBean"/&gt;
+&lt;/deployment&gt;
+ 
+    </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="example_constructor"></a>B.2.&nbsp;Constructor</h2></div></div><div></div></div><p>Create an instance of <tt class="code">MyBean</tt> using its <tt class="code">String</tt> constructor.</p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyBean"
+        class="com.mypackage.MyBean"&gt;
+    &lt;constructor&gt;
+      &lt;parameter&gt;MyString&lt;/parameter&gt;
+    &lt;/constructor&gt;
+  &lt;/bean&gt;
+&lt;/deployment&gt;
+ 
+    </pre><p>Create an instance of <tt class="code">MyBean</tt> using selecting its <tt class="code">String</tt> constructor.</p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyBean"
+        class="com.mypackage.MyBean"&gt;
+    &lt;constructor&gt;
+      &lt;parameter class="java.lang.String"&gt;MyString&lt;/parameter&gt;
+    &lt;/constructor&gt;
+  &lt;/bean&gt;
+&lt;/deployment&gt;
+ 
+    </pre><p>Create an instance of <tt class="code">MyBean</tt> using selecting its <tt class="code">String</tt> constructor
+      and passing in <tt class="code">null</tt>.</p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyBean"
+        class="com.mypackage.MyBean"&gt;
+    &lt;constructor&gt;
+      &lt;parameter class="java.lang.String"&gt;&lt;null/&gt;&lt;/parameter&gt;
+    &lt;/constructor&gt;
+  &lt;/bean&gt;
+&lt;/deployment&gt;
+ 
+    </pre><p>Create an instance of <tt class="code">MyBean</tt> using a static method on a 
+      factory passing in a <tt class="code">String</tt>.</p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyBean"
+        interface="com.mypackage.MyInterface"&gt;
+    &lt;constructor factoryClass="com.mypackage.MyBeanFactory"
+                 factoryMethod="create"&gt;
+      &lt;parameter class="java.lang.String"&gt;MyString&lt;/parameter&gt;
+    &lt;/constructor&gt;
+  &lt;/bean&gt;
+&lt;/deployment&gt;
+ 
+    </pre><p>Create an instance of <tt class="code">MyBean</tt> using a method on a 
+      factory instance passing in a <tt class="code">String</tt>.</p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyBeanFactory"
+        class="com.mypackage.MyBeanFactory"/&gt;
+
+  &lt;bean name="MyBean"
+        interface="com.mypackage.MyInterface"&gt;
+    &lt;constructor factoryMethod="create"&gt;
+      &lt;parameter class="java.lang.String"&gt;MyString&lt;/parameter&gt;
+      &lt;factory bean="MyBeanFactory"/&gt;
+    &lt;/constructor&gt;
+  &lt;/bean&gt;
+&lt;/deployment&gt;
+ 
+    </pre><p>Injecting <tt class="code">MyConstructorBean</tt> into the constructor.</p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyConstructorBean"
+        class="com.mypackage.MyConstructorBean"&gt;
+
+  &lt;bean name="MyBean"
+        class="com.mypackage.MyBean"&gt;
+    &lt;constructor&gt;
+      &lt;parameter&gt;&lt;inject bean="MyConstructorBean"/&gt;&lt;/parameter&gt;
+    &lt;/constructor&gt;
+  &lt;/bean&gt;
+&lt;/deployment&gt;
+ 
+    </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="example_property"></a>B.3.&nbsp;Property</h2></div></div><div></div></div><p>Setting properties on <tt class="code">MyBean</tt></p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyBean"
+        class="com.mypackage.MyBean"&gt;
+    &lt;property name="MyStringProperty"&gt;MyString&lt;/property&gt;
+    &lt;property name="MyDoubleProperty"&gt;0.0&lt;/property&gt;
+    &lt;property name="MyIntProperty"&gt;42&lt;/property&gt;
+    &lt;property name="MyBooleanProperty"&gt;true&lt;/property&gt;
+  &lt;/bean&gt;
+&lt;/deployment&gt;
+ 
+    </pre><p>Setting a list property on <tt class="code">MyBean</tt></p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyBean"
+        class="com.mypackage.MyBean"&gt;
+    &lt;property name="MyListProperty"&gt;
+      &lt;list class="java.util.ArrayList"
+            elementClass="java.lang.String"&gt;
+        &lt;value&gt;MyStringValue1&lt;/value&gt;
+        &lt;value&gt;MyStringValue2&lt;/value&gt;
+        &lt;value&gt;MyStringValue3&lt;/value&gt;
+      &lt;/list&gt;
+    &lt;/property&gt;
+  &lt;/bean&gt;
+&lt;/deployment&gt;
+ 
+    </pre><p>Setting a set property on <tt class="code">MyBean</tt></p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyBean"
+        class="com.mypackage.MyBean"&gt;
+    &lt;property name="MySetProperty"&gt;
+      &lt;set class="java.util.HashSet"
+           elementClass="java.lang.String"&gt;
+        &lt;value&gt;MyStringValue1&lt;/value&gt;
+        &lt;value&gt;MyStringValue2&lt;/value&gt;
+        &lt;value&gt;MyStringValue3&lt;/value&gt;
+      &lt;/set&gt;
+    &lt;/property&gt;
+  &lt;/bean&gt;
+&lt;/deployment&gt;
+ 
+    </pre><p>Setting a map property on <tt class="code">MyBean</tt></p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyBean"
+        class="com.mypackage.MyBean"&gt;
+    &lt;property name="MyMapProperty"&gt;
+      &lt;map class="java.util.HashMap"
+           keyClass="java.lang.String"
+           valueClass="java.lang.String"&gt;
+        &lt;entry&gt;
+          &lt;key&gt;MyKey1&lt;/key&gt;
+          &lt;value&gt;MyString1&lt;/value&gt;
+        &lt;/entry&gt;
+        &lt;entry&gt;
+          &lt;key&gt;MyKey2&lt;/key&gt;
+          &lt;value&gt;MyString2&lt;/value&gt;
+        &lt;/entry&gt;
+      &lt;/map&gt;
+    &lt;/property&gt;
+  &lt;/bean&gt;
+&lt;/deployment&gt;
+ 
+    </pre><p>Injecting <tt class="code">MyPropertyBean</tt> on <tt class="code">MyBean</tt></p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyPropertyBean"
+        class="com.mypackage.MyPropertyBean"&gt;
+
+  &lt;bean name="MyBean"
+        class="com.mypackage.MyBean"&gt;
+    &lt;property name="MyProperty"&gt;&lt;inject bean="MyPropertyBean"/&gt;&lt;/property&gt;
+  &lt;/bean&gt;
+&lt;/deployment&gt;
+ 
+    </pre><p>Injecting <tt class="code">MyPropertyBean</tt>'s <tt class="code">Property</tt> on <tt class="code">MyBean</tt></p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyPropertyBean"
+        class="com.mypackage.MyPropertyBean"&gt;
+
+  &lt;bean name="MyBean"
+        class="com.mypackage.MyBean"&gt;
+    &lt;property name="MyProperty"&gt;&lt;inject bean="MyPropertyBean" property="Property"/&gt;&lt;/property&gt;
+  &lt;/bean&gt;
+&lt;/deployment&gt;
+ 
+    </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="example_depends"></a>B.4.&nbsp;Depends</h2></div></div><div></div></div><p>Create an explicit dependency on <tt class="code">MyDependency</tt>.</p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyDependency"
+        class="com.mypackage.MyDependency"/&gt;
+
+  &lt;bean name="MyBean"
+        class="com.mypackage.MyBean"&gt;
+    &lt;depends&gt;MyDependency&lt;/depends&gt;
+  &lt;/bean&gt;
+&lt;/deployment&gt;
+ 
+    </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="example_installuninstall"></a>B.5.&nbsp;Install / Uninstall</h2></div></div><div></div></div><p>Specify an install and an uninstall method for <tt class="code">MyBean</tt>.</p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyBean"
+        class="com.mypackage.MyBean"&gt;
+    &lt;install method="myInstallMethod"/&gt;
+    &lt;uninstall method="myUninstallMethod"/&gt;
+  &lt;/bean&gt;
+&lt;/deployment&gt;
+ 
+    </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="example_ignore"></a>B.6.&nbsp;IgnoreCreate / IgnoreStart / IgnoreStop / IgnoreDestroy</h2></div></div><div></div></div><p>Ignore the <tt class="code">create</tt>, <tt class="code">start</tt>, <tt class="code">stop</tt> and
+      <tt class="code">destroy</tt> methods on <tt class="code">MyBean</tt>.</p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyBean"
+        class="com.mypackage.MyBean"&gt;
+    &lt;ignoreCreate/&gt;
+    &lt;ignoreStart/&gt;
+    &lt;ignoreStop/&gt;
+    &lt;ignoreDestroy/&gt;
+  &lt;/bean&gt;
+&lt;/deployment&gt;
+ 
+    </pre></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="schemas.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="index.html">Up</a></td><td width="40%" align="right">&nbsp;</td></tr><tr><td width="40%" align="left" valign="top">Appendix&nbsp;A.&nbsp;Schemas&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;</td></tr></table></div></body></html>

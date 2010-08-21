@@ -1,6 +1,6 @@
 <html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-   <title>Fungal User's Guide</title><link rel="stylesheet" href="css/html.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.65.1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book" lang="en"><div class="titlepage"><div><div><h1 class="title"><a name="d0e1"></a>Fungal User's Guide</h1></div><div><h2 class="subtitle">A High-Performance Java Kernel</h2></div></div><div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="chapter"><a href="#about">1. About Fungal</a></span></dt><dd><dl><dt><span class="section"><a href="#theteam">1.1. The team</a></span></dt></dl></dd><dt><span class="chapter"><a href="#introduction">2. Introduction</a></span></dt><dd><dl><dt><span class="section"><a href="#highlights">2.1. Highlights</a></span></dt></dl></dd><dt><span class="chapter"><a href="#gettingstarted">3. Download</a></span></dt><dd><dl><dt><span class="section"><a href="#download">3.1. Download</a></span></dt><dt><span class="section"><a href="#GIT">3.2. Git Access</a></span></dt></dl></dd><dt><span class="chapter"><a href="#installation">4. Installation</a></span></dt><dd><dl><dt><span class="section"><a href="#installation_standalone">4.1. Standalone environments</a></span></dt></dl></dd><dt><span class="chapter"><a href="#configuration">5. Configuration</a></span></dt><dd><dl><dt><span class="section"><a href="#kernel_configuration">5.1. Kernel configuration</a></span></dt><dd><dl><dt><span class="section"><a href="#kernel_configuration_bindaddress">5.1.1. bindAddress</a></span></dt><dt><span class="section"><a href="#kernel_configuration_classloader">5.1.2. classLoader</a></span></dt><dt><span class="section"><a href="#kernel_configuration_command">5.1.3. command</a></span></dt><dt><span class="section"><a href="#kernel_configuration_configuration">5.1.4. configuration</a></span></dt><dt><span class="section"><a href="#kernel_configuration_deploy">5.1.5. deploy</a></span></dt><dt><span class="section"><a href="#kernel_configuration_eventlistener">5.1.6. eventListener</a></span></dt><dt><span class="section"><a href="#kernel_configuration_home">5.1.7. home</a></span></dt><dt><span class="section"><a href="#kernel_configuration_hotdeploy">5.1.8. hotDeploy</a></span></dt><dt><span class="section"><a href="#kernel_configuration_hotdeployinterval">5.1.9. hotDeployInterval</a></span></dt><dt><span class="section"><a href="#kernel_configuration_library">5.1.10. library</a></span></dt><dt><span class="section"><a href="#kernel_configuration_name">5.1.11. name</a></span></dt><dt><span class="section"><a href="#kernel_configuration_paralleldeploy">5.1.12. parallelDeploy</a></span></dt><dt><span class="section"><a href="#kernel_configuration_remoteaccess">5.1.13. remoteAccess</a></span></dt><dt><span class="section"><a href="#kernel_configuration_remoteport">5.1.14. remotePort</a></span></dt><dt><span class="section"><a href="#kernel_configuration_system">5.1.15. system</a></span></dt><dt><span class="section"><a href="#kernel_configuration_threadgroup">5.1.16. threadGroup</a></span></dt></dl></dd></dl></dd><dt><span class="chapter"><a href="#booting">6. Booting</a></span></dt><dd><dl><dt><span class="section"><a href="#booting_kernel">6.1. Booting the kernel</a></span></dt></dl></dd><dt><span class="chapter"><a href="#lifecycle">7. Lifecycle</a></span></dt><dd><dl><dt><span class="section"><a href="#bean_lifecycle">7.1. Lifecycle of beans</a></span></dt></dl></dd><dt><span class="chapter"><a href="#deployment">8. Deployment</a></span></dt><dd><dl><dt><span class="section"><a href="#fungal_deployers">8.1. Deployers</a></span></dt><dd><dl><dt><span class="section"><a href="#fungal_deployers_advanced">8.1.1. Advanced deployers</a></span></dt></dl></dd><dt><span class="section"><a href="#archive_deployment">8.2. Archive deployment</a></span></dt></dl></dd><dt><span class="chapter"><a href="#classloading">9. Classloading</a></span></dt><dd><dl><dt><span class="section"><a href="#classloaders">9.1. Class loading architecture</a></span></dt><dt><span class="section"><a href="#fungal_classloading_types">9.2. Class loader types</a></span></dt></dl></dd><dt><span class="chapter"><a href="#remote">10. Remote communition</a></span></dt><dd><dl><dt><span class="section"><a href="#remote_protocol">10.1. Remote protocol</a></span></dt><dt><span class="section"><a href="#remote_protocol_builtin">10.2. Built-in commands</a></span></dt><dd><dl><dt><span class="section"><a href="#fungal_remote_protocol_help">10.2.1. Help</a></span></dt><dt><span class="section"><a href="#fungal_remote_protocol_deploy">10.2.2. Deploy</a></span></dt><dt><span class="section"><a href="#fungal_remote_protocol_undeploy">10.2.3. Undeploy</a></span></dt></dl></dd><dt><span class="section"><a href="#remote_protocol_internal">10.3. Internal commands</a></span></dt><dd><dl><dt><span class="section"><a href="#fungal_remote_protocol_getcommand">10.3.1. GetCommand</a></span></dt></dl></dd></dl></dd><dt><span class="chapter"><a href="#usage">11. Usage</a></span></dt><dd><dl><dt><span class="section"><a href="#usage_kernel">11.1. Basic usage</a></span></dt></dl></dd><dt><span class="chapter"><a href="#community">12. Community</a></span></dt><dd><dl><dt><span class="section"><a href="#website">12.1. Website</a></span></dt><dt><span class="section"><a href="#issuetracking">12.2. Issue tracking</a></span></dt></dl></dd><dt><span class="chapter"><a href="#troubleshooting">13. Troubleshooting</a></span></dt><dd><dl><dt><span class="section"><a href="#ithinkihavefoundabug">13.1. I think I have found a bug</a></span></dt><dt><span class="section"><a href="#iwouldliketoimplementafeature">13.2. I would like to implement a feature</a></span></dt></dl></dd></dl></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="about"></a>Chapter&nbsp;1.&nbsp;About Fungal</h2></div></div><div></div></div><p>The goal of the Fungal project is to provide a high-performance Java kernel
+   <title>Fungal User's Guide</title><link rel="stylesheet" href="css/html.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.65.1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book" lang="en"><div class="titlepage"><div><div><h1 class="title"><a name="d0e1"></a>Fungal User's Guide</h1></div><div><h2 class="subtitle">A High-Performance Java Kernel</h2></div></div><div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="chapter"><a href="#about">1. About Fungal</a></span></dt><dd><dl><dt><span class="section"><a href="#theteam">1.1. The team</a></span></dt></dl></dd><dt><span class="chapter"><a href="#introduction">2. Introduction</a></span></dt><dd><dl><dt><span class="section"><a href="#highlights">2.1. Highlights</a></span></dt></dl></dd><dt><span class="chapter"><a href="#gettingstarted">3. Download</a></span></dt><dd><dl><dt><span class="section"><a href="#download">3.1. Download</a></span></dt><dt><span class="section"><a href="#GIT">3.2. Git Access</a></span></dt></dl></dd><dt><span class="chapter"><a href="#installation">4. Installation</a></span></dt><dd><dl><dt><span class="section"><a href="#installation_standalone">4.1. Standalone environments</a></span></dt></dl></dd><dt><span class="chapter"><a href="#configuration">5. Configuration</a></span></dt><dd><dl><dt><span class="section"><a href="#kernel_configuration">5.1. Kernel configuration</a></span></dt><dd><dl><dt><span class="section"><a href="#kernel_configuration_bindaddress">5.1.1. bindAddress</a></span></dt><dt><span class="section"><a href="#kernel_configuration_classloader">5.1.2. classLoader</a></span></dt><dt><span class="section"><a href="#kernel_configuration_command">5.1.3. command</a></span></dt><dt><span class="section"><a href="#kernel_configuration_configuration">5.1.4. configuration</a></span></dt><dt><span class="section"><a href="#kernel_configuration_deploy">5.1.5. deploy</a></span></dt><dt><span class="section"><a href="#kernel_configuration_deploymentorder">5.1.6. deploymentOrder</a></span></dt><dt><span class="section"><a href="#kernel_configuration_eventlistener">5.1.7. eventListener</a></span></dt><dt><span class="section"><a href="#kernel_configuration_home">5.1.8. home</a></span></dt><dt><span class="section"><a href="#kernel_configuration_hotdeploy">5.1.9. hotDeploy</a></span></dt><dt><span class="section"><a href="#kernel_configuration_hotdeployinterval">5.1.10. hotDeployInterval</a></span></dt><dt><span class="section"><a href="#kernel_configuration_library">5.1.11. library</a></span></dt><dt><span class="section"><a href="#kernel_configuration_name">5.1.12. name</a></span></dt><dt><span class="section"><a href="#kernel_configuration_paralleldeploy">5.1.13. parallelDeploy</a></span></dt><dt><span class="section"><a href="#kernel_configuration_remoteaccess">5.1.14. remoteAccess</a></span></dt><dt><span class="section"><a href="#kernel_configuration_remoteport">5.1.15. remotePort</a></span></dt><dt><span class="section"><a href="#kernel_configuration_system">5.1.16. system</a></span></dt><dt><span class="section"><a href="#kernel_configuration_threadgroup">5.1.17. threadGroup</a></span></dt></dl></dd></dl></dd><dt><span class="chapter"><a href="#booting">6. Booting</a></span></dt><dd><dl><dt><span class="section"><a href="#booting_kernel">6.1. Booting the kernel</a></span></dt></dl></dd><dt><span class="chapter"><a href="#lifecycle">7. Lifecycle</a></span></dt><dd><dl><dt><span class="section"><a href="#bean_lifecycle">7.1. Lifecycle of beans</a></span></dt></dl></dd><dt><span class="chapter"><a href="#deployment">8. Deployment</a></span></dt><dd><dl><dt><span class="section"><a href="#fungal_deployers">8.1. Deployers</a></span></dt><dd><dl><dt><span class="section"><a href="#fungal_deployers_advanced">8.1.1. Advanced deployers</a></span></dt><dd><dl><dt><span class="section"><a href="#fungal_deployers_advanced_multi">8.1.1.1. Multi stage deployers</a></span></dt></dl></dd></dl></dd><dt><span class="section"><a href="#archive_deployment">8.2. Archive deployment</a></span></dt></dl></dd><dt><span class="chapter"><a href="#classloading">9. Classloading</a></span></dt><dd><dl><dt><span class="section"><a href="#classloaders">9.1. Class loading architecture</a></span></dt><dt><span class="section"><a href="#fungal_classloading_types">9.2. Class loader types</a></span></dt></dl></dd><dt><span class="chapter"><a href="#remote">10. Remote communition</a></span></dt><dd><dl><dt><span class="section"><a href="#remote_protocol">10.1. Remote protocol</a></span></dt><dt><span class="section"><a href="#remote_protocol_builtin">10.2. Built-in commands</a></span></dt><dd><dl><dt><span class="section"><a href="#fungal_remote_protocol_help">10.2.1. Help</a></span></dt><dt><span class="section"><a href="#fungal_remote_protocol_deploy">10.2.2. Deploy</a></span></dt><dt><span class="section"><a href="#fungal_remote_protocol_undeploy">10.2.3. Undeploy</a></span></dt></dl></dd><dt><span class="section"><a href="#remote_protocol_internal">10.3. Internal commands</a></span></dt><dd><dl><dt><span class="section"><a href="#fungal_remote_protocol_getcommand">10.3.1. GetCommand</a></span></dt></dl></dd></dl></dd><dt><span class="chapter"><a href="#usage">11. Usage</a></span></dt><dd><dl><dt><span class="section"><a href="#usage_kernel">11.1. Basic usage</a></span></dt></dl></dd><dt><span class="chapter"><a href="#community">12. Community</a></span></dt><dd><dl><dt><span class="section"><a href="#website">12.1. Website</a></span></dt><dt><span class="section"><a href="#issuetracking">12.2. Issue tracking</a></span></dt></dl></dd><dt><span class="chapter"><a href="#troubleshooting">13. Troubleshooting</a></span></dt><dd><dl><dt><span class="section"><a href="#ithinkihavefoundabug">13.1. I think I have found a bug</a></span></dt><dt><span class="section"><a href="#iwouldliketoimplementafeature">13.2. I would like to implement a feature</a></span></dt></dl></dd><dt><span class="appendix"><a href="#schemas">A. Schemas</a></span></dt><dd><dl><dt><span class="section"><a href="#bootstrap_xsd">A.1. Bootstrap</a></span></dt><dt><span class="section"><a href="#deployment_xsd">A.2. Deployment</a></span></dt></dl></dd><dt><span class="appendix"><a href="#examples">B. Examples</a></span></dt><dd><dl><dt><span class="section"><a href="#example_bean">B.1. Bean</a></span></dt><dt><span class="section"><a href="#example_constructor">B.2. Constructor</a></span></dt><dt><span class="section"><a href="#example_property">B.3. Property</a></span></dt><dt><span class="section"><a href="#example_depends">B.4. Depends</a></span></dt><dt><span class="section"><a href="#example_installuninstall">B.5. Install / Uninstall</a></span></dt><dt><span class="section"><a href="#example_ignore">B.6. IgnoreCreate / IgnoreStart / IgnoreStop / IgnoreDestroy</a></span></dt></dl></dd></dl></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="about"></a>Chapter&nbsp;1.&nbsp;About Fungal</h2></div></div><div></div></div><p>The goal of the Fungal project is to provide a high-performance Java kernel
     environment.</p><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="theteam"></a>1.1.&nbsp;The team</h2></div></div><div></div></div><p>Jesper Pedersen acts as the lead for the Fungal project. He can be reached at jesper (dot) pedersen (at) comcast (dot) net.</p></div></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="introduction"></a>Chapter&nbsp;2.&nbsp;Introduction</h2></div></div><div></div></div><p>The Fungal kernel is a Plain Old Java Object (POJO) based kernel which
      can build a container environment for Java services.</p><p>The focus of the Fungal kernel is simplicity and high performance.</p><p>The Fungal kernel has no dependencies on any 3rd party libraries as the kernel is
      built directly on the Java 6 API.</p><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="highlights"></a>2.1.&nbsp;Highlights</h2></div></div><div></div></div><p>Highlights of the Fungal kernel:</p><div class="itemizedlist"><ul type="disc" compact><li>
@@ -75,35 +75,39 @@ kernelConfiguration.configuration("config");
         </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="kernel_configuration_deploy"></a>5.1.5.&nbsp;<tt class="code">deploy</tt></h3></div></div><div></div></div><p>The <tt class="code">deploy</tt> parameter specifies the deploy directory for the environment where
           all user deployment are located under <tt class="code">home</tt>.</p><p>An example</p><pre class="programlisting">
 kernelConfiguration.deploy("deploy");
-        </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="kernel_configuration_eventlistener"></a>5.1.6.&nbsp;<tt class="code">eventListener</tt></h3></div></div><div></div></div><p>The <tt class="code">eventListener</tt> parameter allows the developer to install additional 
+        </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="kernel_configuration_deploymentorder"></a>5.1.6.&nbsp;<tt class="code">deploymentOrder</tt></h3></div></div><div></div></div><p>The <tt class="code">deploymentOrder</tt> parameter specifies the 
+          <tt class="code">com.github.fungal.api.configuration.DeploymentOrder</tt> object which specifies the 
+          order of the file extension deployment.</p><p>An example</p><pre class="programlisting">
+kernelConfiguration.deploymentOrder(deploymentOrder);
+        </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="kernel_configuration_eventlistener"></a>5.1.7.&nbsp;<tt class="code">eventListener</tt></h3></div></div><div></div></div><p>The <tt class="code">eventListener</tt> parameter allows the developer to install additional 
           kernel event listeners.</p><p>An example</p><pre class="programlisting">
 kernelConfiguration.eventListener(new PreClassLoaderEventListener());
-        </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="kernel_configuration_home"></a>5.1.7.&nbsp;<tt class="code">home</tt></h3></div></div><div></div></div><p>The <tt class="code">home</tt> parameter specifies the top-level directory of the environment.</p><p>An example</p><pre class="programlisting">
+        </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="kernel_configuration_home"></a>5.1.8.&nbsp;<tt class="code">home</tt></h3></div></div><div></div></div><p>The <tt class="code">home</tt> parameter specifies the top-level directory of the environment.</p><p>An example</p><pre class="programlisting">
 kernelConfiguration.home(new File(".").getParent().toURI().toURL());
-        </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="kernel_configuration_hotdeploy"></a>5.1.8.&nbsp;<tt class="code">hotDeploy</tt></h3></div></div><div></div></div><p>The <tt class="code">hotDeploy</tt> parameter specifies if hot deployment should be enabled for 
+        </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="kernel_configuration_hotdeploy"></a>5.1.9.&nbsp;<tt class="code">hotDeploy</tt></h3></div></div><div></div></div><p>The <tt class="code">hotDeploy</tt> parameter specifies if hot deployment should be enabled for 
           the <tt class="code">deploy</tt> directory.</p><p>An example</p><pre class="programlisting">
 kernelConfiguration.hotDeploy(true);
-        </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="kernel_configuration_hotdeployinterval"></a>5.1.9.&nbsp;<tt class="code">hotDeployInterval</tt></h3></div></div><div></div></div><p>The <tt class="code">hotDeployInterval</tt> parameter specifies the number of seconds between
+        </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="kernel_configuration_hotdeployinterval"></a>5.1.10.&nbsp;<tt class="code">hotDeployInterval</tt></h3></div></div><div></div></div><p>The <tt class="code">hotDeployInterval</tt> parameter specifies the number of seconds between
           each scan.</p><p>An example</p><pre class="programlisting">
 kernelConfiguration.hotDeployInterval(5);
-        </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="kernel_configuration_library"></a>5.1.10.&nbsp;<tt class="code">library</tt></h3></div></div><div></div></div><p>The <tt class="code">library</tt> parameter specifies the library directory where all the environment
+        </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="kernel_configuration_library"></a>5.1.11.&nbsp;<tt class="code">library</tt></h3></div></div><div></div></div><p>The <tt class="code">library</tt> parameter specifies the library directory where all the environment
           libraries are located under <tt class="code">home</tt>.</p><p>An example</p><pre class="programlisting">
 kernelConfiguration.library("lib");
-        </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="kernel_configuration_name"></a>5.1.11.&nbsp;<tt class="code">name</tt></h3></div></div><div></div></div><p>The <tt class="code">name</tt> parameter specifies the unique name of the environment which is used
+        </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="kernel_configuration_name"></a>5.1.12.&nbsp;<tt class="code">name</tt></h3></div></div><div></div></div><p>The <tt class="code">name</tt> parameter specifies the unique name of the environment which is used
           to generate for example a MBean name space and system properties.</p><p>An example</p><pre class="programlisting">
 kernelConfiguration.name("fungal");
-        </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="kernel_configuration_paralleldeploy"></a>5.1.12.&nbsp;<tt class="code">parallelDeploy</tt></h3></div></div><div></div></div><p>The <tt class="code">parallelDeploy</tt> parameter specifies if deployments should be done in parallel
+        </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="kernel_configuration_paralleldeploy"></a>5.1.13.&nbsp;<tt class="code">parallelDeploy</tt></h3></div></div><div></div></div><p>The <tt class="code">parallelDeploy</tt> parameter specifies if deployments should be done in parallel
           for the <tt class="code">deploy</tt> and <tt class="code">system</tt> directories.</p><p>An example</p><pre class="programlisting">
 kernelConfiguration.parallelDeploy(true);
-        </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="kernel_configuration_remoteaccess"></a>5.1.13.&nbsp;<tt class="code">remoteAccess</tt></h3></div></div><div></div></div><p>The <tt class="code">remoteAccess</tt> parameter specifies if remote access to the kernel should
+        </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="kernel_configuration_remoteaccess"></a>5.1.14.&nbsp;<tt class="code">remoteAccess</tt></h3></div></div><div></div></div><p>The <tt class="code">remoteAccess</tt> parameter specifies if remote access to the kernel should
           be enabled.</p><p>An example</p><pre class="programlisting">
 kernelConfiguration.remoteAccess(true);
-        </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="kernel_configuration_remoteport"></a>5.1.14.&nbsp;<tt class="code">remotePort</tt></h3></div></div><div></div></div><p>The <tt class="code">remotePort</tt> parameter specifies the port number for remote access.</p><p>An example</p><pre class="programlisting">
+        </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="kernel_configuration_remoteport"></a>5.1.15.&nbsp;<tt class="code">remotePort</tt></h3></div></div><div></div></div><p>The <tt class="code">remotePort</tt> parameter specifies the port number for remote access.</p><p>An example</p><pre class="programlisting">
 kernelConfiguration.remotePort(1202);
-        </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="kernel_configuration_system"></a>5.1.15.&nbsp;<tt class="code">system</tt></h3></div></div><div></div></div><p>The <tt class="code">system</tt> parameter specifies the system directory where system deployments
+        </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="kernel_configuration_system"></a>5.1.16.&nbsp;<tt class="code">system</tt></h3></div></div><div></div></div><p>The <tt class="code">system</tt> parameter specifies the system directory where system deployments
           are located under <tt class="code">home</tt>.</p><p>An example</p><pre class="programlisting">
 kernelConfiguration.system("system");
-        </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="kernel_configuration_threadgroup"></a>5.1.16.&nbsp;<tt class="code">threadGroup</tt></h3></div></div><div></div></div><p>The <tt class="code">threadGroup</tt> parameter specifies the thread group that should be used
+        </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="kernel_configuration_threadgroup"></a>5.1.17.&nbsp;<tt class="code">threadGroup</tt></h3></div></div><div></div></div><p>The <tt class="code">threadGroup</tt> parameter specifies the thread group that should be used
           for kernel threads.</p><p>An example</p><pre class="programlisting">
 kernelConfiguration.threadGroup(new MyThreadGroup());
         </pre></div></div></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="booting"></a>Chapter&nbsp;6.&nbsp;Booting</h2></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="booting_kernel"></a>6.1.&nbsp;Booting the kernel</h2></div></div><div></div></div><p>The kernel is booted using a</p><pre class="programlisting">
@@ -133,7 +137,7 @@ ${jboss.jca.host:localhost}
    &lt;property name="socketProcessIdPort"&gt;0&lt;/property&gt;    
    &lt;depends&gt;NamingServer&lt;/depends&gt;
  &lt;/bean&gt;
-      </pre></div></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="lifecycle"></a>Chapter&nbsp;7.&nbsp;Lifecycle</h2></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="bean_lifecycle"></a>7.1.&nbsp;Lifecycle of beans</h2></div></div><div></div></div><p>There is support for lifecycle methods. These include</p><div class="itemizedlist"><ul type="disc"><li><tt class="code">public void create()</tt><p>Called after a bean has been constructed.</p></li><li><tt class="code">public void start()</tt><p>Called after create.</p></li><li><tt class="code">public void stop()</tt><p>Called when bean is stopped.</p></li><li><tt class="code">public void destroy()</tt><p>Called after stop.</p></li></ul></div><p>The lifecycle methods can be ignored by using the following constructs:</p><div class="itemizedlist"><ul type="disc"><li><tt class="code">&lt;ignoreCreate/&gt;</tt><p>which ignores the <tt class="code">create</tt> method.</p></li><li><tt class="code">&lt;ignoreStart/&gt;</tt><p>which ignores the <tt class="code">start</tt> method.</p></li><li><tt class="code">&lt;ignoreStop/&gt;</tt><p>which ignores the <tt class="code">stop</tt> method.</p></li><li><tt class="code">&lt;ignoreDestroy/&gt;</tt><p>which ignores the <tt class="code">destroy</tt> method.</p></li></ul></div><p>Furthermore all <tt class="code">install</tt> methods defined for the bean are called after the <tt class="code">start</tt>
+      </pre><p>See more examples of bean configuration in the "Examples" appendix.</p></div></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="lifecycle"></a>Chapter&nbsp;7.&nbsp;Lifecycle</h2></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="bean_lifecycle"></a>7.1.&nbsp;Lifecycle of beans</h2></div></div><div></div></div><p>There is support for lifecycle methods. These include</p><div class="itemizedlist"><ul type="disc"><li><tt class="code">public void create()</tt><p>Called after a bean has been constructed.</p></li><li><tt class="code">public void start()</tt><p>Called after create.</p></li><li><tt class="code">public void stop()</tt><p>Called when bean is stopped.</p></li><li><tt class="code">public void destroy()</tt><p>Called after stop.</p></li></ul></div><p>The lifecycle methods can be ignored by using the following constructs:</p><div class="itemizedlist"><ul type="disc"><li><tt class="code">&lt;ignoreCreate/&gt;</tt><p>which ignores the <tt class="code">create</tt> method.</p></li><li><tt class="code">&lt;ignoreStart/&gt;</tt><p>which ignores the <tt class="code">start</tt> method.</p></li><li><tt class="code">&lt;ignoreStop/&gt;</tt><p>which ignores the <tt class="code">stop</tt> method.</p></li><li><tt class="code">&lt;ignoreDestroy/&gt;</tt><p>which ignores the <tt class="code">destroy</tt> method.</p></li></ul></div><p>Furthermore all <tt class="code">install</tt> methods defined for the bean are called after the <tt class="code">start</tt>
         method. All <tt class="code">uninstall</tt> methods defined for the bean are called before the <tt class="code">stop</tt>
         method.</p></div></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="deployment"></a>Chapter&nbsp;8.&nbsp;Deployment</h2></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="fungal_deployers"></a>8.1.&nbsp;Deployers</h2></div></div><div></div></div><p>Fungal features a very simple deployers mechanism.</p><p>Each deployer is defined as a bean in a bean deployment XML file and they
         must implement the</p><pre class="programlisting">
@@ -166,7 +170,17 @@ public Deployer clone() throws CloneNotSupportedException;
             all the deployer instances should be <tt class="code">static</tt> and have atomic access.</p><p>In order to receive callbacks before deployment begins and after it has ended a bean
             can implement the <tt class="code">com.github.fungal.spi.deployers.DeployerPhases</tt> interface.
             Note that beans deployed as part of the <tt class="code">system</tt> and <tt class="code">deploy</tt> directories
-            will not receive the <tt class="code">preDeploy</tt> notification.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="archive_deployment"></a>8.2.&nbsp;Archive deployment</h2></div></div><div></div></div><p>Fungal uses multiple threads during the booting sequence.</p><p>When multiple threads are used in the kernel a dependency mechanism between beans is
+            will not receive the <tt class="code">preDeploy</tt> notification.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="fungal_deployers_advanced_multi"></a>8.1.1.1.&nbsp;Multi stage deployers</h4></div></div><div></div></div><p>A deployer chain can be split into multi stages by applying the
+              <tt class="code">com.github.fungal.spi.deployers.MultiStageDeployer</tt> marker interface.</p><p>This will tell the kernel to keep processing the deployment until no more deployers
+              are found or a deployer which doesn't implement the marker interface is found.</p><p>In order to select which deployer is processed first the 
+              <tt class="code">com.github.fungal.spi.deployers.DeployerOrder</tt> interface must be implemented.</p><p>The interface contains the method</p><pre class="programlisting">
+/**
+ * Get the order for the deployer. The lower the number the sooner
+ * the deployer will be scheduled in the deployment chain
+ * @return The value
+ */
+public int getOrder();
+            </pre><p>where the developer can return intergers which represent the order of the deployers.</p></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="archive_deployment"></a>8.2.&nbsp;Archive deployment</h2></div></div><div></div></div><p>Fungal uses multiple threads during the booting sequence.</p><p>When multiple threads are used in the kernel a dependency mechanism between beans is
         needed. The kernel keeps track of each bean deployment and assigns a status</p><div class="itemizedlist"><ul type="disc"><li><p><tt class="code">NOT_STARTED</tt></p><p>The bean hasn't started.</p></li><li><p><tt class="code">STARTING</tt></p><p>The bean is starting.</p></li><li><p><tt class="code">STARTED</tt></p><p>The bean has fully started.</p></li><li><p><tt class="code">STOPPING</tt></p><p>The bean is stopping.</p></li><li><p><tt class="code">ERROR</tt></p><p>The bean is in error.</p></li></ul></div><p>Caveats: The kernel currently doesn't detect cyclic dependencies between deployment units.</p><p>Furthermore the dependencies between beans are recorded in order to be able to safely shutdown
         deployments.</p><p>The Fungal kernel can deploy the archives in the <tt class="code">deploy</tt> directory in parallel if specified
         by the <tt class="code">KernelConfiguration.parallelDeploy()</tt> method. Otherwise are all the deployment units
@@ -199,7 +213,7 @@ com.github.fungal.api.classloading.ClassLoaderFactory
         result of running the command.</p><p>The name of the command is written using <tt class="code">writeUTF()</tt> and read using
         <tt class="code">readUTF()</tt>.</p><p>Each of the arguments is written using <tt class="code">writeObject()</tt> and read using
         <tt class="code">readObject()</tt>.</p><p>The kernel must be configured with <tt class="code">KernelConfiguration.remoteAccess(true)</tt>
-        in order to enable remote access.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="remote_protocol_builtin"></a>10.2.&nbsp;Built-in commands</h2></div></div><div></div></div><p>If remote access is enabled in the kernel then the following commands are enabled.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="fungal_remote_protocol_help"></a>10.2.1.&nbsp;Help</h3></div></div><div></div></div><p>Displays the available commands.</p><div class="table"><a name="d0e917"></a><p class="title"><b>Table&nbsp;10.1.&nbsp;Help: Input</b></p><table summary="Help: Input" border="1"><colgroup><col align="left"><col align="left"><col align="left"></colgroup><thead><tr><th align="left">Type</th><th align="left">Value</th><th align="left">Description</th></tr></thead><tbody><tr><td align="left">UTF</td><td align="left"><tt class="code">help</tt></td><td align="left">Command name</td></tr></tbody></table></div><div class="table"><a name="d0e941"></a><p class="title"><b>Table&nbsp;10.2.&nbsp;Help: Output</b></p><table summary="Help: Output" border="1"><colgroup><col align="left"><col align="left"><col align="left"></colgroup><thead><tr><th align="left">Type</th><th align="left">Value</th><th align="left">Description</th></tr></thead><tbody><tr><td align="left">OBJECT</td><td align="left">&lt;message&gt;</td><td align="left">List of available commands</td></tr></tbody></table></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="fungal_remote_protocol_deploy"></a>10.2.2.&nbsp;Deploy</h3></div></div><div></div></div><p>Deploys a file.</p><div class="table"><a name="d0e969"></a><p class="title"><b>Table&nbsp;10.3.&nbsp;Deploy: Input</b></p><table summary="Deploy: Input" border="1"><colgroup><col align="left"><col align="left"><col align="left"></colgroup><thead><tr><th align="left">Type</th><th align="left">Value</th><th align="left">Description</th></tr></thead><tbody><tr><td align="left">UTF</td><td align="left"><tt class="code">deploy</tt></td><td align="left">Command name</td></tr><tr><td align="left">OBJECT</td><td align="left">&lt;file url&gt;</td><td align="left">Location of the deployment unit as an <tt class="code">java.net.URL</tt></td></tr></tbody></table></div><div class="table"><a name="d0e1002"></a><p class="title"><b>Table&nbsp;10.4.&nbsp;Deploy: Output</b></p><table summary="Deploy: Output" border="1"><colgroup><col align="left"><col align="left"><col align="left"></colgroup><thead><tr><th align="left">Type</th><th align="left">Value</th><th align="left">Description</th></tr></thead><tbody><tr><td align="left">OBJECT</td><td align="left">&lt;message&gt;</td><td align="left">Empty string if successful. Otherwise error description</td></tr></tbody></table></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="fungal_remote_protocol_undeploy"></a>10.2.3.&nbsp;Undeploy</h3></div></div><div></div></div><p>Undeploys a file.</p><div class="table"><a name="d0e1030"></a><p class="title"><b>Table&nbsp;10.5.&nbsp;Undeploy: Input</b></p><table summary="Undeploy: Input" border="1"><colgroup><col align="left"><col align="left"><col align="left"></colgroup><thead><tr><th align="left">Type</th><th align="left">Value</th><th align="left">Description</th></tr></thead><tbody><tr><td align="left">UTF</td><td align="left"><tt class="code">undeploy</tt></td><td align="left">Command name</td></tr><tr><td align="left">OBJECT</td><td align="left">&lt;file url&gt;</td><td align="left">Location of the deployment unit as an <tt class="code">java.net.URL</tt></td></tr></tbody></table></div><div class="table"><a name="d0e1063"></a><p class="title"><b>Table&nbsp;10.6.&nbsp;Undeploy: Output</b></p><table summary="Undeploy: Output" border="1"><colgroup><col align="left"><col align="left"><col align="left"></colgroup><thead><tr><th align="left">Type</th><th align="left">Value</th><th align="left">Description</th></tr></thead><tbody><tr><td align="left">OBJECT</td><td align="left">&lt;message&gt;</td><td align="left">Empty string if successful. Otherwise error description</td></tr></tbody></table></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="remote_protocol_internal"></a>10.3.&nbsp;Internal commands</h2></div></div><div></div></div><p>The following internal commands are available.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="fungal_remote_protocol_getcommand"></a>10.3.1.&nbsp;GetCommand</h3></div></div><div></div></div><p>Get the parameter types for a command.</p><div class="table"><a name="d0e1096"></a><p class="title"><b>Table&nbsp;10.7.&nbsp;GetCommand: Input</b></p><table summary="GetCommand: Input" border="1"><colgroup><col align="left"><col align="left"><col align="left"></colgroup><thead><tr><th align="left">Type</th><th align="left">Value</th><th align="left">Description</th></tr></thead><tbody><tr><td align="left">UTF</td><td align="left"><tt class="code">getcommand</tt></td><td align="left">Command name</td></tr><tr><td align="left">OBJECT</td><td align="left">&lt;command&gt;</td><td align="left">The name of the command</td></tr></tbody></table></div><div class="table"><a name="d0e1127"></a><p class="title"><b>Table&nbsp;10.8.&nbsp;GetCommand: Output</b></p><table summary="GetCommand: Output" border="1"><colgroup><col align="left"><col align="left"><col align="left"></colgroup><thead><tr><th align="left">Type</th><th align="left">Value</th><th align="left">Description</th></tr></thead><tbody><tr><td align="left">OBJECT</td><td align="left">&lt;parameters&gt;</td><td align="left">The list of parameter types (<tt class="code">Class[]</tt>). Or <tt class="code">null</tt> if none.</td></tr></tbody></table></div></div></div></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="usage"></a>Chapter&nbsp;11.&nbsp;Usage</h2></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="usage_kernel"></a>11.1.&nbsp;Basic usage</h2></div></div><div></div></div><p>The Fungal kernel is constructed and started using</p><pre class="programlisting">
+        in order to enable remote access.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="remote_protocol_builtin"></a>10.2.&nbsp;Built-in commands</h2></div></div><div></div></div><p>If remote access is enabled in the kernel then the following commands are enabled.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="fungal_remote_protocol_help"></a>10.2.1.&nbsp;Help</h3></div></div><div></div></div><p>Displays the available commands.</p><div class="table"><a name="d0e956"></a><p class="title"><b>Table&nbsp;10.1.&nbsp;Help: Input</b></p><table summary="Help: Input" border="1"><colgroup><col align="left"><col align="left"><col align="left"></colgroup><thead><tr><th align="left">Type</th><th align="left">Value</th><th align="left">Description</th></tr></thead><tbody><tr><td align="left">UTF</td><td align="left"><tt class="code">help</tt></td><td align="left">Command name</td></tr></tbody></table></div><div class="table"><a name="d0e980"></a><p class="title"><b>Table&nbsp;10.2.&nbsp;Help: Output</b></p><table summary="Help: Output" border="1"><colgroup><col align="left"><col align="left"><col align="left"></colgroup><thead><tr><th align="left">Type</th><th align="left">Value</th><th align="left">Description</th></tr></thead><tbody><tr><td align="left">OBJECT</td><td align="left">&lt;message&gt;</td><td align="left">List of available commands</td></tr></tbody></table></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="fungal_remote_protocol_deploy"></a>10.2.2.&nbsp;Deploy</h3></div></div><div></div></div><p>Deploys a file.</p><div class="table"><a name="d0e1008"></a><p class="title"><b>Table&nbsp;10.3.&nbsp;Deploy: Input</b></p><table summary="Deploy: Input" border="1"><colgroup><col align="left"><col align="left"><col align="left"></colgroup><thead><tr><th align="left">Type</th><th align="left">Value</th><th align="left">Description</th></tr></thead><tbody><tr><td align="left">UTF</td><td align="left"><tt class="code">deploy</tt></td><td align="left">Command name</td></tr><tr><td align="left">OBJECT</td><td align="left">&lt;file url&gt;</td><td align="left">Location of the deployment unit as an <tt class="code">java.net.URL</tt></td></tr></tbody></table></div><div class="table"><a name="d0e1041"></a><p class="title"><b>Table&nbsp;10.4.&nbsp;Deploy: Output</b></p><table summary="Deploy: Output" border="1"><colgroup><col align="left"><col align="left"><col align="left"></colgroup><thead><tr><th align="left">Type</th><th align="left">Value</th><th align="left">Description</th></tr></thead><tbody><tr><td align="left">OBJECT</td><td align="left">&lt;message&gt;</td><td align="left">Empty string if successful. Otherwise error description</td></tr></tbody></table></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="fungal_remote_protocol_undeploy"></a>10.2.3.&nbsp;Undeploy</h3></div></div><div></div></div><p>Undeploys a file.</p><div class="table"><a name="d0e1069"></a><p class="title"><b>Table&nbsp;10.5.&nbsp;Undeploy: Input</b></p><table summary="Undeploy: Input" border="1"><colgroup><col align="left"><col align="left"><col align="left"></colgroup><thead><tr><th align="left">Type</th><th align="left">Value</th><th align="left">Description</th></tr></thead><tbody><tr><td align="left">UTF</td><td align="left"><tt class="code">undeploy</tt></td><td align="left">Command name</td></tr><tr><td align="left">OBJECT</td><td align="left">&lt;file url&gt;</td><td align="left">Location of the deployment unit as an <tt class="code">java.net.URL</tt></td></tr></tbody></table></div><div class="table"><a name="d0e1102"></a><p class="title"><b>Table&nbsp;10.6.&nbsp;Undeploy: Output</b></p><table summary="Undeploy: Output" border="1"><colgroup><col align="left"><col align="left"><col align="left"></colgroup><thead><tr><th align="left">Type</th><th align="left">Value</th><th align="left">Description</th></tr></thead><tbody><tr><td align="left">OBJECT</td><td align="left">&lt;message&gt;</td><td align="left">Empty string if successful. Otherwise error description</td></tr></tbody></table></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="remote_protocol_internal"></a>10.3.&nbsp;Internal commands</h2></div></div><div></div></div><p>The following internal commands are available.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="fungal_remote_protocol_getcommand"></a>10.3.1.&nbsp;GetCommand</h3></div></div><div></div></div><p>Get the parameter types for a command.</p><div class="table"><a name="d0e1135"></a><p class="title"><b>Table&nbsp;10.7.&nbsp;GetCommand: Input</b></p><table summary="GetCommand: Input" border="1"><colgroup><col align="left"><col align="left"><col align="left"></colgroup><thead><tr><th align="left">Type</th><th align="left">Value</th><th align="left">Description</th></tr></thead><tbody><tr><td align="left">UTF</td><td align="left"><tt class="code">getcommand</tt></td><td align="left">Command name</td></tr><tr><td align="left">OBJECT</td><td align="left">&lt;command&gt;</td><td align="left">The name of the command</td></tr></tbody></table></div><div class="table"><a name="d0e1166"></a><p class="title"><b>Table&nbsp;10.8.&nbsp;GetCommand: Output</b></p><table summary="GetCommand: Output" border="1"><colgroup><col align="left"><col align="left"><col align="left"></colgroup><thead><tr><th align="left">Type</th><th align="left">Value</th><th align="left">Description</th></tr></thead><tbody><tr><td align="left">OBJECT</td><td align="left">&lt;parameters&gt;</td><td align="left">The list of parameter types (<tt class="code">Class[]</tt>). Or <tt class="code">null</tt> if none.</td></tr></tbody></table></div></div></div></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="usage"></a>Chapter&nbsp;11.&nbsp;Usage</h2></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="usage_kernel"></a>11.1.&nbsp;Basic usage</h2></div></div><div></div></div><p>The Fungal kernel is constructed and started using</p><pre class="programlisting">
 import com.github.fungal.api.Kernel;
 import com.github.fungal.api.KernelFactory;
 import com.github.fungal.api.configuration.KernelConfiguration;
@@ -244,4 +258,393 @@ ant clean cobertura
           There isn't any bug reports from the Findbugs environment
         </li><li>
           There is full code coverage based on the Cobertura report
-        </li></ol></div><p>when done, create a pull request. See the developer guide for additional details.</p><p>Happy Coding !</p></div></div></div></body></html>
+        </li></ol></div><p>when done, create a pull request. See the developer guide for additional details.</p><p>Happy Coding !</p></div></div><div class="appendix" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="schemas"></a>Appendix&nbsp;A.&nbsp;Schemas</h2></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="bootstrap_xsd"></a>A.1.&nbsp;Bootstrap</h2></div></div><div></div></div><pre class="programlisting">
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!--
+   Bootstrap XML Schema
+--&gt;
+&lt;xsd:schema xmlns:boot="http://fungal.github.com/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+
+   &lt;xsd:element name="bootstrap"&gt;
+     &lt;xsd:complexType&gt;
+       &lt;xsd:sequence&gt;
+         &lt;xsd:element name="url" type="xsd:token" maxOccurs="unbounded" minOccurs="0"/&gt;
+       &lt;/xsd:sequence&gt;
+     &lt;/xsd:complexType&gt;
+   &lt;/xsd:element&gt;
+
+&lt;/xsd:schema&gt;
+ 
+    </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="deployment_xsd"></a>A.2.&nbsp;Deployment</h2></div></div><div></div></div><pre class="programlisting">
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!--
+   Deployment XML Schema
+--&gt;
+&lt;xsd:schema xmlns:deployment="http://fungal.github.com/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+
+   &lt;xsd:complexType name="beanType"&gt;
+     &lt;xsd:sequence&gt;
+       &lt;xsd:element name="constructor" type="constructorType" maxOccurs="1" minOccurs="0"/&gt;
+       &lt;xsd:element name="property" type="propertyType" maxOccurs="unbounded" minOccurs="0"/&gt;
+       &lt;xsd:element name="depends" type="dependsType" maxOccurs="unbounded" minOccurs="0"/&gt;
+       &lt;xsd:element name="install" type="installType" maxOccurs="unbounded" minOccurs="0"/&gt;
+       &lt;xsd:element name="uninstall" type="uninstallType" maxOccurs="unbounded" minOccurs="0"/&gt;
+       &lt;xsd:element name="ignoreCreate" type="ignoreCreateType" maxOccurs="1" minOccurs="0"/&gt;
+       &lt;xsd:element name="ignoreStart" type="ignoreStartType" maxOccurs="1" minOccurs="0"/&gt;
+       &lt;xsd:element name="ignoreStop" type="ignoreStopType" maxOccurs="1" minOccurs="0"/&gt;
+       &lt;xsd:element name="ignoreDestroy" type="ignoreDestroyType" maxOccurs="1" minOccurs="0"/&gt;
+     &lt;/xsd:sequence&gt;
+     &lt;xsd:attribute name="name" type="xsd:token" use="required"/&gt;
+     &lt;xsd:attribute name="interface" type="xsd:token"/&gt;
+     &lt;xsd:attribute name="class" type="xsd:token"/&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="propertyType" mixed="true"&gt;
+     &lt;xsd:sequence&gt;
+       &lt;xsd:element name="inject" type="injectType" maxOccurs="1" minOccurs="0"/&gt;
+       &lt;xsd:element name="list" type="listType" maxOccurs="1" minOccurs="0"/&gt;
+       &lt;xsd:element name="set" type="setType" maxOccurs="1" minOccurs="0"/&gt;
+       &lt;xsd:element name="map" type="mapType" maxOccurs="1" minOccurs="0"/&gt;
+       &lt;xsd:element name="value" type="valueType" maxOccurs="1" minOccurs="0"/&gt;
+       &lt;xsd:element name="null" type="nullType" maxOccurs="1" minOccurs="0"/&gt;
+       &lt;xsd:element name="this" type="thisType" maxOccurs="1" minOccurs="0"/&gt;
+     &lt;/xsd:sequence&gt;
+     &lt;xsd:attribute name="name" type="xsd:token" use="required"/&gt;
+     &lt;xsd:attribute name="class" type="xsd:token"/&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="injectType"&gt;
+     &lt;xsd:simpleContent&gt;
+       &lt;xsd:extension base="xsd:token"&gt;
+         &lt;xsd:attribute name="bean" type="xsd:token" use="required"/&gt;
+         &lt;xsd:attribute name="property" type="xsd:token"/&gt;
+       &lt;/xsd:extension&gt;
+     &lt;/xsd:simpleContent&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="constructorType"&gt;
+     &lt;xsd:sequence&gt;
+       &lt;xsd:element name="parameter" type="parameterType" maxOccurs="unbounded" minOccurs="0"/&gt;
+       &lt;xsd:element name="factory" type="factoryType" maxOccurs="1" minOccurs="0"/&gt;
+     &lt;/xsd:sequence&gt;
+     &lt;xsd:attribute name="factoryMethod" type="xsd:token"/&gt;
+     &lt;xsd:attribute name="factoryClass" type="xsd:token"/&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="factoryType"&gt;
+     &lt;xsd:attribute name="bean" type="xsd:token"/&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="mapType"&gt;
+     &lt;xsd:sequence&gt;
+       &lt;xsd:element name="entry" type="entryType" maxOccurs="unbounded" minOccurs="0"/&gt;
+     &lt;/xsd:sequence&gt;
+     &lt;xsd:attribute name="class" type="xsd:token"/&gt;
+     &lt;xsd:attribute name="keyClass" type="xsd:token" use="required"/&gt;
+     &lt;xsd:attribute name="valueClass" type="xsd:token" use="required"/&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="entryType"&gt;
+     &lt;xsd:sequence&gt;
+       &lt;xsd:element name="key" type="keyType"/&gt;
+       &lt;xsd:element name="value" type="valueType"/&gt;
+     &lt;/xsd:sequence&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="setType"&gt;
+     &lt;xsd:sequence&gt;
+       &lt;xsd:element name="value" type="valueType" maxOccurs="unbounded" minOccurs="0"/&gt;
+     &lt;/xsd:sequence&gt;
+     &lt;xsd:attribute name="class" type="xsd:token"/&gt;
+     &lt;xsd:attribute name="elementClass" type="xsd:token" use="required"/&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="listType"&gt;
+     &lt;xsd:sequence&gt;
+       &lt;xsd:element name="value" type="valueType" maxOccurs="unbounded" minOccurs="0"/&gt;
+     &lt;/xsd:sequence&gt;
+     &lt;xsd:attribute name="class" type="xsd:token"/&gt;
+     &lt;xsd:attribute name="elementClass" type="xsd:token" use="required"/&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="parameterType" mixed="true"&gt;
+     &lt;xsd:sequence&gt;
+       &lt;xsd:element name="inject" type="injectType" maxOccurs="1" minOccurs="0"/&gt;
+       &lt;xsd:element name="null" type="nullType" maxOccurs="1" minOccurs="0"/&gt;
+     &lt;/xsd:sequence&gt;
+     &lt;xsd:attribute name="class" type="xsd:token"/&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="dependsType"&gt;
+     &lt;xsd:simpleContent&gt;
+       &lt;xsd:extension base="xsd:token"&gt;
+       &lt;/xsd:extension&gt;
+     &lt;/xsd:simpleContent&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="keyType"&gt;
+     &lt;xsd:simpleContent&gt;
+       &lt;xsd:extension base="xsd:token"&gt;
+       &lt;/xsd:extension&gt;
+     &lt;/xsd:simpleContent&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="valueType"&gt;
+     &lt;xsd:simpleContent&gt;
+       &lt;xsd:extension base="xsd:token"&gt;
+       &lt;/xsd:extension&gt;
+     &lt;/xsd:simpleContent&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="thisType"/&gt;
+
+   &lt;xsd:complexType name="nullType"/&gt;
+
+   &lt;xsd:complexType name="installType"&gt;
+     &lt;xsd:attribute name="method" type="xsd:token"/&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="uninstallType"&gt;
+     &lt;xsd:attribute name="method" type="xsd:token"/&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="incallbackType"&gt;
+     &lt;xsd:attribute name="method" type="xsd:token"/&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="uncallbackType"&gt;
+     &lt;xsd:attribute name="method" type="xsd:token"/&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="ignoreCreateType"/&gt;
+
+   &lt;xsd:complexType name="ignoreStartType"/&gt;
+
+   &lt;xsd:complexType name="ignoreStopType"/&gt;
+
+   &lt;xsd:complexType name="ignoreDestroyType"/&gt;
+
+   &lt;xsd:element name="deployment"&gt;
+     &lt;xsd:complexType&gt;
+       &lt;xsd:sequence&gt;
+         &lt;xsd:element name="bean" type="beanType" maxOccurs="unbounded" minOccurs="0"/&gt;
+       &lt;/xsd:sequence&gt;
+     &lt;/xsd:complexType&gt;
+   &lt;/xsd:element&gt;
+
+&lt;/xsd:schema&gt;
+
+ 
+    </pre></div></div><div class="appendix" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="examples"></a>Appendix&nbsp;B.&nbsp;Examples</h2></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="example_bean"></a>B.1.&nbsp;Bean</h2></div></div><div></div></div><p>Create an instance of <tt class="code">MyBean</tt> using its default constructor.</p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyBean"
+        interface="com.mypackage.MyInterface"
+        class="com.mypackage.MyBean"/&gt;
+&lt;/deployment&gt;
+ 
+    </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="example_constructor"></a>B.2.&nbsp;Constructor</h2></div></div><div></div></div><p>Create an instance of <tt class="code">MyBean</tt> using its <tt class="code">String</tt> constructor.</p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyBean"
+        class="com.mypackage.MyBean"&gt;
+    &lt;constructor&gt;
+      &lt;parameter&gt;MyString&lt;/parameter&gt;
+    &lt;/constructor&gt;
+  &lt;/bean&gt;
+&lt;/deployment&gt;
+ 
+    </pre><p>Create an instance of <tt class="code">MyBean</tt> using selecting its <tt class="code">String</tt> constructor.</p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyBean"
+        class="com.mypackage.MyBean"&gt;
+    &lt;constructor&gt;
+      &lt;parameter class="java.lang.String"&gt;MyString&lt;/parameter&gt;
+    &lt;/constructor&gt;
+  &lt;/bean&gt;
+&lt;/deployment&gt;
+ 
+    </pre><p>Create an instance of <tt class="code">MyBean</tt> using selecting its <tt class="code">String</tt> constructor
+      and passing in <tt class="code">null</tt>.</p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyBean"
+        class="com.mypackage.MyBean"&gt;
+    &lt;constructor&gt;
+      &lt;parameter class="java.lang.String"&gt;&lt;null/&gt;&lt;/parameter&gt;
+    &lt;/constructor&gt;
+  &lt;/bean&gt;
+&lt;/deployment&gt;
+ 
+    </pre><p>Create an instance of <tt class="code">MyBean</tt> using a static method on a 
+      factory passing in a <tt class="code">String</tt>.</p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyBean"
+        interface="com.mypackage.MyInterface"&gt;
+    &lt;constructor factoryClass="com.mypackage.MyBeanFactory"
+                 factoryMethod="create"&gt;
+      &lt;parameter class="java.lang.String"&gt;MyString&lt;/parameter&gt;
+    &lt;/constructor&gt;
+  &lt;/bean&gt;
+&lt;/deployment&gt;
+ 
+    </pre><p>Create an instance of <tt class="code">MyBean</tt> using a method on a 
+      factory instance passing in a <tt class="code">String</tt>.</p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyBeanFactory"
+        class="com.mypackage.MyBeanFactory"/&gt;
+
+  &lt;bean name="MyBean"
+        interface="com.mypackage.MyInterface"&gt;
+    &lt;constructor factoryMethod="create"&gt;
+      &lt;parameter class="java.lang.String"&gt;MyString&lt;/parameter&gt;
+      &lt;factory bean="MyBeanFactory"/&gt;
+    &lt;/constructor&gt;
+  &lt;/bean&gt;
+&lt;/deployment&gt;
+ 
+    </pre><p>Injecting <tt class="code">MyConstructorBean</tt> into the constructor.</p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyConstructorBean"
+        class="com.mypackage.MyConstructorBean"&gt;
+
+  &lt;bean name="MyBean"
+        class="com.mypackage.MyBean"&gt;
+    &lt;constructor&gt;
+      &lt;parameter&gt;&lt;inject bean="MyConstructorBean"/&gt;&lt;/parameter&gt;
+    &lt;/constructor&gt;
+  &lt;/bean&gt;
+&lt;/deployment&gt;
+ 
+    </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="example_property"></a>B.3.&nbsp;Property</h2></div></div><div></div></div><p>Setting properties on <tt class="code">MyBean</tt></p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyBean"
+        class="com.mypackage.MyBean"&gt;
+    &lt;property name="MyStringProperty"&gt;MyString&lt;/property&gt;
+    &lt;property name="MyDoubleProperty"&gt;0.0&lt;/property&gt;
+    &lt;property name="MyIntProperty"&gt;42&lt;/property&gt;
+    &lt;property name="MyBooleanProperty"&gt;true&lt;/property&gt;
+  &lt;/bean&gt;
+&lt;/deployment&gt;
+ 
+    </pre><p>Setting a list property on <tt class="code">MyBean</tt></p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyBean"
+        class="com.mypackage.MyBean"&gt;
+    &lt;property name="MyListProperty"&gt;
+      &lt;list class="java.util.ArrayList"
+            elementClass="java.lang.String"&gt;
+        &lt;value&gt;MyStringValue1&lt;/value&gt;
+        &lt;value&gt;MyStringValue2&lt;/value&gt;
+        &lt;value&gt;MyStringValue3&lt;/value&gt;
+      &lt;/list&gt;
+    &lt;/property&gt;
+  &lt;/bean&gt;
+&lt;/deployment&gt;
+ 
+    </pre><p>Setting a set property on <tt class="code">MyBean</tt></p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyBean"
+        class="com.mypackage.MyBean"&gt;
+    &lt;property name="MySetProperty"&gt;
+      &lt;set class="java.util.HashSet"
+           elementClass="java.lang.String"&gt;
+        &lt;value&gt;MyStringValue1&lt;/value&gt;
+        &lt;value&gt;MyStringValue2&lt;/value&gt;
+        &lt;value&gt;MyStringValue3&lt;/value&gt;
+      &lt;/set&gt;
+    &lt;/property&gt;
+  &lt;/bean&gt;
+&lt;/deployment&gt;
+ 
+    </pre><p>Setting a map property on <tt class="code">MyBean</tt></p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyBean"
+        class="com.mypackage.MyBean"&gt;
+    &lt;property name="MyMapProperty"&gt;
+      &lt;map class="java.util.HashMap"
+           keyClass="java.lang.String"
+           valueClass="java.lang.String"&gt;
+        &lt;entry&gt;
+          &lt;key&gt;MyKey1&lt;/key&gt;
+          &lt;value&gt;MyString1&lt;/value&gt;
+        &lt;/entry&gt;
+        &lt;entry&gt;
+          &lt;key&gt;MyKey2&lt;/key&gt;
+          &lt;value&gt;MyString2&lt;/value&gt;
+        &lt;/entry&gt;
+      &lt;/map&gt;
+    &lt;/property&gt;
+  &lt;/bean&gt;
+&lt;/deployment&gt;
+ 
+    </pre><p>Injecting <tt class="code">MyPropertyBean</tt> on <tt class="code">MyBean</tt></p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyPropertyBean"
+        class="com.mypackage.MyPropertyBean"&gt;
+
+  &lt;bean name="MyBean"
+        class="com.mypackage.MyBean"&gt;
+    &lt;property name="MyProperty"&gt;&lt;inject bean="MyPropertyBean"/&gt;&lt;/property&gt;
+  &lt;/bean&gt;
+&lt;/deployment&gt;
+ 
+    </pre><p>Injecting <tt class="code">MyPropertyBean</tt>'s <tt class="code">Property</tt> on <tt class="code">MyBean</tt></p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyPropertyBean"
+        class="com.mypackage.MyPropertyBean"&gt;
+
+  &lt;bean name="MyBean"
+        class="com.mypackage.MyBean"&gt;
+    &lt;property name="MyProperty"&gt;&lt;inject bean="MyPropertyBean" property="Property"/&gt;&lt;/property&gt;
+  &lt;/bean&gt;
+&lt;/deployment&gt;
+ 
+    </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="example_depends"></a>B.4.&nbsp;Depends</h2></div></div><div></div></div><p>Create an explicit dependency on <tt class="code">MyDependency</tt>.</p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyDependency"
+        class="com.mypackage.MyDependency"/&gt;
+
+  &lt;bean name="MyBean"
+        class="com.mypackage.MyBean"&gt;
+    &lt;depends&gt;MyDependency&lt;/depends&gt;
+  &lt;/bean&gt;
+&lt;/deployment&gt;
+ 
+    </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="example_installuninstall"></a>B.5.&nbsp;Install / Uninstall</h2></div></div><div></div></div><p>Specify an install and an uninstall method for <tt class="code">MyBean</tt>.</p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyBean"
+        class="com.mypackage.MyBean"&gt;
+    &lt;install method="myInstallMethod"/&gt;
+    &lt;uninstall method="myUninstallMethod"/&gt;
+  &lt;/bean&gt;
+&lt;/deployment&gt;
+ 
+    </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="example_ignore"></a>B.6.&nbsp;IgnoreCreate / IgnoreStart / IgnoreStop / IgnoreDestroy</h2></div></div><div></div></div><p>Ignore the <tt class="code">create</tt>, <tt class="code">start</tt>, <tt class="code">stop</tt> and
+      <tt class="code">destroy</tt> methods on <tt class="code">MyBean</tt>.</p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyBean"
+        class="com.mypackage.MyBean"&gt;
+    &lt;ignoreCreate/&gt;
+    &lt;ignoreStart/&gt;
+    &lt;ignoreStop/&gt;
+    &lt;ignoreDestroy/&gt;
+  &lt;/bean&gt;
+&lt;/deployment&gt;
+ 
+    </pre></div></div></div></body></html>

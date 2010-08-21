@@ -31,7 +31,17 @@ public Deployer clone() throws CloneNotSupportedException;
             all the deployer instances should be <tt class="code">static</tt> and have atomic access.</p><p>In order to receive callbacks before deployment begins and after it has ended a bean
             can implement the <tt class="code">com.github.fungal.spi.deployers.DeployerPhases</tt> interface.
             Note that beans deployed as part of the <tt class="code">system</tt> and <tt class="code">deploy</tt> directories
-            will not receive the <tt class="code">preDeploy</tt> notification.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="archive_deployment"></a>8.2.&nbsp;Archive deployment</h2></div></div><div></div></div><p>Fungal uses multiple threads during the booting sequence.</p><p>When multiple threads are used in the kernel a dependency mechanism between beans is
+            will not receive the <tt class="code">preDeploy</tt> notification.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="fungal_deployers_advanced_multi"></a>8.1.1.1.&nbsp;Multi stage deployers</h4></div></div><div></div></div><p>A deployer chain can be split into multi stages by applying the
+              <tt class="code">com.github.fungal.spi.deployers.MultiStageDeployer</tt> marker interface.</p><p>This will tell the kernel to keep processing the deployment until no more deployers
+              are found or a deployer which doesn't implement the marker interface is found.</p><p>In order to select which deployer is processed first the 
+              <tt class="code">com.github.fungal.spi.deployers.DeployerOrder</tt> interface must be implemented.</p><p>The interface contains the method</p><pre class="programlisting">
+/**
+ * Get the order for the deployer. The lower the number the sooner
+ * the deployer will be scheduled in the deployment chain
+ * @return The value
+ */
+public int getOrder();
+            </pre><p>where the developer can return intergers which represent the order of the deployers.</p></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="archive_deployment"></a>8.2.&nbsp;Archive deployment</h2></div></div><div></div></div><p>Fungal uses multiple threads during the booting sequence.</p><p>When multiple threads are used in the kernel a dependency mechanism between beans is
         needed. The kernel keeps track of each bean deployment and assigns a status</p><div class="itemizedlist"><ul type="disc"><li><p><tt class="code">NOT_STARTED</tt></p><p>The bean hasn't started.</p></li><li><p><tt class="code">STARTING</tt></p><p>The bean is starting.</p></li><li><p><tt class="code">STARTED</tt></p><p>The bean has fully started.</p></li><li><p><tt class="code">STOPPING</tt></p><p>The bean is stopping.</p></li><li><p><tt class="code">ERROR</tt></p><p>The bean is in error.</p></li></ul></div><p>Caveats: The kernel currently doesn't detect cyclic dependencies between deployment units.</p><p>Furthermore the dependencies between beans are recorded in order to be able to safely shutdown
         deployments.</p><p>The Fungal kernel can deploy the archives in the <tt class="code">deploy</tt> directory in parallel if specified
         by the <tt class="code">KernelConfiguration.parallelDeploy()</tt> method. Otherwise are all the deployment units

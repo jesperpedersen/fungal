@@ -1,0 +1,182 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Appendix&nbsp;A.&nbsp;Schemas</title><link rel="stylesheet" href="css/html.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.65.1"><link rel="home" href="index.html" title="Fungal User's Guide"><link rel="up" href="index.html" title="Fungal User's Guide"><link rel="previous" href="troubleshooting.html" title="Chapter&nbsp;13.&nbsp;Troubleshooting"><link rel="next" href="examples.html" title="Appendix&nbsp;B.&nbsp;Examples"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Appendix&nbsp;A.&nbsp;Schemas</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="troubleshooting.html">Prev</a>&nbsp;</td><th width="60%" align="center">&nbsp;</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="examples.html">Next</a></td></tr></table><hr></div><div class="appendix" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="schemas"></a>Appendix&nbsp;A.&nbsp;Schemas</h2></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="bootstrap_xsd"></a>A.1.&nbsp;Bootstrap</h2></div></div><div></div></div><pre class="programlisting">
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!--
+   Bootstrap XML Schema
+--&gt;
+&lt;xsd:schema xmlns:boot="http://fungal.github.com/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+
+   &lt;xsd:element name="bootstrap"&gt;
+     &lt;xsd:complexType&gt;
+       &lt;xsd:sequence&gt;
+         &lt;xsd:element name="url" type="xsd:token" maxOccurs="unbounded" minOccurs="0"/&gt;
+       &lt;/xsd:sequence&gt;
+     &lt;/xsd:complexType&gt;
+   &lt;/xsd:element&gt;
+
+&lt;/xsd:schema&gt;
+ 
+    </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="deployment_xsd"></a>A.2.&nbsp;Deployment</h2></div></div><div></div></div><pre class="programlisting">
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!--
+   Deployment XML Schema
+--&gt;
+&lt;xsd:schema xmlns:deployment="http://fungal.github.com/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+
+   &lt;xsd:complexType name="beanType"&gt;
+     &lt;xsd:sequence&gt;
+       &lt;xsd:element name="constructor" type="constructorType" maxOccurs="1" minOccurs="0"/&gt;
+       &lt;xsd:element name="property" type="propertyType" maxOccurs="unbounded" minOccurs="0"/&gt;
+       &lt;xsd:element name="depends" type="dependsType" maxOccurs="unbounded" minOccurs="0"/&gt;
+       &lt;xsd:element name="install" type="installType" maxOccurs="unbounded" minOccurs="0"/&gt;
+       &lt;xsd:element name="uninstall" type="uninstallType" maxOccurs="unbounded" minOccurs="0"/&gt;
+       &lt;xsd:element name="ignoreCreate" type="ignoreCreateType" maxOccurs="1" minOccurs="0"/&gt;
+       &lt;xsd:element name="ignoreStart" type="ignoreStartType" maxOccurs="1" minOccurs="0"/&gt;
+       &lt;xsd:element name="ignoreStop" type="ignoreStopType" maxOccurs="1" minOccurs="0"/&gt;
+       &lt;xsd:element name="ignoreDestroy" type="ignoreDestroyType" maxOccurs="1" minOccurs="0"/&gt;
+     &lt;/xsd:sequence&gt;
+     &lt;xsd:attribute name="name" type="xsd:token" use="required"/&gt;
+     &lt;xsd:attribute name="interface" type="xsd:token"/&gt;
+     &lt;xsd:attribute name="class" type="xsd:token"/&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="propertyType" mixed="true"&gt;
+     &lt;xsd:sequence&gt;
+       &lt;xsd:element name="inject" type="injectType" maxOccurs="1" minOccurs="0"/&gt;
+       &lt;xsd:element name="list" type="listType" maxOccurs="1" minOccurs="0"/&gt;
+       &lt;xsd:element name="set" type="setType" maxOccurs="1" minOccurs="0"/&gt;
+       &lt;xsd:element name="map" type="mapType" maxOccurs="1" minOccurs="0"/&gt;
+       &lt;xsd:element name="value" type="valueType" maxOccurs="1" minOccurs="0"/&gt;
+       &lt;xsd:element name="null" type="nullType" maxOccurs="1" minOccurs="0"/&gt;
+       &lt;xsd:element name="this" type="thisType" maxOccurs="1" minOccurs="0"/&gt;
+     &lt;/xsd:sequence&gt;
+     &lt;xsd:attribute name="name" type="xsd:token" use="required"/&gt;
+     &lt;xsd:attribute name="class" type="xsd:token"/&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="injectType"&gt;
+     &lt;xsd:simpleContent&gt;
+       &lt;xsd:extension base="xsd:token"&gt;
+         &lt;xsd:attribute name="bean" type="xsd:token" use="required"/&gt;
+         &lt;xsd:attribute name="property" type="xsd:token"/&gt;
+       &lt;/xsd:extension&gt;
+     &lt;/xsd:simpleContent&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="constructorType"&gt;
+     &lt;xsd:sequence&gt;
+       &lt;xsd:element name="parameter" type="parameterType" maxOccurs="unbounded" minOccurs="0"/&gt;
+       &lt;xsd:element name="factory" type="factoryType" maxOccurs="1" minOccurs="0"/&gt;
+     &lt;/xsd:sequence&gt;
+     &lt;xsd:attribute name="factoryMethod" type="xsd:token"/&gt;
+     &lt;xsd:attribute name="factoryClass" type="xsd:token"/&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="factoryType"&gt;
+     &lt;xsd:attribute name="bean" type="xsd:token"/&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="mapType"&gt;
+     &lt;xsd:sequence&gt;
+       &lt;xsd:element name="entry" type="entryType" maxOccurs="unbounded" minOccurs="0"/&gt;
+     &lt;/xsd:sequence&gt;
+     &lt;xsd:attribute name="class" type="xsd:token"/&gt;
+     &lt;xsd:attribute name="keyClass" type="xsd:token" use="required"/&gt;
+     &lt;xsd:attribute name="valueClass" type="xsd:token" use="required"/&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="entryType"&gt;
+     &lt;xsd:sequence&gt;
+       &lt;xsd:element name="key" type="keyType"/&gt;
+       &lt;xsd:element name="value" type="valueType"/&gt;
+     &lt;/xsd:sequence&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="setType"&gt;
+     &lt;xsd:sequence&gt;
+       &lt;xsd:element name="value" type="valueType" maxOccurs="unbounded" minOccurs="0"/&gt;
+     &lt;/xsd:sequence&gt;
+     &lt;xsd:attribute name="class" type="xsd:token"/&gt;
+     &lt;xsd:attribute name="elementClass" type="xsd:token" use="required"/&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="listType"&gt;
+     &lt;xsd:sequence&gt;
+       &lt;xsd:element name="value" type="valueType" maxOccurs="unbounded" minOccurs="0"/&gt;
+     &lt;/xsd:sequence&gt;
+     &lt;xsd:attribute name="class" type="xsd:token"/&gt;
+     &lt;xsd:attribute name="elementClass" type="xsd:token" use="required"/&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="parameterType" mixed="true"&gt;
+     &lt;xsd:sequence&gt;
+       &lt;xsd:element name="inject" type="injectType" maxOccurs="1" minOccurs="0"/&gt;
+       &lt;xsd:element name="null" type="nullType" maxOccurs="1" minOccurs="0"/&gt;
+     &lt;/xsd:sequence&gt;
+     &lt;xsd:attribute name="class" type="xsd:token"/&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="dependsType"&gt;
+     &lt;xsd:simpleContent&gt;
+       &lt;xsd:extension base="xsd:token"&gt;
+       &lt;/xsd:extension&gt;
+     &lt;/xsd:simpleContent&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="keyType"&gt;
+     &lt;xsd:simpleContent&gt;
+       &lt;xsd:extension base="xsd:token"&gt;
+       &lt;/xsd:extension&gt;
+     &lt;/xsd:simpleContent&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="valueType"&gt;
+     &lt;xsd:simpleContent&gt;
+       &lt;xsd:extension base="xsd:token"&gt;
+       &lt;/xsd:extension&gt;
+     &lt;/xsd:simpleContent&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="thisType"/&gt;
+
+   &lt;xsd:complexType name="nullType"/&gt;
+
+   &lt;xsd:complexType name="installType"&gt;
+     &lt;xsd:attribute name="method" type="xsd:token"/&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="uninstallType"&gt;
+     &lt;xsd:attribute name="method" type="xsd:token"/&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="incallbackType"&gt;
+     &lt;xsd:attribute name="method" type="xsd:token"/&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="uncallbackType"&gt;
+     &lt;xsd:attribute name="method" type="xsd:token"/&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="ignoreCreateType"/&gt;
+
+   &lt;xsd:complexType name="ignoreStartType"/&gt;
+
+   &lt;xsd:complexType name="ignoreStopType"/&gt;
+
+   &lt;xsd:complexType name="ignoreDestroyType"/&gt;
+
+   &lt;xsd:element name="deployment"&gt;
+     &lt;xsd:complexType&gt;
+       &lt;xsd:sequence&gt;
+         &lt;xsd:element name="bean" type="beanType" maxOccurs="unbounded" minOccurs="0"/&gt;
+       &lt;/xsd:sequence&gt;
+     &lt;/xsd:complexType&gt;
+   &lt;/xsd:element&gt;
+
+&lt;/xsd:schema&gt;
+
+ 
+    </pre></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="troubleshooting.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="index.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="examples.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;13.&nbsp;Troubleshooting&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Appendix&nbsp;B.&nbsp;Examples</td></tr></table></div></body></html>
