@@ -259,7 +259,7 @@ public final class HotDeployer implements HotDeployerMBean, Runnable
             }
 
             if (postDeploy)
-               kernel.postDeploy();
+               kernel.postDeploy(true);
             
             long took = System.currentTimeMillis() - start;
             long sleep = interval * 1000L - took;

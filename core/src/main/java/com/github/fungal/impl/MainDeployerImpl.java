@@ -74,17 +74,18 @@ public final class MainDeployerImpl implements Cloneable, MainDeployerImplMBean
     */
    public synchronized void deploy(URL url) throws Throwable
    {
-      deploy(url, kernel.getKernelClassLoader());
+      deploy(url, true, kernel.getKernelClassLoader());
    }
 
    /**
     * Deploy
     * @param url The URL for the deployment
+    * @param deployerPhases Run DeployerPhases hooks
     * @param classLoader The parent class loader for the deployment
     * @exception Throwable If an error occurs
     */
    @SuppressWarnings("unchecked")
-   public synchronized void deploy(URL url, ClassLoader classLoader) throws Throwable
+   public synchronized void deploy(URL url, boolean deployerPhases, ClassLoader classLoader) throws Throwable
    {
       if (url == null)
          throw new IllegalArgumentException("URL is null");
@@ -151,6 +152,9 @@ public final class MainDeployerImpl implements Cloneable, MainDeployerImplMBean
       boolean done = false;
       int copySize = copy.size();
 
+      if (deployerPhases)
+         kernel.preDeploy(true);
+
       for (int i = 0; !done && i < copySize; i++)
       {
          Deployer deployer = copy.get(i);
@@ -164,6 +168,9 @@ public final class MainDeployerImpl implements Cloneable, MainDeployerImplMBean
                done = true;
          }
       }
+
+      if (deployerPhases)
+         kernel.postDeploy(true);
    }
 
    /**
@@ -178,7 +185,13 @@ public final class MainDeployerImpl implements Cloneable, MainDeployerImplMBean
 
       Deployment deployment = kernel.getDeployment(url);
       if (deployment != null)
+      {
+         kernel.preUndeploy(true);
+
          unregisterDeployment(deployment);
+
+         kernel.postUndeploy(true);
+      }
    }
 
    /**

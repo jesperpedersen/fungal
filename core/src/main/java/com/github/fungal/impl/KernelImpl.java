@@ -387,7 +387,7 @@ public class KernelImpl implements Kernel
       }
 
       // PreDeploy
-      preDeploy();
+      preDeploy(false);
 
       // Deploy all files in system/
       if (systemDirectory != null && systemDirectory.exists() && systemDirectory.isDirectory())
@@ -489,7 +489,7 @@ public class KernelImpl implements Kernel
       }
 
       // PostDeploy
-      postDeploy();
+      postDeploy(false);
 
       // Remote access
       if (kernelConfiguration.isRemoteAccess())
@@ -627,6 +627,9 @@ public class KernelImpl implements Kernel
          remote.stop();
       }
 
+      // PreUndeploy
+      preUndeploy(false);      
+
       // Shutdown all deployments
       if (deployments.size() > 0)
       {
@@ -641,6 +644,9 @@ public class KernelImpl implements Kernel
             shutdownDeployment(deployment);
          }
       }
+
+      // PostUndeploy
+      // We are removing all deployments including all DeployerPhases beans => no postUndeploy call
 
       // Remove kernel bean
       removeBean("Kernel");
@@ -1189,8 +1195,10 @@ public class KernelImpl implements Kernel
 
    /**
     * Pre deploy
+    * @param delegate True if any exception should be delegated
+    * @exception Throwable Thrown if there is an error and delegate is true
     */
-   void preDeploy()
+   void preDeploy(boolean delegate) throws Throwable
    {
       if (newDeployerPhasesBeans.size() > 0)
       {
@@ -1202,22 +1210,33 @@ public class KernelImpl implements Kernel
       {
          DeployerPhases bean = (DeployerPhases)getBean(beanName);
 
-         try
+         if (bean != null && getBeanStatus(beanName) == ServiceLifecycle.STARTED)
          {
-            if (bean != null && getBeanStatus(beanName) == ServiceLifecycle.STARTED)
+            if (delegate)
+            {
                bean.preDeploy();
-         }
-         catch (Throwable t)
-         {
-            log.log(Level.WARNING, t.getMessage(), t);
+            }
+            else
+            {
+               try
+               {
+                  bean.preDeploy();
+               }
+               catch (Throwable t)
+               {
+                  log.log(Level.WARNING, t.getMessage(), t);
+               }
+            }
          }
       }
    }
 
    /**
     * Post deploy
+    * @param delegate True if any exception should be delegated
+    * @exception Throwable Thrown if there is an error and delegate is true
     */
-   void postDeploy()
+   void postDeploy(boolean delegate) throws Throwable
    {
       if (newDeployerPhasesBeans.size() > 0)
       {
@@ -1229,56 +1248,87 @@ public class KernelImpl implements Kernel
       {
          DeployerPhases bean = (DeployerPhases)getBean(beanName);
 
-         try
+         if (bean != null && getBeanStatus(beanName) == ServiceLifecycle.STARTED)
          {
-            if (bean != null && getBeanStatus(beanName) == ServiceLifecycle.STARTED)
+            if (delegate)
+            {
                bean.postDeploy();
-         }
-         catch (Throwable t)
-         {
-            log.log(Level.WARNING, t.getMessage(), t);
+            }
+            else
+            {
+               try
+               {
+                  bean.postDeploy();
+               }
+               catch (Throwable t)
+               {
+                  log.log(Level.WARNING, t.getMessage(), t);
+               }
+            }
          }
       }
    }
 
    /**
     * Pre undeploy
+    * @param delegate True if any exception should be delegated
+    * @exception Throwable Thrown if there is an error and delegate is true
     */
-   void preUndeploy()
+   void preUndeploy(boolean delegate) throws Throwable
    {
       for (String beanName : deployerPhasesBeans)
       {
          DeployerPhases bean = (DeployerPhases)getBean(beanName);
 
-         try
+         if (bean != null && getBeanStatus(beanName) == ServiceLifecycle.STARTED)
          {
-            if (bean != null && getBeanStatus(beanName) == ServiceLifecycle.STARTED)
+            if (delegate)
+            {
                bean.preUndeploy();
-         }
-         catch (Throwable t)
-         {
-            log.log(Level.WARNING, t.getMessage(), t);
+            }
+            else
+            {
+               try
+               {
+                  bean.preUndeploy();
+               }
+               catch (Throwable t)
+               {
+                  log.log(Level.WARNING, t.getMessage(), t);
+               }
+            }
          }
       }
    }
 
    /**
     * Post undeploy
+    * @param delegate True if any exception should be delegated
+    * @exception Throwable Thrown if there is an error and delegate is true
     */
-   void postUndeploy()
+   void postUndeploy(boolean delegate) throws Throwable
    {
       for (String beanName : deployerPhasesBeans)
       {
          DeployerPhases bean = (DeployerPhases)getBean(beanName);
 
-         try
+         if (bean != null && getBeanStatus(beanName) == ServiceLifecycle.STARTED)
          {
-            if (bean != null && getBeanStatus(beanName) == ServiceLifecycle.STARTED)
+            if (delegate)
+            {
                bean.postUndeploy();
-         }
-         catch (Throwable t)
-         {
-            log.log(Level.WARNING, t.getMessage(), t);
+            }
+            else
+            {
+               try
+               {
+                  bean.postUndeploy();
+               }
+               catch (Throwable t)
+               {
+                  log.log(Level.WARNING, t.getMessage(), t);
+               }
+            }
          }
       }
    }
@@ -1331,7 +1381,7 @@ public class KernelImpl implements Kernel
 
          try
          {
-            deployer.deploy(url, classLoader);
+            deployer.deploy(url, false, classLoader);
          }
          catch (Throwable t)
          {
