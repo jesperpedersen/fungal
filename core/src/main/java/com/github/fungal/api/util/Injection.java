@@ -20,6 +20,7 @@
 
 package com.github.fungal.api.util;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Locale;
@@ -223,7 +224,15 @@ public class Injection
          String defaultValue = "";
          if (dv == -1)
          {
-            systemProperty = SecurityActions.getSystemProperty(input.substring(from + 2, to));
+            String s = input.substring(from + 2, to);
+            if (!s.equals("/"))
+            {
+               systemProperty = SecurityActions.getSystemProperty(s);
+            }
+            else
+            {
+               systemProperty = File.separator;
+            }
          }
          else
          {
