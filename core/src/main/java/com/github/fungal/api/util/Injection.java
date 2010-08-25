@@ -208,7 +208,7 @@ public class Injection
       if (input == null || input.trim().equals(""))
          return input;
 
-      if (input.indexOf("${") != -1)
+      while (input.indexOf("${") != -1)
       {
          int from = input.indexOf("${");
          int to = input.indexOf("}");
@@ -254,11 +254,11 @@ public class Injection
 
          if (systemProperty != null && !systemProperty.trim().equals(""))
          {
-            return prefix + systemProperty + postfix;
+            input = prefix + systemProperty + postfix;
          }
          else if (defaultValue != null && !defaultValue.trim().equals(""))
          {
-            return prefix + defaultValue + postfix;
+            input = prefix + defaultValue + postfix;
          }
       }
       return input;
