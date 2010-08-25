@@ -225,13 +225,17 @@ public class Injection
          if (dv == -1)
          {
             String s = input.substring(from + 2, to);
-            if (!s.equals("/"))
+            if ("/".equals(s))
             {
-               systemProperty = SecurityActions.getSystemProperty(s);
+               systemProperty = File.separator;
+            }
+            else if (":".equals(s))
+            {
+               systemProperty = File.pathSeparator;
             }
             else
             {
-               systemProperty = File.separator;
+               systemProperty = SecurityActions.getSystemProperty(s);
             }
          }
          else
