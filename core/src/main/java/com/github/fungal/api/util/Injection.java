@@ -211,7 +211,13 @@ public class Injection
       {
          int from = input.indexOf("${");
          int to = input.indexOf("}");
-         int dv = input.indexOf(":");
+         int dv = input.indexOf(":", from + 2);
+
+         if (dv != -1)
+         {
+            if (dv > to)
+               dv = -1;
+         }
          
          String systemProperty = "";
          String defaultValue = "";
