@@ -4,7 +4,7 @@
   <artifactId>fungal</artifactId>
   <packaging>jar</packaging>
   <name>Fungal</name>
-  <version>0.8.0.RC2</version>
+  <version>0.8.0.RC3</version>
   <description>A POJO kernel</description>
   <licenses>
     <license>
