@@ -135,8 +135,8 @@ public int getOrder();
         deployments.</para>
 
       <para>The Fungal kernel can deploy the archives in the <code>deploy</code> directory in parallel if specified
-        by the <code>KernelConfiguration.parallelDeploy()</code> method. Otherwise are all the deployment units
-        booted in sequence as defined by the <code>File.listFiles()</code> method.</para>
+        by the <code>KernelConfiguration.parallelDeploy()</code> method. The archives are scheduled for
+        deployment in the order defined by the <code>DeploymentOrder</code> class specified in the configuration.</para>
 
       <para>The Fungal kernel features a hot deployer, which scans the deployment directory at the specified
         intervals for new, changed or removed deployment units. The properties of the hot deployer can

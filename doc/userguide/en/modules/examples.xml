@@ -38,7 +38,7 @@
  ]]>
     </programlisting>
 
-    <para>Create an instance of <code>MyBean</code> using selecting its <code>String</code> constructor.</para>
+    <para>Create an instance of <code>MyBean</code> selecting its <code>String</code> constructor.</para>
 
     <programlisting>
 <![CDATA[
@@ -53,7 +53,7 @@
  ]]>
     </programlisting>
 
-    <para>Create an instance of <code>MyBean</code> using selecting its <code>String</code> constructor
+    <para>Create an instance of <code>MyBean</code> selecting its <code>String</code> constructor
       and passing in <code>null</code>.</para>
 
     <programlisting>

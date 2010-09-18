@@ -14,13 +14,15 @@ ${&lt;name&gt;.home}/config/bootstrap.xml
 
       <para>The layout of bootstrap.xml is defined in</para>
       <programlisting>
-${&lt;name&gt;.home}/config/bootstrap.xsd
+bootstrap.xsd
       </programlisting>
+
+      <para>file.</para>
 
       <para>The</para>
 
       <programlisting>
-${&lt;name&gt;.home}/config/deployment.xsd
+deployment.xsd
       </programlisting>
 
       <para>file defines how bean deployments are constructed.</para>
@@ -125,7 +127,7 @@ ${jboss.jca.host:localhost}
  &lt;/bean&gt;
       </programlisting>
 
-      <para>See more examples of bean configuration in the "Examples" appendix.</para>
+      <para>See more examples of bean configuration in the 'Examples' appendix.</para>
 
    </section>
 

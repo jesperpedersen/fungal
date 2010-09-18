@@ -70,6 +70,8 @@ kernelConfiguration.bindAddress("localhost");
 kernelConfiguration.classLoader(ClassLoaderFactory.PARENT_FIRST);
         </programlisting>
 
+        <para>See the chapter 'Classloading' for additional information.</para>
+
       </section>
 
       <section id="kernel_configuration_command">
@@ -82,6 +84,8 @@ kernelConfiguration.classLoader(ClassLoaderFactory.PARENT_FIRST);
         <programlisting>
 kernelConfiguration.command(new ShutdownCommand());
         </programlisting>
+
+        <para>See the chapter 'Remote Communication' for additional information.</para>
 
       </section>
 
@@ -108,6 +112,8 @@ kernelConfiguration.configuration("config");
         <programlisting>
 kernelConfiguration.deploy("deploy");
         </programlisting>
+        
+        <para>Disable this functionality by passing <code>null</code> to the method.</para>
 
       </section>
 
@@ -120,7 +126,7 @@ kernelConfiguration.deploy("deploy");
 
         <para>An example</para>
         <programlisting>
-kernelConfiguration.deploymentOrder(deploymentOrder);
+kernelConfiguration.deploymentOrder(new MyDeploymentOrder());
         </programlisting>
 
       </section>
@@ -250,6 +256,8 @@ kernelConfiguration.remotePort(1202);
         <programlisting>
 kernelConfiguration.system("system");
         </programlisting>
+
+        <para>Disable this functionality by passing <code>null</code> to the method.</para>
 
       </section>
 

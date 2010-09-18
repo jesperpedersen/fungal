@@ -8,10 +8,10 @@
      <title>Standalone environments</title>
    
      <para>The Fungal kernel provides the foundation for standalone Java environments
-       where it enables deployment of the services which makes up those environments.</para>
+       where it enables deployment of the services which represents those environments.</para>
 
      <para>The Fungal kernel should be deployed as part of the application classloader for
-       the application. This is typically done by bundling all the classes Fungal that makes
+       the application. This is typically done by bundling all the Fungal classes that makes
        up the kernel.</para>
 
      <para>The bundle would also include the main class for the environment, which sets up the
