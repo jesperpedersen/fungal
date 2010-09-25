@@ -32,9 +32,9 @@
        ================================= -->
   <property name="name" value="fungal"/>
   <property name="major" value="0"/>
-  <property name="minor" value="8"/>
+  <property name="minor" value="9"/>
   <property name="patch" value="0"/>
-  <property name="type" value="GA"/>
+  <property name="type" value="Beta1"/>
 
   <!-- ================================= 
        Repositories              
