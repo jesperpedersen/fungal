@@ -6,12 +6,36 @@
 &lt;!--
    Bootstrap XML Schema
 --&gt;
-&lt;xsd:schema xmlns:boot="http://fungal.github.com/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+&lt;xsd:schema xmlns:boot="http://jesperpedersen.github.com/fungal/schema" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+
+   &lt;xsd:complexType name="serversType"&gt;
+     &lt;xsd:sequence&gt;
+       &lt;xsd:element name="server" type="xsd:token" maxOccurs="unbounded" minOccurs="1"/&gt;
+     &lt;/xsd:sequence&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="dependenciesType"&gt;
+     &lt;xsd:sequence&gt;
+       &lt;xsd:element name="dependency" type="dependencyType" maxOccurs="unbounded" minOccurs="1"/&gt;
+     &lt;/xsd:sequence&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="dependencyType"&gt;
+     &lt;xsd:sequence&gt;
+       &lt;xsd:element name="groupId" type="xsd:token"/&gt;
+       &lt;xsd:element name="artifactId" type="xsd:token"/&gt;
+       &lt;xsd:element name="version" type="xsd:token"/&gt;
+       &lt;xsd:element name="type" type="xsd:token" default="jar" maxOccurs="1" minOccurs="0"/&gt;
+     &lt;/xsd:sequence&gt;
+     &lt;xsd:attribute name="target" type="xsd:token" default="lib"/&gt;
+   &lt;/xsd:complexType&gt;
 
    &lt;xsd:element name="bootstrap"&gt;
      &lt;xsd:complexType&gt;
        &lt;xsd:sequence&gt;
          &lt;xsd:element name="url" type="xsd:token" maxOccurs="unbounded" minOccurs="0"/&gt;
+         &lt;xsd:element name="servers" type="serversType" maxOccurs="1" minOccurs="0"/&gt;
+         &lt;xsd:element name="dependencies" type="dependenciesType" maxOccurs="1" minOccurs="0"/&gt;
        &lt;/xsd:sequence&gt;
      &lt;/xsd:complexType&gt;
    &lt;/xsd:element&gt;
@@ -24,7 +48,7 @@
 &lt;!--
    Deployment XML Schema
 --&gt;
-&lt;xsd:schema xmlns:deployment="http://fungal.github.com/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+&lt;xsd:schema xmlns:deployment="http://jesperpedersen.github.com/fungal/schema" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
 
    &lt;xsd:complexType name="beanType"&gt;
      &lt;xsd:sequence&gt;
