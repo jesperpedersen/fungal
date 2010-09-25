@@ -35,8 +35,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
-import java.util.logging.Logger;
-
 
 /**
  * An utility for JAR type files
@@ -44,8 +42,6 @@ import java.util.logging.Logger;
  */
 public class FileUtil
 {
-   private static Logger log = Logger.getLogger(FileUtil.class.getName());
-
    /**
     * Constructor
     */
@@ -68,7 +64,7 @@ public class FileUtil
          throw new IllegalArgumentException("Target is null");
 
       if (target.exists())
-         recursiveDelete(target);
+         delete(target);
 
       Manifest manifest = null;
 
@@ -96,7 +92,7 @@ public class FileUtil
       }
       else
       {
-         log.fine("No META-INF/MANIFEST.MF found; creating one");
+         // No META-INF/MANIFEST.MF found; creating one
          manifest = new Manifest();
       }
 
@@ -180,7 +176,7 @@ public class FileUtil
       File target = new File(directory, file.getName());
 
       if (target.exists())
-         recursiveDelete(target);
+         delete(target);
 
       if (!target.mkdirs())
          throw new IOException("Could not create " + target);
@@ -265,11 +261,105 @@ public class FileUtil
    }
 
    /**
+    * Copy
+    * @param src The source
+    * @param dest The destination
+    * @exception IOException Thrown if a file could not be deleted
+    */
+   public void copy(File src, File dest) throws IOException
+   {
+      if (src == null)
+         throw new IllegalArgumentException("Src is null");
+
+      if (dest == null)
+         throw new IllegalArgumentException("Dest is null");
+
+      if (!src.exists())
+         throw new IOException("Source doesn't exist: " + src.getAbsolutePath());
+
+      if (!src.canRead())
+         throw new IOException("Source can't be read: " + src.getAbsolutePath());
+
+      if (src.isDirectory())
+      {
+         if (!dest.exists())
+         {
+            if (!dest.mkdirs())
+               throw new IOException("Could not create directory: " + dest.getAbsolutePath());
+         }
+          
+         String list[] = src.list();
+         for (int i = 0; i < list.length; i++)
+         {
+            File srcFile = new File(src, list[i]);
+            File destFile = new File(dest, list[i]); 
+            copy(srcFile, destFile);
+         }
+      }
+      else
+      {
+         InputStream in = null;
+         OutputStream out = null;
+
+         byte[] buffer = new byte[8192];
+
+         int bytesRead;
+
+         try
+         {
+            in =  new BufferedInputStream(new FileInputStream(src), 8192);
+            out = new BufferedOutputStream(new FileOutputStream(dest), 8192);
+
+            while ((bytesRead = in.read(buffer)) >= 0)
+            {
+               out.write(buffer, 0, bytesRead);
+            }
+
+            out.flush();
+         }
+         catch (IOException e)
+         {
+            IOException wrapper = new IOException("Unable to copy file: " +
+                                                  src.getAbsolutePath() + " to " + dest.getAbsolutePath());
+            wrapper.initCause(e);
+            wrapper.setStackTrace(e.getStackTrace());
+            throw wrapper;
+         }
+         finally
+         {
+            if (in != null)
+            {
+               try
+               {
+                  in.close();
+               }
+               catch (IOException ioe)
+               {
+                  // Ignore
+               }
+            }
+
+            if (out != null)
+            {
+               try
+               {
+                  out.close();
+               }
+               catch (IOException ioe)
+               {
+                  // Ignore
+               }
+            }
+         }
+      }
+   }
+
+   /**
     * Recursive delete
     * @param f The file handler
     * @exception IOException Thrown if a file could not be deleted
     */
-   public void recursiveDelete(File f) throws IOException
+   public void delete(File f) throws IOException
    {
       if (f != null && f.exists())
       {
@@ -280,7 +370,7 @@ public class FileUtil
             {
                if (files[i].isDirectory())
                {
-                  recursiveDelete(files[i]);
+                  delete(files[i]);
                } 
                else
                {
@@ -301,16 +391,7 @@ public class FileUtil
     */
    private List<File> findEntries(File root)
    {
-      try
-      {
-         return getListing(root, root);
-      }
-      catch (Exception e)
-      {
-         log.severe(e.getMessage());
-      }
-
-      return null;
+      return getListing(root, root);
    }
 
    /**
@@ -318,16 +399,16 @@ public class FileUtil
     * @param root The root directory
     * @param directory The current directory
     * @return The list of files
-    * @exception Exception Thrown if an error occurs
     */
-   private List<File> getListing(File root, File directory) throws Exception 
+   private List<File> getListing(File root, File directory)
    {
-      List<File> result = new ArrayList<File>();
-
+      List<File> result = null;
       File[] filesAndDirs = directory.listFiles();
 
       if (filesAndDirs != null)
       {
+         result = new ArrayList<File>(filesAndDirs.length);
+
          for (File file : filesAndDirs) 
          {
             if (file.isDirectory()) 
