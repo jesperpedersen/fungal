@@ -2,7 +2,7 @@
 <!--
    Deployment XML Schema
 -->
-<xsd:schema xmlns:deployment="http://fungal.github.com/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<xsd:schema xmlns:deployment="http://jesperpedersen.github.com/fungal/schema" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 
    <xsd:complexType name="beanType">
      <xsd:sequence>

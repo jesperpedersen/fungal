@@ -28,6 +28,8 @@ import com.github.fungal.api.deployer.MainDeployer;
 import com.github.fungal.api.events.Event;
 import com.github.fungal.api.events.EventListener;
 import com.github.fungal.api.remote.Command;
+import com.github.fungal.bootstrap.Bootstrap;
+import com.github.fungal.impl.netboot.Netboot;
 import com.github.fungal.impl.remote.CommunicationServer;
 import com.github.fungal.impl.remote.commands.Deploy;
 import com.github.fungal.impl.remote.commands.GetCommand;
@@ -83,7 +85,7 @@ public class KernelImpl implements Kernel
    private static boolean trace = false;
 
    /** Version information */
-   private static final String VERSION = "Fungal 0.8.0";
+   private static final String VERSION = "Fungal 0.9.0.Beta1";
 
    /** Kernel configuration */
    private KernelConfiguration kernelConfiguration;
@@ -246,6 +248,7 @@ public class KernelImpl implements Kernel
 
       File libDirectory = null;
       File configDirectory = null;
+      File repositoryDirectory = null;
       File systemDirectory = null;
       File deployDirectory = null;
 
@@ -256,6 +259,9 @@ public class KernelImpl implements Kernel
 
          if (kernelConfiguration.getConfiguration() != null)
             configDirectory = new File(root, File.separator + kernelConfiguration.getConfiguration() + File.separator);
+
+         if (kernelConfiguration.getRepository() != null)
+            repositoryDirectory = new File(root, File.separator + kernelConfiguration.getRepository() + File.separator);
 
          if (kernelConfiguration.getSystem() != null)
             systemDirectory = new File(root, File.separator + kernelConfiguration.getSystem() + File.separator);
@@ -275,6 +281,21 @@ public class KernelImpl implements Kernel
 
       oldClassLoader = SecurityActions.getThreadContextClassLoader();
 
+      // Setup bootstrap
+      Bootstrap bootstrap = null;
+      if (configDirectory != null && configDirectory.exists() && configDirectory.isDirectory())
+      {
+         File bootstrapXml = new File(configDirectory, "bootstrap.xml");
+
+         if (bootstrapXml != null && bootstrapXml.exists())
+         {
+            com.github.fungal.bootstrap.Unmarshaller bootstrapU = 
+               new com.github.fungal.bootstrap.Unmarshaller();
+            bootstrap = bootstrapU.unmarshal(bootstrapXml.toURI().toURL());
+         }
+      }
+
+      // Setup kernel classloader
       URL[] libUrls = getUrls(libDirectory);
       URL[] confUrls = getUrls(configDirectory);
 
@@ -282,6 +303,24 @@ public class KernelImpl implements Kernel
 
       kernelClassLoader = ClassLoaderFactory.create(kernelConfiguration.getClassLoader(), urls, oldClassLoader);
       SecurityActions.setThreadContextClassLoader(kernelClassLoader);
+
+      initKernelLogging();
+
+      // Netboot
+      boolean netbooted = false;
+      if (bootstrap != null)
+         netbooted = Netboot.resolve(getExecutorService(), bootstrap, repositoryDirectory, root);
+
+      if (netbooted)
+      {
+         libUrls = getUrls(libDirectory);
+         confUrls = getUrls(configDirectory);
+
+         urls = mergeUrls(libUrls, confUrls);
+
+         kernelClassLoader = ClassLoaderFactory.create(kernelConfiguration.getClassLoader(), urls, kernelClassLoader);
+         SecurityActions.setThreadContextClassLoader(kernelClassLoader);
+      }
 
       // POST_CLASSLOADER
       if (els != null && els.size() > 0)
@@ -291,8 +330,6 @@ public class KernelImpl implements Kernel
             el.event(this, Event.POST_CLASSLOADER);
          }
       }
-
-      initKernelLogging();
 
       if (kernelConfiguration.getBindAddress() != null)
       {
@@ -356,35 +393,21 @@ public class KernelImpl implements Kernel
       }
 
       // Start all URLs defined in bootstrap.xml
-      if (configDirectory != null && configDirectory.exists() && configDirectory.isDirectory())
+      if (bootstrap != null)
       {
-         File bootstrapXml = new File(configDirectory, "bootstrap.xml");
+         beanDeployments = new AtomicInteger(bootstrap.getUrl().size());
 
-         if (bootstrapXml != null && bootstrapXml.exists())
+         List<URL> bootstrapUrls = new ArrayList<URL>(bootstrap.getUrl().size());
+
+         for (String url : bootstrap.getUrl())
          {
-            com.github.fungal.bootstrap.Unmarshaller bootstrapU = 
-               new com.github.fungal.bootstrap.Unmarshaller();
-            com.github.fungal.bootstrap.Bootstrap bootstrap = bootstrapU.unmarshal(bootstrapXml.toURI().toURL());
-
-            // Bootstrap urls
-            if (bootstrap != null)
-            {
-               beanDeployments = new AtomicInteger(bootstrap.getUrl().size());
-
-               List<URL> bootstrapUrls = new ArrayList<URL>(bootstrap.getUrl().size());
-
-               for (String url : bootstrap.getUrl())
-               {
-                  URL fullPath = new URL(configDirectory.toURI().toURL().toExternalForm() + url);
-                  bootstrapUrls.add(fullPath);
-               }
-
-               deployUrls(bootstrapUrls.toArray(new URL[bootstrapUrls.size()]));
-            }
-
-            incallback();
+            URL fullPath = new URL(configDirectory.toURI().toURL().toExternalForm() + url);
+            bootstrapUrls.add(fullPath);
          }
+
+         deployUrls(bootstrapUrls.toArray(new URL[bootstrapUrls.size()]));
       }
+      incallback();
 
       // PreDeploy
       preDeploy(false);
@@ -662,10 +685,12 @@ public class KernelImpl implements Kernel
       }
 
       // Release MBeanServer
-      MBeanServerFactory.releaseMBeanServer(mbeanServer);
+      if (mbeanServer != null)
+         MBeanServerFactory.releaseMBeanServer(mbeanServer);
 
       // Shutdown thread pool
-      threadPoolExecutor.shutdown();
+      if (threadPoolExecutor != null)
+         threadPoolExecutor.shutdown();
 
       // Cleanup temporary environment
       if (temporaryEnvironment)
@@ -677,7 +702,14 @@ public class KernelImpl implements Kernel
       }
 
       // Log shutdown
-      log.info(VERSION + " stopped");
+      if (log != null)
+      {
+         log.info(VERSION + " stopped");
+      }
+      else
+      {
+         System.out.println(VERSION + " stopped");
+      }
 
       // Shutdown kernel class loader
       if (kernelClassLoader != null)

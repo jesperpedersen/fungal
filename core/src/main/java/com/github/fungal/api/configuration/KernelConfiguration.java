@@ -59,6 +59,9 @@ public class KernelConfiguration
    /** Deploy */
    private String deploy;
 
+   /** Repository */
+   private String repository;
+
    /** Do parallel deployment in deploy */
    private boolean parallelDeploy;
 
@@ -101,6 +104,7 @@ public class KernelConfiguration
       configuration = "config";
       system = "system";
       deploy = "deploy";
+      repository = "repository";
       parallelDeploy = true;
       bindAddress = null;
       threadGroup = null;
@@ -258,6 +262,27 @@ public class KernelConfiguration
    public String getDeploy()
    {
       return deploy;
+   }
+
+   /**
+    * Set the repository directory; default <code>repository</code>
+    * @param value The value
+    * @return The configuration
+    */
+   public KernelConfiguration repository(String value)
+   {
+      this.repository = value;
+
+      return this;
+   }
+
+   /**
+    * Get the repository directory
+    * @return The value
+    */
+   public String getRepository()
+   {
+      return repository;
    }
 
    /**

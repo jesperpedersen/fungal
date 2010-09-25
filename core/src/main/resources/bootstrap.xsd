@@ -2,12 +2,36 @@
 <!--
    Bootstrap XML Schema
 -->
-<xsd:schema xmlns:boot="http://fungal.github.com/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<xsd:schema xmlns:boot="http://jesperpedersen.github.com/fungal/schema" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+   <xsd:complexType name="serversType">
+     <xsd:sequence>
+       <xsd:element name="server" type="xsd:token" maxOccurs="unbounded" minOccurs="1"/>
+     </xsd:sequence>
+   </xsd:complexType>
+
+   <xsd:complexType name="dependenciesType">
+     <xsd:sequence>
+       <xsd:element name="dependency" type="dependencyType" maxOccurs="unbounded" minOccurs="1"/>
+     </xsd:sequence>
+   </xsd:complexType>
+
+   <xsd:complexType name="dependencyType">
+     <xsd:sequence>
+       <xsd:element name="groupId" type="xsd:token"/>
+       <xsd:element name="artifactId" type="xsd:token"/>
+       <xsd:element name="version" type="xsd:token"/>
+       <xsd:element name="type" type="xsd:token" default="jar" maxOccurs="1" minOccurs="0"/>
+     </xsd:sequence>
+     <xsd:attribute name="target" type="xsd:token" default="lib"/>
+   </xsd:complexType>
 
    <xsd:element name="bootstrap">
      <xsd:complexType>
        <xsd:sequence>
          <xsd:element name="url" type="xsd:token" maxOccurs="unbounded" minOccurs="0"/>
+         <xsd:element name="servers" type="serversType" maxOccurs="1" minOccurs="0"/>
+         <xsd:element name="dependencies" type="dependenciesType" maxOccurs="1" minOccurs="0"/>
        </xsd:sequence>
      </xsd:complexType>
    </xsd:element>

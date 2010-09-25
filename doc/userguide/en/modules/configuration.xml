@@ -246,6 +246,19 @@ kernelConfiguration.remotePort(1202);
 
       </section>
 
+      <section id="kernel_configuration_repository">
+        <title><code>repository</code></title>
+
+        <para>The <code>repository</code> parameter specifies the repository directory for the environment where
+          all netboot dependencies are downloaded to under <code>home</code>.</para>
+
+        <para>An example</para>
+        <programlisting>
+kernelConfiguration.repository("repository");
+        </programlisting>
+        
+      </section>
+
       <section id="kernel_configuration_system">
         <title><code>system</code></title>
 

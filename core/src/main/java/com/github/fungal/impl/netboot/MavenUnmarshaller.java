@@ -18,7 +18,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.github.fungal.bootstrap;
+package com.github.fungal.impl.netboot;
+
+import com.github.fungal.bootstrap.DependencyType;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -27,21 +29,23 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.JarURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 /**
- * Unmarshaller for bootstrap.xml
+ * Unmarshaller for a Maven POM XML file
  * @author <a href="mailto:jesper.pedersen@comcast.net">Jesper Pedersen</a>
  */
-public class Unmarshaller
+public class MavenUnmarshaller
 {
    /**
     * Constructor
     */
-   public Unmarshaller()
+   public MavenUnmarshaller()
    {
    }
 
@@ -51,15 +55,15 @@ public class Unmarshaller
     * @return The result
     * @exception IOException If an I/O error occurs
     */
-   public Bootstrap unmarshal(URL url) throws IOException
+   public List<DependencyType> unmarshal(URL url) throws IOException
    {
       if (url == null)
-         throw new IllegalArgumentException("URL is null");
+         throw new IllegalArgumentException("File is null");
 
       InputStream is = null;
       try
       {
-         Bootstrap bootstrap = new Bootstrap();
+         List<DependencyType> result = new ArrayList<DependencyType>(1);
 
          if ("file".equals(url.getProtocol()))
          {
@@ -89,7 +93,7 @@ public class Unmarshaller
          {
             xmlInputFactory = XMLInputFactory.newInstance();
          }
-
+        
          XMLStreamReader xmlStreamReader = xmlInputFactory.createXMLStreamReader(is);
 
          while (xmlStreamReader.hasNext())
@@ -100,25 +104,15 @@ public class Unmarshaller
             {
                case XMLStreamReader.START_ELEMENT :
 
-                  if ("url".equals(xmlStreamReader.getLocalName()))
-                  {
-                     bootstrap.getUrl().add(readUrl(xmlStreamReader));
-                  }
-                  else if ("servers".equals(xmlStreamReader.getLocalName()))
-                  {
-                     bootstrap.setServers(readServers(xmlStreamReader));
-                  }
-                  else if ("dependencies".equals(xmlStreamReader.getLocalName()))
-                  {
-                     bootstrap.setDependencies(readDependencies(xmlStreamReader));
-                  }
+                  if ("dependency".equals(xmlStreamReader.getLocalName()))
+                     result.add(readDependency(xmlStreamReader));
 
                   break;
                default :
             }
          }
 
-         return bootstrap;
+         return result;
       }
       catch (Throwable t)
       {
@@ -139,144 +133,10 @@ public class Unmarshaller
    }
 
    /**
-    * Read: <url>
-    * @param xmlStreamReader The XML stream
-    * @return The result
-    * @exception XMLStreamException Thrown if an error occurs
-    */
-   private String readUrl(XMLStreamReader xmlStreamReader) throws XMLStreamException
-   {
-      String result = null;
-
-      int eventCode = xmlStreamReader.next();
-
-      while (eventCode != XMLStreamReader.END_ELEMENT)
-      {
-         switch (eventCode)
-         {
-            case XMLStreamReader.CHARACTERS :
-               result = xmlStreamReader.getText();
-               break;
-            default : 
-         }
-         eventCode = xmlStreamReader.next();
-      }
-
-      if (!"url".equals(xmlStreamReader.getLocalName()))
-         throw new XMLStreamException("url tag not completed");
-
-      return result;
-   }
-
-   /**
-    * Read: <servers>
-    * @param xmlStreamReader The XML stream
-    * @return The result
-    * @exception XMLStreamException Thrown if an error occurs
-    */
-   private ServersType readServers(XMLStreamReader xmlStreamReader) throws XMLStreamException
-   {
-      ServersType result = new ServersType();
-
-      int eventCode = xmlStreamReader.next();
-
-      while (eventCode != XMLStreamReader.END_ELEMENT)
-      {
-         switch (eventCode)
-         {
-            case XMLStreamReader.START_ELEMENT :
-               String name = xmlStreamReader.getLocalName();
-
-               if ("server".equals(name))
-                  result.getServer().add(readServer(xmlStreamReader));
-
-               break;
-            default :
-         }
-
-         eventCode = xmlStreamReader.next();
-      }
-
-      if (!"servers".equals(xmlStreamReader.getLocalName()))
-         throw new XMLStreamException("servers tag not completed");
-
-      return result;
-   }
-
-   /**
-    * Read: <server>
-    * @param xmlStreamReader The XML stream
-    * @return The result
-    * @exception XMLStreamException Thrown if an error occurs
-    */
-   private String readServer(XMLStreamReader xmlStreamReader) throws XMLStreamException
-   {
-      String result = null;
-
-      int eventCode = xmlStreamReader.next();
-
-      while (eventCode != XMLStreamReader.END_ELEMENT)
-      {
-         switch (eventCode)
-         {
-            case XMLStreamReader.CHARACTERS :
-               if (!xmlStreamReader.getText().trim().equals(""))
-                  result = xmlStreamReader.getText().trim();
-
-               break;
-
-            default :
-         }
-
-         eventCode = xmlStreamReader.next();
-      }
-
-      if (!"server".equals(xmlStreamReader.getLocalName()))
-         throw new XMLStreamException("server tag not completed");
-
-      return result;
-   }
-
-   /**
-    * Read: <dependencies>
-    * @param xmlStreamReader The XML stream
-    * @return The result
-    * @exception XMLStreamException Thrown if an error occurs
-    */
-   private DependenciesType readDependencies(XMLStreamReader xmlStreamReader) throws XMLStreamException
-   {
-      DependenciesType result = new DependenciesType();
-
-      int eventCode = xmlStreamReader.next();
-
-      while (eventCode != XMLStreamReader.END_ELEMENT)
-      {
-         switch (eventCode)
-         {
-            case XMLStreamReader.START_ELEMENT :
-               String name = xmlStreamReader.getLocalName();
-
-               if ("dependency".equals(name))
-                  result.getDependency().add(readDependency(xmlStreamReader));
-
-               break;
-            default :
-         }
-
-         eventCode = xmlStreamReader.next();
-      }
-
-      if (!"dependencies".equals(xmlStreamReader.getLocalName()))
-         throw new XMLStreamException("dependencies tag not completed");
-
-      return result;
-   }
-
-   /**
     * Read: <dependency>
     * @param xmlStreamReader The XML stream
-    * @return The result
-    * @exception XMLStreamException Thrown if an error occurs
+    * @return The dependency
+    * @exception XMLStreamException Thrown if an exception occurs
     */
    private DependencyType readDependency(XMLStreamReader xmlStreamReader) throws XMLStreamException
    {
@@ -306,6 +166,10 @@ public class Unmarshaller
                {
                   result.setType(readString(xmlStreamReader));
                }
+               else
+               {
+                  ignoreTag(xmlStreamReader);
+               }
 
                break;
             default :
@@ -315,7 +179,7 @@ public class Unmarshaller
       }
 
       if (!"dependency".equals(xmlStreamReader.getLocalName()))
-         throw new XMLStreamException("dependency tag not completed");
+         throw new XMLStreamException("dependency tag not completed", xmlStreamReader.getLocation());
 
       return result;
    }
@@ -349,5 +213,20 @@ public class Unmarshaller
       }
 
       return result;
+   }
+
+   /**
+    * Ignore a tag
+    * @param xmlStreamReader The XML stream
+    * @exception XMLStreamException Thrown if an exception occurs
+    */
+   private void ignoreTag(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   {
+      int eventCode = xmlStreamReader.next();
+
+      while (eventCode != XMLStreamReader.END_ELEMENT)
+      {
+         eventCode = xmlStreamReader.next();
+      }
    }
 }

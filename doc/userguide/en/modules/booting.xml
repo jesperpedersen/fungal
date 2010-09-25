@@ -131,4 +131,48 @@ ${jboss.jca.host:localhost}
 
    </section>
 
+   <section id="booting_netboot">
+     <title>Using netboot</title>
+
+     <para>The Fungal kernel support resolving and downloading remote libraries and deployments
+       to its local installation. This feature allows the developer to create a minimal setup
+       and have the rest of the environment hosted on a remote server.</para>
+
+     <para>The netboot feature is activated by specifying which servers to contact and which
+       dependencies that should be downloaded and installed. This is done in the <code>bootstrap.xml</code>
+       file.</para>
+
+     <para>An example:</para>
+     <programlisting>
+<![CDATA[
+<bootstrap>
+  <url>bootstrap/startup.xml</url>
+  <servers>
+    <server>http://repository.acme.com/maven2</server>
+  </servers>
+  <dependencies>
+    <dependency>
+      <groupId>com.acme.project</groupId>
+      <artifactId>project-lib</artifactId>
+      <version>1.0.0</version>
+      <type>jar</type>
+    </dependency>
+  </dependencies>
+</bootstrap>
+ ]]>
+     </programlisting>
+
+     <para>will download <code>http://repository.acme.com/maven2/com/acme/project/project-lib/1.0.0/project-lib-1.0.0.jar</code>
+       and install it under <code>lib/project-lib.jar</code>.</para>
+
+     <para>The <code>target</code> attribute on the <code>dependency</code> decides where the dependency
+       is installed. The default value is <code>lib</code> - e.g. install the dependency in the <code>lib</code>
+       directory and activate it in the kernel classloader.</para>
+
+     <para>The netboot features supports the Apache Maven layout.</para>
+
+     <para>The netboot sequence is executed before the <code>POST_CLASSLOADER</code> event.</para>
+
+   </section>
+
 </chapter>
