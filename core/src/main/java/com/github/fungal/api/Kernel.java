@@ -58,7 +58,7 @@ public interface Kernel
 
    /**
     * Get a deployment unit
-    * @param url The unique URL for a deployment
+    * @param deployment The unique URL for a deployment
     * @return The deployment unit; <code>null</code> if no unit is found
     */
    public Deployment getDeployment(URL deployment);
