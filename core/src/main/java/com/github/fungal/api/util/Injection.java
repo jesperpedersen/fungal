@@ -21,6 +21,7 @@
 package com.github.fungal.api.util;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Locale;
@@ -49,6 +50,7 @@ public class Injection
     * @exception IllegalAccessException If the property method cannot be accessed
     * @exception InvocationTargetException If the property method cannot be executed
     */
+   @SuppressWarnings("unchecked")
    public void inject(String propertyType, String propertyName, String propertyValue, Object object)
       throws NoSuchMethodException, IllegalAccessException, InvocationTargetException
    {
@@ -143,8 +145,17 @@ public class Injection
       }
       else
       {
-         throw new IllegalArgumentException("Unknown property type: " + propertyType + " for " +
-                                            "property " + propertyName);
+         try
+         {
+            parameterClass = Class.forName(propertyType, true, object.getClass().getClassLoader());
+            Constructor constructor = parameterClass.getConstructor(String.class);
+            parameterValue = constructor.newInstance(substituredValue);
+         }
+         catch (Throwable t)
+         {
+            throw new IllegalArgumentException("Unknown property type: " + propertyType + " for " +
+                                               "property " + propertyName);
+         }
       }
 
       Method method = null;
@@ -189,6 +200,11 @@ public class Injection
          else if (parameterClass.equals(Character.class))
          {
             parameterClass = char.class;
+         }
+         else
+         {
+            throw new IllegalArgumentException("Unknown property type: " + propertyType + " for " +
+                                               "property " + propertyName);
          }
 
          method = object.getClass().getMethod(methodName, parameterClass);
