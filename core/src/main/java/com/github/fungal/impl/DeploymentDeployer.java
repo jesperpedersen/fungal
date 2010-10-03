@@ -44,6 +44,7 @@ import com.github.fungal.spi.deployers.Deployer;
 import com.github.fungal.spi.deployers.DeployerPhases;
 import com.github.fungal.spi.deployers.Deployment;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -905,6 +906,26 @@ public final class DeploymentDeployer implements CloneableDeployer
          {
             return Class.forName(s, true, cl);
          }
+
+         // Try String constructor
+         try
+         {
+            Constructor constructor = clz.getConstructor(String.class);
+            return constructor.newInstance(s);
+         }
+         catch (Throwable t)
+         {
+            // Try static String valueOf method
+            try
+            {
+               Method valueOf = clz.getMethod("valueOf", String.class);
+               return valueOf.invoke((Object)null, s);
+            }
+            catch (Throwable inner)
+            {
+               // Ok - give up
+            }
+         }
          
          throw new Exception("Unknown class " + clz.getName() + " for " + s);
       }
@@ -1104,17 +1125,35 @@ public final class DeploymentDeployer implements CloneableDeployer
          if (input == null || input.trim().equals(""))
             return input;
 
-         if (input.indexOf("${") != -1)
+         while (input.indexOf("${") != -1)
          {
             int from = input.indexOf("${");
             int to = input.indexOf("}");
-            int dv = input.indexOf(":");
+            int dv = input.indexOf(":", from + 2);
+
+            if (dv != -1)
+            {
+               if (dv > to)
+                  dv = -1;
+            }
          
             String systemProperty = "";
             String defaultValue = "";
             if (dv == -1)
             {
-               systemProperty = SecurityActions.getSystemProperty(input.substring(from + 2, to));
+               String s = input.substring(from + 2, to);
+               if ("/".equals(s))
+               {
+                  systemProperty = File.separator;
+               }
+               else if (":".equals(s))
+               {
+                  systemProperty = File.pathSeparator;
+               }
+               else
+               {
+                  systemProperty = SecurityActions.getSystemProperty(s);
+               }
             }
             else
             {
@@ -1136,11 +1175,11 @@ public final class DeploymentDeployer implements CloneableDeployer
 
             if (systemProperty != null && !systemProperty.trim().equals(""))
             {
-               return prefix + systemProperty + postfix;
+               input = prefix + systemProperty + postfix;
             }
             else if (defaultValue != null && !defaultValue.trim().equals(""))
             {
-               return prefix + defaultValue + postfix;
+               input = prefix + defaultValue + postfix;
             }
          }
          return input;
