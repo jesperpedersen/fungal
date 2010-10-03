@@ -85,7 +85,7 @@ public class KernelImpl implements Kernel
    private static boolean trace = false;
 
    /** Version information */
-   private static final String VERSION = "Fungal 0.9.0.Beta1";
+   private static final String VERSION = "Fungal 0.9.0.Beta2";
 
    /** Kernel configuration */
    private KernelConfiguration kernelConfiguration;
