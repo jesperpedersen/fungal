@@ -24,11 +24,14 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.management.Attribute;
 import javax.management.AttributeList;
@@ -97,8 +100,8 @@ public class JMX
     * @param obj The object
     * @param description The description for the object
     * @param descriptions Descriptions for the attributes and operations on the object
-    * @param excludeAttributes A set of attributes that should be excluded from the management facade
-    * @param excludeOperations A set of operations that should be excluded from the management facade
+    * @param excludeAttributes A set of attributes specified by regular expressions that should be excluded from the management facade
+    * @param excludeOperations A set of operations specified by regular expressions that should be excluded from the management facade
     * @return The management facade for the object
     * @exception SecurityException Thrown if there isn't sufficient permissions
     */
@@ -146,6 +149,28 @@ public class JMX
 
          List<MBeanAttributeInfo> attrs = new ArrayList<MBeanAttributeInfo>();
          List<MBeanOperationInfo> ops = new ArrayList<MBeanOperationInfo>();
+         Set<Pattern> attributePatterns = null;
+         Set<Pattern> operationPatterns = null;
+
+         if (excludeAttributes != null)
+         {
+            attributePatterns = new HashSet<Pattern>(excludeAttributes.size());
+            for (String pattern : excludeAttributes)
+            {
+               Pattern p = Pattern.compile(pattern);
+               attributePatterns.add(p);
+            }
+         }
+
+         if (excludeOperations != null)
+         {
+            operationPatterns = new HashSet<Pattern>(excludeOperations.size());
+            for (String pattern : excludeOperations)
+            {
+               Pattern p = Pattern.compile(pattern);
+               operationPatterns.add(p);
+            }
+         }
 
          Method[] methods = instance.getClass().getMethods();
          for (Method method : methods)
@@ -159,13 +184,13 @@ public class JMX
 
                boolean include = true;
 
-               if (excludeAttributes != null)
+               if (attributePatterns != null)
                {
-                  Iterator<String> it = excludeAttributes.iterator();
+                  Iterator<Pattern> it = attributePatterns.iterator();
                   while (include && it.hasNext())
                   {
-                     String s = it.next();
-                     if (name.equalsIgnoreCase(s))
+                     Pattern p = it.next();
+                     if (p.matcher(name).matches())
                         include = false;
                   }
                }
@@ -204,13 +229,13 @@ public class JMX
                   String name = method.getName();
                   boolean include = true;
 
-                  if (excludeOperations != null)
+                  if (operationPatterns != null)
                   {
-                     Iterator<String> it = excludeOperations.iterator();
+                     Iterator<Pattern> it = operationPatterns.iterator();
                      while (include && it.hasNext())
                      {
-                        String s = it.next();
-                        if (name.equalsIgnoreCase(s))
+                        Pattern p = it.next();
+                        if (p.matcher(name).matches())
                            include = false;
                      }
                   }
