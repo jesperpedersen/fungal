@@ -291,12 +291,46 @@ ant clean cobertura
 &lt;!--
    Bootstrap XML Schema
 --&gt;
-&lt;xsd:schema xmlns:boot="http://jesperpedersen.github.com/fungal/schema" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+&lt;xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            elementFormDefault="qualified"
+            targetNamespace="http://jesperpedersen.github.com/fungal/schema"
+            xmlns="http://jesperpedersen.github.com/fungal/schema"&gt;
+
+   &lt;xsd:complexType name="protocolsType"&gt;
+     &lt;xsd:sequence&gt;
+       &lt;xsd:element name="protocol" type="protocolType" maxOccurs="unbounded" minOccurs="1"/&gt;
+     &lt;/xsd:sequence&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="protocolType"&gt;
+     &lt;xsd:sequence&gt;
+       &lt;xsd:element name="property" type="propertyType" maxOccurs="unbounded" minOccurs="0"/&gt;
+     &lt;/xsd:sequence&gt;
+     &lt;xsd:attribute name="id" type="xsd:token"/&gt;
+     &lt;xsd:attribute name="class-name" type="xsd:token"/&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="propertyType" mixed="true"&gt;
+     &lt;xsd:simpleContent&gt;
+       &lt;xsd:extension base="xsd:token"&gt;
+         &lt;xsd:attribute name="name" type="xsd:token"/&gt;
+       &lt;/xsd:extension&gt;
+     &lt;/xsd:simpleContent&gt;
+   &lt;/xsd:complexType&gt;
 
    &lt;xsd:complexType name="serversType"&gt;
      &lt;xsd:sequence&gt;
-       &lt;xsd:element name="server" type="xsd:token" maxOccurs="unbounded" minOccurs="1"/&gt;
+       &lt;xsd:element name="server" type="serverType" maxOccurs="unbounded" minOccurs="1"/&gt;
      &lt;/xsd:sequence&gt;
+   &lt;/xsd:complexType&gt;
+
+   &lt;xsd:complexType name="serverType" mixed="true"&gt;
+     &lt;xsd:simpleContent&gt;
+       &lt;xsd:extension base="xsd:token"&gt;
+         &lt;xsd:attribute name="protocol" type="xsd:token"/&gt;
+         &lt;xsd:attribute name="pattern" type="xsd:token"/&gt;
+       &lt;/xsd:extension&gt;
+     &lt;/xsd:simpleContent&gt;
    &lt;/xsd:complexType&gt;
 
    &lt;xsd:complexType name="dependenciesType"&gt;
@@ -307,10 +341,12 @@ ant clean cobertura
 
    &lt;xsd:complexType name="dependencyType"&gt;
      &lt;xsd:sequence&gt;
-       &lt;xsd:element name="groupId" type="xsd:token"/&gt;
-       &lt;xsd:element name="artifactId" type="xsd:token"/&gt;
-       &lt;xsd:element name="version" type="xsd:token"/&gt;
-       &lt;xsd:element name="type" type="xsd:token" default="jar" maxOccurs="1" minOccurs="0"/&gt;
+       &lt;xsd:element name="organisation" type="xsd:token"/&gt;
+       &lt;xsd:element name="module" type="xsd:token" maxOccurs="1" minOccurs="0"/&gt;
+       &lt;xsd:element name="artifact" type="xsd:token"/&gt;
+       &lt;xsd:element name="revision" type="xsd:token"/&gt;
+       &lt;xsd:element name="classifier" type="xsd:token" maxOccurs="1" minOccurs="0"/&gt;
+       &lt;xsd:element name="ext" type="xsd:token" default="jar" maxOccurs="1" minOccurs="0"/&gt;
      &lt;/xsd:sequence&gt;
      &lt;xsd:attribute name="target" type="xsd:token" default="lib"/&gt;
    &lt;/xsd:complexType&gt;
@@ -319,6 +355,7 @@ ant clean cobertura
      &lt;xsd:complexType&gt;
        &lt;xsd:sequence&gt;
          &lt;xsd:element name="url" type="xsd:token" maxOccurs="unbounded" minOccurs="0"/&gt;
+         &lt;xsd:element name="protocols" type="protocolsType" maxOccurs="1" minOccurs="0"/&gt;
          &lt;xsd:element name="servers" type="serversType" maxOccurs="1" minOccurs="0"/&gt;
          &lt;xsd:element name="dependencies" type="dependenciesType" maxOccurs="1" minOccurs="0"/&gt;
        &lt;/xsd:sequence&gt;

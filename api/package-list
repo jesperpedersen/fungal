@@ -6,3 +6,4 @@ com.github.fungal.api.events
 com.github.fungal.api.remote
 com.github.fungal.api.util
 com.github.fungal.spi.deployers
+com.github.fungal.spi.netboot
