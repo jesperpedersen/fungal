@@ -104,6 +104,10 @@ public class Unmarshaller
                   {
                      bootstrap.getUrl().add(readUrl(xmlStreamReader));
                   }
+                  else if ("protocols".equals(xmlStreamReader.getLocalName()))
+                  {
+                     bootstrap.setProtocols(readProtocols(xmlStreamReader));
+                  }
                   else if ("servers".equals(xmlStreamReader.getLocalName()))
                   {
                      bootstrap.setServers(readServers(xmlStreamReader));
@@ -169,6 +173,132 @@ public class Unmarshaller
    }
 
    /**
+    * Read: <protocols>
+    * @param xmlStreamReader The XML stream
+    * @return The result
+    * @exception XMLStreamException Thrown if an error occurs
+    */
+   private ProtocolsType readProtocols(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   {
+      ProtocolsType result = new ProtocolsType();
+
+      int eventCode = xmlStreamReader.next();
+
+      while (eventCode != XMLStreamReader.END_ELEMENT)
+      {
+         switch (eventCode)
+         {
+            case XMLStreamReader.START_ELEMENT :
+               String name = xmlStreamReader.getLocalName();
+
+               if ("protocol".equals(name))
+                  result.getProtocol().add(readProtocol(xmlStreamReader));
+
+               break;
+            default :
+         }
+
+         eventCode = xmlStreamReader.next();
+      }
+
+      if (!"protocols".equals(xmlStreamReader.getLocalName()))
+         throw new XMLStreamException("protocols tag not completed");
+
+      return result;
+   }
+
+   /**
+    * Read: <protocol>
+    * @param xmlStreamReader The XML stream
+    * @return The result
+    * @exception XMLStreamException Thrown if an error occurs
+    */
+   private ProtocolType readProtocol(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   {
+      ProtocolType result = new ProtocolType();
+
+      for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++)
+      {
+         String name = xmlStreamReader.getAttributeLocalName(i);
+         if ("id".equals(name))
+         {
+            result.setId(xmlStreamReader.getAttributeValue(i));
+         }
+         else if ("class-name".equals(name))
+         {
+            result.setClassName(xmlStreamReader.getAttributeValue(i));
+         }
+      }
+
+      int eventCode = xmlStreamReader.next();
+
+      while (eventCode != XMLStreamReader.END_ELEMENT)
+      {
+         switch (eventCode)
+         {
+            case XMLStreamReader.START_ELEMENT :
+               String name = xmlStreamReader.getLocalName();
+
+               if ("property".equals(name))
+                  result.getProperty().add(readProperty(xmlStreamReader));
+
+               break;
+            default :
+         }
+
+         eventCode = xmlStreamReader.next();
+      }
+
+      if (!"protocol".equals(xmlStreamReader.getLocalName()))
+         throw new XMLStreamException("protocol tag not completed");
+
+      return result;
+   }
+
+   /**
+    * Read: <property>
+    * @param xmlStreamReader The XML stream
+    * @return The result
+    * @exception XMLStreamException Thrown if an error occurs
+    */
+   private PropertyType readProperty(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   {
+      PropertyType result = new PropertyType();
+
+      for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++)
+      {
+         String name = xmlStreamReader.getAttributeLocalName(i);
+         if ("name".equals(name))
+         {
+            result.setName(xmlStreamReader.getAttributeValue(i));
+         }
+      }
+
+      int eventCode = xmlStreamReader.next();
+
+      while (eventCode != XMLStreamReader.END_ELEMENT)
+      {
+         switch (eventCode)
+         {
+            case XMLStreamReader.CHARACTERS :
+               if (!xmlStreamReader.getText().trim().equals(""))
+                  result.setValue(xmlStreamReader.getText().trim());
+
+               break;
+
+            default :
+         }
+
+         eventCode = xmlStreamReader.next();
+      }
+
+      if (!"property".equals(xmlStreamReader.getLocalName()))
+         throw new XMLStreamException("property tag not completed");
+
+      return result;
+   }
+
+   /**
     * Read: <servers>
     * @param xmlStreamReader The XML stream
     * @return The result
@@ -209,9 +339,22 @@ public class Unmarshaller
     * @return The result
     * @exception XMLStreamException Thrown if an error occurs
     */
-   private String readServer(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   private ServerType readServer(XMLStreamReader xmlStreamReader) throws XMLStreamException
    {
-      String result = null;
+      ServerType result = new ServerType();
+
+      for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++)
+      {
+         String name = xmlStreamReader.getAttributeLocalName(i);
+         if ("protocol".equals(name))
+         {
+            result.setProtocol(xmlStreamReader.getAttributeValue(i));
+         }
+         else if ("pattern".equals(name))
+         {
+            result.setPattern(xmlStreamReader.getAttributeValue(i));
+         }
+      }
 
       int eventCode = xmlStreamReader.next();
 
@@ -221,7 +364,7 @@ public class Unmarshaller
          {
             case XMLStreamReader.CHARACTERS :
                if (!xmlStreamReader.getText().trim().equals(""))
-                  result = xmlStreamReader.getText().trim();
+                  result.setValue(xmlStreamReader.getText().trim());
 
                break;
 
@@ -282,6 +425,15 @@ public class Unmarshaller
    {
       DependencyType result = new DependencyType();
 
+      for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++)
+      {
+         String name = xmlStreamReader.getAttributeLocalName(i);
+         if ("target".equals(name))
+         {
+            result.setTarget(xmlStreamReader.getAttributeValue(i));
+         }
+      }
+
       int eventCode = xmlStreamReader.next();
 
       while (eventCode != XMLStreamReader.END_ELEMENT)
@@ -290,21 +442,29 @@ public class Unmarshaller
          {
             case XMLStreamReader.START_ELEMENT :
                String name = xmlStreamReader.getLocalName();
-               if ("groupId".equals(name))
+               if ("organisation".equals(name))
                {
-                  result.setGroupId(readString(xmlStreamReader));
+                  result.setOrganisation(readString(xmlStreamReader));
                }
-               else if ("artifactId".equals(name))
+               else if ("module".equals(name))
                {
-                  result.setArtifactId(readString(xmlStreamReader));
+                  result.setModule(readString(xmlStreamReader));
                }
-               else if ("version".equals(name))
+               else if ("artifact".equals(name))
                {
-                  result.setVersion(readString(xmlStreamReader));
+                  result.setArtifact(readString(xmlStreamReader));
                }
-               else if ("type".equals(name))
+               else if ("revision".equals(name))
                {
-                  result.setType(readString(xmlStreamReader));
+                  result.setRevision(readString(xmlStreamReader));
+               }
+               else if ("classifier".equals(name))
+               {
+                  result.setClassifier(readString(xmlStreamReader));
+               }
+               else if ("ext".equals(name))
+               {
+                  result.setExt(readString(xmlStreamReader));
                }
 
                break;

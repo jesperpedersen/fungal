@@ -20,34 +20,57 @@
 
 package com.github.fungal.bootstrap;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * A servers tag
+ * A property tag
  * @author <a href="mailto:jesper.pedersen@comcast.net">Jesper Pedersen</a>
  */
-public class ServersType
+public class PropertyType
 {
-   private List<ServerType> server;
+   private String name;
+   private String value;
 
    /**
     * Constructor
     */
-   public ServersType()
+   public PropertyType()
    {
-      server = null;
+      name = null;
+      value = null;
    }
 
    /**
-    * Get the server
+    * Get the name
     * @return The value
     */
-   public List<ServerType> getServer()
+   public String getName()
    {
-      if (server == null)
-         server = new ArrayList<ServerType>(1);
+      return name;
+   }
 
-      return server;
+   /**
+    * Set the name
+    * @param v The value
+    */
+   public void setName(String v)
+   {
+      name = v;
+   }
+
+   /**
+    * Get the value
+    * @return The value
+    */
+   public String getValue()
+   {
+      return value;
+   }
+
+   /**
+    * Set the value
+    * @param v The value
+    */
+   public void setValue(String v)
+   {
+      value = v;
    }
 }

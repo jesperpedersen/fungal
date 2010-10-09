@@ -24,30 +24,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A servers tag
+ * A protocols tag
  * @author <a href="mailto:jesper.pedersen@comcast.net">Jesper Pedersen</a>
  */
-public class ServersType
+public class ProtocolsType
 {
-   private List<ServerType> server;
+   private List<ProtocolType> protocol;
 
    /**
     * Constructor
     */
-   public ServersType()
+   public ProtocolsType()
    {
-      server = null;
+      protocol = null;
    }
 
    /**
     * Get the server
     * @return The value
     */
-   public List<ServerType> getServer()
+   public List<ProtocolType> getProtocol()
    {
-      if (server == null)
-         server = new ArrayList<ServerType>(1);
+      if (protocol == null)
+         protocol = new ArrayList<ProtocolType>(1);
 
-      return server;
+      return protocol;
    }
 }

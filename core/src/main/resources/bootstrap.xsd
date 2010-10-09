@@ -2,12 +2,46 @@
 <!--
    Bootstrap XML Schema
 -->
-<xsd:schema xmlns:boot="http://jesperpedersen.github.com/fungal/schema" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            elementFormDefault="qualified"
+            targetNamespace="http://jesperpedersen.github.com/fungal/schema"
+            xmlns="http://jesperpedersen.github.com/fungal/schema">
+
+   <xsd:complexType name="protocolsType">
+     <xsd:sequence>
+       <xsd:element name="protocol" type="protocolType" maxOccurs="unbounded" minOccurs="1"/>
+     </xsd:sequence>
+   </xsd:complexType>
+
+   <xsd:complexType name="protocolType">
+     <xsd:sequence>
+       <xsd:element name="property" type="propertyType" maxOccurs="unbounded" minOccurs="0"/>
+     </xsd:sequence>
+     <xsd:attribute name="id" type="xsd:token"/>
+     <xsd:attribute name="class-name" type="xsd:token"/>
+   </xsd:complexType>
+
+   <xsd:complexType name="propertyType" mixed="true">
+     <xsd:simpleContent>
+       <xsd:extension base="xsd:token">
+         <xsd:attribute name="name" type="xsd:token"/>
+       </xsd:extension>
+     </xsd:simpleContent>
+   </xsd:complexType>
 
    <xsd:complexType name="serversType">
      <xsd:sequence>
-       <xsd:element name="server" type="xsd:token" maxOccurs="unbounded" minOccurs="1"/>
+       <xsd:element name="server" type="serverType" maxOccurs="unbounded" minOccurs="1"/>
      </xsd:sequence>
+   </xsd:complexType>
+
+   <xsd:complexType name="serverType" mixed="true">
+     <xsd:simpleContent>
+       <xsd:extension base="xsd:token">
+         <xsd:attribute name="protocol" type="xsd:token"/>
+         <xsd:attribute name="pattern" type="xsd:token"/>
+       </xsd:extension>
+     </xsd:simpleContent>
    </xsd:complexType>
 
    <xsd:complexType name="dependenciesType">
@@ -18,10 +52,12 @@
 
    <xsd:complexType name="dependencyType">
      <xsd:sequence>
-       <xsd:element name="groupId" type="xsd:token"/>
-       <xsd:element name="artifactId" type="xsd:token"/>
-       <xsd:element name="version" type="xsd:token"/>
-       <xsd:element name="type" type="xsd:token" default="jar" maxOccurs="1" minOccurs="0"/>
+       <xsd:element name="organisation" type="xsd:token"/>
+       <xsd:element name="module" type="xsd:token" maxOccurs="1" minOccurs="0"/>
+       <xsd:element name="artifact" type="xsd:token"/>
+       <xsd:element name="revision" type="xsd:token"/>
+       <xsd:element name="classifier" type="xsd:token" maxOccurs="1" minOccurs="0"/>
+       <xsd:element name="ext" type="xsd:token" default="jar" maxOccurs="1" minOccurs="0"/>
      </xsd:sequence>
      <xsd:attribute name="target" type="xsd:token" default="lib"/>
    </xsd:complexType>
@@ -30,6 +66,7 @@
      <xsd:complexType>
        <xsd:sequence>
          <xsd:element name="url" type="xsd:token" maxOccurs="unbounded" minOccurs="0"/>
+         <xsd:element name="protocols" type="protocolsType" maxOccurs="1" minOccurs="0"/>
          <xsd:element name="servers" type="serversType" maxOccurs="1" minOccurs="0"/>
          <xsd:element name="dependencies" type="dependenciesType" maxOccurs="1" minOccurs="0"/>
        </xsd:sequence>

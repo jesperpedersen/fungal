@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.management.Attribute;
@@ -100,8 +99,10 @@ public class JMX
     * @param obj The object
     * @param description The description for the object
     * @param descriptions Descriptions for the attributes and operations on the object
-    * @param excludeAttributes A set of attributes specified by regular expressions that should be excluded from the management facade
-    * @param excludeOperations A set of operations specified by regular expressions that should be excluded from the management facade
+    * @param excludeAttributes A set of attributes specified by regular expressions that 
+    *                          should be excluded from the management facade
+    * @param excludeOperations A set of operations specified by regular expressions that 
+    *                          should be excluded from the management facade
     * @return The management facade for the object
     * @exception SecurityException Thrown if there isn't sufficient permissions
     */

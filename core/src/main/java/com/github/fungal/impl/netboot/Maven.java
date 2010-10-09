@@ -21,26 +21,18 @@
 package com.github.fungal.impl.netboot;
 
 import com.github.fungal.bootstrap.DependencyType;
+import com.github.fungal.bootstrap.ServerType;
+import com.github.fungal.spi.netboot.Protocol;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represent a Maven repository
  */
-public class Maven implements Repository
+public class Maven extends AbstractRepository
 {
    /**
     * Constructor
@@ -52,15 +44,17 @@ public class Maven implements Repository
    /**
     * {@inheritDoc}
     */
-   public List<DependencyType> resolve(List<String> servers,
+   public List<DependencyType> resolve(List<ServerType> servers,
+                                       Map<String, Protocol> protocolMap,
                                        DependencyType dependency,
                                        File repository,
                                        DependencyTracker tracker)
       throws ResolveException
    {
-      if ("pom".equals(dependency.getType()))
+      if ("pom".equals(dependency.getExt()))
       {
          return downloadPom(servers, 
+                            protocolMap,
                             dependency,
                             repository,
                             tracker);
@@ -68,36 +62,21 @@ public class Maven implements Repository
       else
       {
          return downloadArtifact(servers, 
+                                 protocolMap,
                                  dependency,
                                  repository,
                                  tracker);
       }
    }
 
-   /**
-    * {@inheritDoc}
-    */
-   public File getFile(DependencyType dependency, File repository) throws IOException
-   {
-      File f = new File(repository, getPath(dependency));
-      
-      if (f.exists())
-      {
-         return f;
-      }
-
-      throw new IOException("Dependency " + dependency + " doesn't exist in the repository " +
-                            repository.getAbsolutePath());
-
-   }
-
-   private List<DependencyType> downloadPom(List<String> servers,
+   private List<DependencyType> downloadPom(List<ServerType> servers,
+                                            Map<String, Protocol> protocolMap,
                                             DependencyType dependency,
                                             File repository,
                                             DependencyTracker tracker)
       throws ResolveException
    {
-      List<DependencyType> result = downloadArtifact(servers, dependency, repository, tracker);
+      List<DependencyType> result = downloadArtifact(servers, protocolMap, dependency, repository, tracker);
 
       if (result.size() == 0)
          return result;
@@ -114,7 +93,7 @@ public class Maven implements Repository
             while (dit.hasNext())
             {
                DependencyType dep = dit.next();
-               List<DependencyType> l = downloadArtifact(servers, dep, repository, tracker);
+               List<DependencyType> l = downloadArtifact(servers, protocolMap, dep, repository, tracker);
                result.addAll(l);
             }
          }
@@ -125,125 +104,5 @@ public class Maven implements Repository
       {
          throw new ResolveException("The dependency couldn't be parsed", dependency);
       }
-   }
-
-   private List<DependencyType> downloadArtifact(List<String> servers,
-                                                 DependencyType dependency,
-                                                 File repository,
-                                                 DependencyTracker tracker)
-      throws ResolveException
-   {
-      if (tracker.isTracked(dependency))
-         return Collections.emptyList();
-
-      if (!tracker.track(dependency))
-         return Collections.emptyList();
-
-      List<DependencyType> result = getArtifact(repository, dependency);
-
-      if (result != null)
-         return result;
-
-      result = new ArrayList<DependencyType>(1);
-
-      File f = new File(repository, getPath(dependency));
-
-      if (!f.getParentFile().mkdirs())
-         throw new ResolveException(f.getParent() + " couldn't be created");
-
-      boolean redirect = HttpURLConnection.getFollowRedirects();
-      HttpURLConnection.setFollowRedirects(true);
-
-      Iterator<String> it = servers.iterator();
-      while (result.isEmpty() && it.hasNext())
-      {
-         InputStream is = null;
-         OutputStream os = null;
-         try
-         {
-            String server = it.next();
-
-            if (!server.endsWith("/"))
-               server = server + "/";
-
-            URL u = new URL(server + getPath(dependency).replace(File.separatorChar, '/'));
-            URLConnection connection = u.openConnection();
-
-            connection.connect();
-
-            is = new BufferedInputStream(connection.getInputStream(), 8192);
-            os = new BufferedOutputStream(new FileOutputStream(f), 8192);
-
-            int b;
-            while ((b = is.read()) != -1)
-            {
-               os.write(b);
-            }
-
-            os.flush();
-
-            result.add(dependency);
-         }
-         catch (Throwable t)
-         {
-            // Nothing to do - try next server
-         }
-         finally
-         {
-            if (is != null)
-            {
-               try
-               {
-                  is.close();
-               }
-               catch (IOException ignore)
-               {
-                  // Ignore
-               }
-            }
-            if (os != null)
-            {
-               try
-               {
-                  os.close();
-               }
-               catch (IOException ignore)
-               {
-                  // Ignore
-               }
-            }
-         }
-      }
-
-      HttpURLConnection.setFollowRedirects(redirect);
-
-      if (result.isEmpty())
-         throw new ResolveException("The dependency couldn't be resolved", dependency);
-
-      return result;
-   }
-
-   private List<DependencyType> getArtifact(File repository, DependencyType dependency)
-   {
-      File f = new File(repository, getPath(dependency));
-      
-      if (f.exists())
-      {
-         List<DependencyType> l = new ArrayList<DependencyType>(1);
-         l.add(dependency);
-         return l;
-      }
-
-      return null;
-   }
-
-   private String getPath(DependencyType dependency)
-   {
-      String path = dependency.getGroupId().replace('.', File.separatorChar) + File.separatorChar + 
-         dependency.getArtifactId() + File.separatorChar +
-         dependency.getVersion() + File.separatorChar +
-         dependency.getArtifactId() + "-" + dependency.getVersion() + "." + dependency.getType();
-
-      return path;
    }
 }

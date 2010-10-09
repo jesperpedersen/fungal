@@ -18,36 +18,31 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.github.fungal.bootstrap;
+package com.github.fungal.spi.netboot;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.File;
 
 /**
- * A servers tag
+ * The protocol interface for Fungal's netboot functionality.
+ *
+ * Implementations of this interface must have a default constructor, and
+ * its Java bean properties will be injected.
  * @author <a href="mailto:jesper.pedersen@comcast.net">Jesper Pedersen</a>
  */
-public class ServersType
+public interface Protocol extends Cloneable
 {
-   private List<ServerType> server;
+   /**
+    * Download
+    * @param path The path
+    * @param target The target
+    * @return True if artifact downloaded; otherwise false
+    */
+   public boolean download(String path, File target);
 
    /**
-    * Constructor
+    * Clone the protocol implementation
+    * @return A copy of the implementation
+    * @exception CloneNotSupportedException Thrown if the copy operation isn't supported
     */
-   public ServersType()
-   {
-      server = null;
-   }
-
-   /**
-    * Get the server
-    * @return The value
-    */
-   public List<ServerType> getServer()
-   {
-      if (server == null)
-         server = new ArrayList<ServerType>(1);
-
-      return server;
-   }
+   public Protocol clone() throws CloneNotSupportedException;
 }

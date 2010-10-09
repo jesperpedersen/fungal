@@ -29,6 +29,7 @@ import java.util.List;
 public class Bootstrap
 {
    private List<String> url;
+   private ProtocolsType protocols;
    private ServersType servers;
    private DependenciesType dependencies;
 
@@ -38,6 +39,7 @@ public class Bootstrap
    public Bootstrap()
    {
       url = null;
+      protocols = null;
       servers = null;
       dependencies = null;
    }
@@ -52,6 +54,24 @@ public class Bootstrap
          url = new ArrayList<String>(1);
       
       return url;
+   }
+
+   /**
+    * Get the protocols
+    * @return The value
+    */
+   public ProtocolsType getProtocols()
+   {
+      return protocols;
+   }
+
+   /**
+    * Set the protocols
+    * @param v The value
+    */
+   public void setProtocols(ProtocolsType v)
+   {
+      protocols = v;
    }
 
    /**

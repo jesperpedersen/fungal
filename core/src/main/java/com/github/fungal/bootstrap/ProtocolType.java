@@ -24,30 +24,70 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A servers tag
+ * A protocol tag
  * @author <a href="mailto:jesper.pedersen@comcast.net">Jesper Pedersen</a>
  */
-public class ServersType
+public class ProtocolType
 {
-   private List<ServerType> server;
+   private String id;
+   private String className;
+   private List<PropertyType> property;
 
    /**
     * Constructor
     */
-   public ServersType()
+   public ProtocolType()
    {
-      server = null;
+      id = null;
+      className = null;
+      property = null;
    }
 
    /**
-    * Get the server
+    * Get the id
     * @return The value
     */
-   public List<ServerType> getServer()
+   public String getId()
    {
-      if (server == null)
-         server = new ArrayList<ServerType>(1);
+      return id;
+   }
 
-      return server;
+   /**
+    * Set the id
+    * @param v The value
+    */
+   public void setId(String v)
+   {
+      id = v;
+   }
+
+   /**
+    * Get the class name
+    * @return The value
+    */
+   public String getClassName()
+   {
+      return className;
+   }
+
+   /**
+    * Set the class name
+    * @param v The value
+    */
+   public void setClassName(String v)
+   {
+      className = v;
+   }
+
+   /**
+    * Get the property
+    * @return The value
+    */
+   public List<PropertyType> getProperty()
+   {
+      if (property == null)
+         property = new ArrayList<PropertyType>(1);
+
+      return property;
    }
 }

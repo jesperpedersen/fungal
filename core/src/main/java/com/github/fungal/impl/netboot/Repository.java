@@ -21,10 +21,13 @@
 package com.github.fungal.impl.netboot;
 
 import com.github.fungal.bootstrap.DependencyType;
+import com.github.fungal.bootstrap.ServerType;
+import com.github.fungal.spi.netboot.Protocol;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents a repository
@@ -34,13 +37,15 @@ public interface Repository
    /**
     * Resolve a dependency
     * @param servers The servers
+    * @param protocolMap The protocols
     * @param dependency The dependency
     * @param repository The repository for the container
     * @param tracker The dependency tracker
     * @return The list of dependencies downloaded
     * @exception ResolveException Thrown if the dependency can't be resolved
     */
-   public List<DependencyType> resolve(List<String> servers, 
+   public List<DependencyType> resolve(List<ServerType> servers, 
+                                       Map<String, Protocol> protocolMap,
                                        DependencyType dependency, 
                                        File repository,
                                        DependencyTracker tracker)

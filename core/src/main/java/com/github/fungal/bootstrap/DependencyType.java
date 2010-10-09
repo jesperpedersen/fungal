@@ -28,10 +28,12 @@ public class DependencyType
 {
    private String target;
 
-   private String groupId;
-   private String artifactId;
-   private String version;
-   private String type;
+   private String organisation;
+   private String module;
+   private String artifact;
+   private String revision;
+   private String classifier;
+   private String ext;
 
    /**
     * Constructor
@@ -40,10 +42,12 @@ public class DependencyType
    {
       target = "lib";
 
-      groupId = null;
-      artifactId = null;
-      version = null;
-      type = "jar";
+      organisation = "";
+      module = "";
+      artifact = "";
+      revision = "";
+      classifier = "";
+      ext = "jar";
    }
 
    /**
@@ -66,76 +70,120 @@ public class DependencyType
    }
 
    /**
-    * Get the group id
+    * Get the organisation
     * @return The value
     */
-   public String getGroupId()
+   public String getOrganisation()
    {
-      return groupId;
+      return organisation;
    }
 
    /**
-    * Set the group id
+    * Set the organisation
     * @param v The value
     */
-   public void setGroupId(String v)
+   public void setOrganisation(String v)
    {
-      groupId = v;
+      if (v != null && !v.trim().equals(""))
+         organisation = v;
    }
 
    /**
-    * Get the artifact id
+    * Get the module
     * @return The value
     */
-   public String getArtifactId()
+   public String getModule()
    {
-      return artifactId;
+      if (module == null || module.trim().equals(""))
+         return getArtifact();
+
+      return module;
+   }
+
+   /**
+    * Set the module
+    * @param v The value
+    */
+   public void setModule(String v)
+   {
+      if (v != null && !v.trim().equals(""))
+         module = v;
+   }
+
+   /**
+    * Get the artifact
+    * @return The value
+    */
+   public String getArtifact()
+   {
+      return artifact;
    }
 
    /**
     * Set the artifact id
     * @param v The value
     */
-   public void setArtifactId(String v)
-   {
-      artifactId = v;
-   }
-
-   /**
-    * Get the version
-    * @return The value
-    */
-   public String getVersion()
-   {
-      return version;
-   }
-
-   /**
-    * Set the version
-    * @param v The value
-    */
-   public void setVersion(String v)
-   {
-      version = v;
-   }
-
-   /**
-    * Get the type
-    * @return The value
-    */
-   public String getType()
-   {
-      return type;
-   }
-
-   /**
-    * Set the type
-    * @param v The value
-    */
-   public void setType(String v)
+   public void setArtifact(String v)
    {
       if (v != null && !v.trim().equals(""))
-         type = v;
+         artifact = v;
+   }
+
+   /**
+    * Get the revision
+    * @return The value
+    */
+   public String getRevision()
+   {
+      return revision;
+   }
+
+   /**
+    * Set the revision
+    * @param v The value
+    */
+   public void setRevision(String v)
+   {
+      if (v != null && !v.trim().equals(""))
+         revision = v;
+   }
+
+   /**
+    * Get the classifier
+    * @return The value
+    */
+   public String getClassifier()
+   {
+      return classifier;
+   }
+
+   /**
+    * Set the classifier
+    * @param v The value
+    */
+   public void setClassifier(String v)
+   {
+      if (v != null && !v.trim().equals(""))
+         classifier = v;
+   }
+
+   /**
+    * Get the ext
+    * @return The value
+    */
+   public String getExt()
+   {
+      return ext;
+   }
+
+   /**
+    * Set the ext
+    * @param v The value
+    */
+   public void setExt(String v)
+   {
+      if (v != null && !v.trim().equals(""))
+         ext = v;
    }
 
    /**
@@ -157,16 +205,22 @@ public class DependencyType
 
       DependencyType dt = (DependencyType)obj;
 
-      if (!groupId.equals(dt.getGroupId()))
+      if (!organisation.equals(dt.getOrganisation()))
          return false;
 
-      if (!artifactId.equals(dt.getArtifactId()))
+      if (!module.equals(dt.getModule()))
          return false;
 
-      if (!version.equals(dt.getVersion()))
+      if (!artifact.equals(dt.getArtifact()))
          return false;
 
-      if (!type.equals(dt.getType()))
+      if (!revision.equals(dt.getRevision()))
+         return false;
+
+      if (!classifier.equals(dt.getClassifier()))
+         return false;
+
+      if (!ext.equals(dt.getExt()))
          return false;
 
       return true;
@@ -181,10 +235,12 @@ public class DependencyType
    {
       int hash = 7;
 
-      hash += 7 * groupId.hashCode();
-      hash += 7 * artifactId.hashCode();
-      hash += 7 * version.hashCode();
-      hash += 7 * type.hashCode();
+      hash += organisation != null ? 7 * organisation.hashCode() : 3;
+      hash += module != null ? 7 * module.hashCode() : 3;
+      hash += artifact != null ? 7 * artifact.hashCode() : 3;
+      hash += revision != null ? 7 * revision.hashCode() : 3;
+      hash += classifier != null ? 7 * classifier.hashCode() : 3;
+      hash += ext != null ? 7 * ext.hashCode() : 3;
 
       return hash;
    }
@@ -200,10 +256,12 @@ public class DependencyType
 
       sb = sb.append("Dependency[");
 
-      sb = sb.append("GroupId=").append(groupId).append(",");
-      sb = sb.append("ArtifactId=").append(artifactId).append(",");
-      sb = sb.append("Version=").append(version).append(",");
-      sb = sb.append("Type=").append(type);
+      sb = sb.append("Organisation=").append(organisation).append(",");
+      sb = sb.append("Module=").append(module).append(",");
+      sb = sb.append("Artifact=").append(artifact).append(",");
+      sb = sb.append("Revision=").append(revision).append(",");
+      sb = sb.append("Classifier=").append(classifier).append(",");
+      sb = sb.append("Ext=").append(ext);
 
       sb = sb.append("]");
 

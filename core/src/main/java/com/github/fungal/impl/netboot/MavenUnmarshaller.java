@@ -152,19 +152,19 @@ public class MavenUnmarshaller
                String name = xmlStreamReader.getLocalName();
                if ("groupId".equals(name))
                {
-                  result.setGroupId(readString(xmlStreamReader));
+                  result.setOrganisation(readString(xmlStreamReader));
                }
                else if ("artifactId".equals(name))
                {
-                  result.setArtifactId(readString(xmlStreamReader));
+                  result.setArtifact(readString(xmlStreamReader));
                }
                else if ("version".equals(name))
                {
-                  result.setVersion(readString(xmlStreamReader));
+                  result.setRevision(readString(xmlStreamReader));
                }
                else if ("type".equals(name))
                {
-                  result.setType(readString(xmlStreamReader));
+                  result.setExt(readString(xmlStreamReader));
                }
                else
                {
