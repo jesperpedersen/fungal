@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -45,10 +46,20 @@ import javax.management.MBeanParameterInfo;
 import javax.management.ReflectionException;
 
 /**
- * A JMX helper class
+ * This class will create a MBean representation of any POJO object.
+ *
+ * The various methods allows the developer to filter attributes and operations
+ * from the generated dynamic management view.
+ *
+ * Note, that the generated MBean holds a strong reference to the POJO object it represents.
  */
 public class JMX
 {
+   /** GET constant */
+   private static final String GET = "get";
+
+   /** SET constant */
+   private static final String SET = "set";
 
    /**
     * Constructor
@@ -65,7 +76,7 @@ public class JMX
     */
    public static DynamicMBean createMBean(Object obj) throws SecurityException
    {
-      return createMBean(obj, "", null, null, null);
+      return createMBean(obj, "", null, null, null, null);
    }
 
    /**
@@ -77,27 +88,44 @@ public class JMX
     */
    public static DynamicMBean createMBean(Object obj, String description) throws SecurityException
    {
-      return createMBean(obj, description, null, null, null);
+      return createMBean(obj, description, null, null, null, null);
    }
 
    /**
     * Create a MBean representation for the object argument
     * @param obj The object
     * @param description The description for the object
+    * @param writeableAttributes The set of attributes that are writeable specified by regular expressions
+    * @return The management facade for the object
+    * @exception SecurityException Thrown if there isn't sufficient permissions
+    */
+   public static DynamicMBean createMBean(Object obj, String description, Set<String> writeableAttributes) 
+      throws SecurityException
+   {
+      return createMBean(obj, description, writeableAttributes, null, null, null);
+   }
+
+   /**
+    * Create a MBean representation for the object argument
+    * @param obj The object
+    * @param description The description for the object
+    * @param writeableAttributes The set of attributes that are writeable specified by regular expressions
     * @param descriptions Descriptions for the attributes and operations on the object
     * @return The management facade for the object
     * @exception SecurityException Thrown if there isn't sufficient permissions
     */
-   public static DynamicMBean createMBean(Object obj, String description, Map<String, String> descriptions)
+   public static DynamicMBean createMBean(Object obj, String description, 
+                                          Set<String> writeableAttributes, Map<String, String> descriptions)
       throws SecurityException
    {
-      return createMBean(obj, description, descriptions, null, null);
+      return createMBean(obj, description, writeableAttributes, descriptions, null, null);
    }
 
    /**
     * Create a MBean representation for the object argument
     * @param obj The object
     * @param description The description for the object
+    * @param writeableAttributes The set of attributes that are writeable specified by regular expressions
     * @param descriptions Descriptions for the attributes and operations on the object
     * @param excludeAttributes A set of attributes specified by regular expressions that 
     *                          should be excluded from the management facade
@@ -108,6 +136,7 @@ public class JMX
     */
    public static DynamicMBean createMBean(Object obj, 
                                           String description,
+                                          Set<String> writeableAttributes,
                                           Map<String, String> descriptions,
                                           Set<String> excludeAttributes,
                                           Set<String> excludeOperations)
@@ -119,7 +148,8 @@ public class JMX
       if (obj instanceof DynamicMBean)
          return (DynamicMBean)obj;
 
-      return new ManagementDelegator(obj, description, descriptions, excludeAttributes, excludeOperations);
+      return new ManagementDelegator(obj, description, writeableAttributes, 
+                                     descriptions, excludeAttributes, excludeOperations);
    }
 
    /**
@@ -134,6 +164,7 @@ public class JMX
        * Constructor
        * @param instance The object instance
        * @param description The description for the object
+       * @param writeableAttributes The set of attributes that are writeable
        * @param descriptions Descriptions for the attributes and operations on the object
        * @param excludeAttributes A set of attributes that should be excluded from the management facade
        * @param excludeOperations A set of operations that should be excluded from the management facade
@@ -141,6 +172,7 @@ public class JMX
        */
       public ManagementDelegator(Object instance, 
                                  String description,
+                                 Set<String> writeableAttributes,
                                  Map<String, String> descriptions,
                                  Set<String> excludeAttributes,
                                  Set<String> excludeOperations)
@@ -150,8 +182,22 @@ public class JMX
 
          List<MBeanAttributeInfo> attrs = new ArrayList<MBeanAttributeInfo>();
          List<MBeanOperationInfo> ops = new ArrayList<MBeanOperationInfo>();
+         Set<Pattern> writeableAttributePatterns = null;
          Set<Pattern> attributePatterns = null;
          Set<Pattern> operationPatterns = null;
+
+         Map<String, Map<String, Method>> attributeMap = new HashMap<String, Map<String, Method>>();
+         Map<String, Method> operationMap = new HashMap<String, Method>();
+
+         if (writeableAttributes != null)
+         {
+            writeableAttributePatterns = new HashSet<Pattern>(writeableAttributes.size());
+            for (String pattern : writeableAttributes)
+            {
+               Pattern p = Pattern.compile(pattern);
+               writeableAttributePatterns.add(p);
+            }
+         }
 
          if (excludeAttributes != null)
          {
@@ -176,12 +222,50 @@ public class JMX
          Method[] methods = instance.getClass().getMethods();
          for (Method method : methods)
          {
-            if ((method.getName().startsWith("get") || method.getName().startsWith("is")) && 
-                method.getParameterTypes().length == 0 &&
-                !method.getDeclaringClass().equals(Object.class))
+            if (!method.getDeclaringClass().equals(Object.class))
             {
-               String name = method.getName().startsWith("get") ? method.getName().substring(3) :
-                  method.getName().substring(2);
+               if ((method.getName().startsWith("get") || method.getName().startsWith("is")) && 
+                   method.getParameterTypes().length == 0)
+               {
+                  String s = method.getName().startsWith("get") ? method.getName().substring(3) :
+                     method.getName().substring(2);
+
+                  String name = s.substring(0, 1).toUpperCase(Locale.US);
+                  if (s.length() > 1)
+                     name += s.substring(1);
+
+                  boolean include = true;
+
+                  if (attributePatterns != null)
+                  {
+                     Iterator<Pattern> it = attributePatterns.iterator();
+                     while (include && it.hasNext())
+                     {
+                        Pattern p = it.next();
+                        if (p.matcher(name).matches())
+                           include = false;
+                     }
+                  }
+
+                  if (include)
+                  {
+                     Map<String, Method> m = attributeMap.get(name);
+
+                     if (m == null)
+                        m = new HashMap<String, Method>(2);
+
+                     m.put(GET, method);
+                     attributeMap.put(name, m);
+                  }
+               }
+            }
+            else if (method.getName().startsWith("set") && method.getParameterTypes().length == 1)
+            {
+               String s = method.getName().substring(3);
+
+               String name = s.substring(0, 1).toUpperCase(Locale.US);
+               if (s.length() > 1)
+                  name += s.substring(1);
 
                boolean include = true;
 
@@ -198,86 +282,119 @@ public class JMX
 
                if (include)
                {
-                  Method setMethod = null;
-                  try
+                  if (writeableAttributePatterns != null)
                   {
-                     setMethod = instance.getClass().getMethod("set" + name, method.getReturnType());
-                  }
-                  catch (Throwable t)
-                  {
-                     // Ok, no set-method
-                  }
+                     boolean writeable = false;
 
-                  try
-                  {
-                     String desc = "";
-                     if (descriptions != null && descriptions.get(name) != null)
-                        desc = descriptions.get(name);
+                     Iterator<Pattern> it = writeableAttributePatterns.iterator();
+                     while (!writeable && it.hasNext())
+                     {
+                        Pattern p = it.next();
+                        if (p.matcher(name).matches())
+                           writeable = true;
+                     }
 
-                     MBeanAttributeInfo mai = new MBeanAttributeInfo(name, desc, method, setMethod);
-                     attrs.add(mai);
-                  }
-                  catch (Throwable t)
-                  {
-                     // Nothing to do
+                     if (writeable)
+                     {
+                        Map<String, Method> m = attributeMap.get(name);
+
+                        if (m == null)
+                           m = new HashMap<String, Method>(2);
+
+                        m.put(SET, method);
+                        attributeMap.put(name, m);
+                     }
                   }
                }
             }
             else
             {
-               if (!method.getName().startsWith("set") && !method.getDeclaringClass().equals(Object.class))
+               String name = method.getName();
+               boolean include = true;
+
+               if (operationPatterns != null)
                {
-                  String name = method.getName();
-                  boolean include = true;
-
-                  if (operationPatterns != null)
+                  Iterator<Pattern> it = operationPatterns.iterator();
+                  while (include && it.hasNext())
                   {
-                     Iterator<Pattern> it = operationPatterns.iterator();
-                     while (include && it.hasNext())
-                     {
-                        Pattern p = it.next();
-                        if (p.matcher(name).matches())
-                           include = false;
-                     }
-                  }
-
-                  if (include)
-                  {
-                     try
-                     {
-                        String desc = "";
-                        if (descriptions != null && descriptions.get(name) != null)
-                           desc = descriptions.get(name);
-
-                        MBeanParameterInfo[] signature = null;
-
-                        if (method.getParameterTypes().length > 0)
-                        {
-                           signature = new MBeanParameterInfo[method.getParameterTypes().length];
-                           for (int i = 0; i < method.getParameterTypes().length; i++)
-                           {
-                              MBeanParameterInfo pi = new MBeanParameterInfo("p" + (i + 1),
-                                                                             method.getParameterTypes()[i].getName(),
-                                                                             "");
-
-                              signature[i] = pi;
-                           }
-                        }
-
-                        MBeanOperationInfo moi = new MBeanOperationInfo(name,
-                                                                        desc, 
-                                                                        signature,
-                                                                        method.getReturnType().getName(),
-                                                                        MBeanOperationInfo.UNKNOWN);
-
-                        ops.add(moi);
-                     }
-                     catch (Throwable t)
-                     {
-                        // Nothing to do
-                     }
+                     Pattern p = it.next();
+                     if (p.matcher(name).matches())
+                        include = false;
                   }
                }
+
+               if (include)
+               {
+                  operationMap.put(name, method);
+               }
+            }
+         }
+
+         Iterator<Map.Entry<String, Map<String, Method>>> ait = attributeMap.entrySet().iterator();
+         while (ait.hasNext())
+         {
+            Map.Entry<String, Map<String, Method>> entry = ait.next();
+            String name = entry.getKey();
+            Map<String, Method> m = entry.getValue();
+
+            Method getMethod = m.get(GET);
+            Method setMethod = m.get(SET);
+
+            try
+            {
+               String desc = "";
+               if (descriptions != null && descriptions.get(name) != null)
+                  desc = descriptions.get(name);
+            
+               MBeanAttributeInfo mai = new MBeanAttributeInfo(name, desc, getMethod, setMethod);
+               attrs.add(mai);
+            }
+            catch (Throwable t)
+            {
+               // Nothing to do
+            }
+         }
+
+         Iterator<Map.Entry<String, Method>> oit = operationMap.entrySet().iterator();
+         while (oit.hasNext())
+         {
+            Map.Entry<String, Method> entry = oit.next();
+
+            String name = entry.getKey();
+            Method operation = entry.getValue();
+
+            try
+            {
+               String desc = "";
+               if (descriptions != null && descriptions.get(name) != null)
+                  desc = descriptions.get(name);
+
+               MBeanParameterInfo[] signature = null;
+
+               if (operation.getParameterTypes().length > 0)
+               {
+                  signature = new MBeanParameterInfo[operation.getParameterTypes().length];
+                  for (int i = 0; i < operation.getParameterTypes().length; i++)
+                  {
+                     MBeanParameterInfo pi = new MBeanParameterInfo("p" + (i + 1),
+                                                                    operation.getParameterTypes()[i].getName(),
+                                                                    "");
+
+                     signature[i] = pi;
+                  }
+               }
+
+               MBeanOperationInfo moi = new MBeanOperationInfo(name,
+                                                               desc, 
+                                                               signature,
+                                                               operation.getReturnType().getName(),
+                                                               MBeanOperationInfo.UNKNOWN);
+
+               ops.add(moi);
+            }
+            catch (Throwable t)
+            {
+               // Nothing to do
             }
          }
 
@@ -316,11 +433,12 @@ public class JMX
                try
                {
                   Method method = null;
-                  try
+
+                  if (!mai.isIs())
                   {
                      method = instance.getClass().getMethod("get" + name, (Class[])null);
                   }
-                  catch (Throwable t)
+                  else
                   {
                      method = instance.getClass().getMethod("is" + name, (Class[])null);
                   }
@@ -329,7 +447,7 @@ public class JMX
                }
                catch (Exception e)
                {
-                  throw new MBeanException(e, "Exception during setAttribute(" + attribute + ")");
+                  throw new MBeanException(e, "Exception during getAttribute(" + attribute + ")");
                }
             }
          }
@@ -382,31 +500,56 @@ public class JMX
          {
             if (actionName.equals(moi.getName()))
             {
-               try
+               boolean correct = false;
+               
+               if (signature == null && moi.getSignature() == null)
                {
-                  Class[] paramTypes = null;
-
-                  if (signature != null && signature.length > 0)
+                  correct = true;
+               }
+               else if (signature != null && moi.getSignature() != null)
+               {
+                  if (signature.length == moi.getSignature().length)
                   {
-                     List<Class<?>> l = new ArrayList<Class<?>>(signature.length);
+                     correct = true;
 
-                     for (String paramType : signature)
+                     for (int i = 0; correct && i < signature.length; i++)
                      {
-                        Class<?> clz = Class.forName(paramType, true, instance.getClass().getClassLoader());
-                        l.add(clz);
+                        MBeanParameterInfo mpi = moi.getSignature()[i];
+
+                        if (!signature[i].equals(mpi.getType()))
+                           correct = false;
+                     }
+                  }
+               }
+
+               if (correct)
+               {
+                  try
+                  {
+                     Class[] paramTypes = null;
+
+                     if (signature != null && signature.length > 0)
+                     {
+                        List<Class<?>> l = new ArrayList<Class<?>>(signature.length);
+
+                        for (String paramType : signature)
+                        {
+                           Class<?> clz = Class.forName(paramType, true, instance.getClass().getClassLoader());
+                           l.add(clz);
+                        }
+
+                        paramTypes = l.toArray(new Class[l.size()]);
                      }
 
-                     paramTypes = l.toArray(new Class[l.size()]);
+                     Method method = instance.getClass().getMethod(actionName, paramTypes);
+
+                     return method.invoke(instance, params);
                   }
-
-                  Method method = instance.getClass().getMethod(actionName, paramTypes);
-
-                  return method.invoke(instance, params);
-               }
-               catch (Exception e)
-               {
-                  throw new MBeanException(e, "Exception during invoke(" + actionName + ", " +
-                                           params + ", " + signature + ")");
+                  catch (Exception e)
+                  {
+                     throw new MBeanException(e, "Exception during invoke(" + actionName + ", " +
+                                              params + ", " + signature + ")");
+                  }
                }
             }
          }
@@ -435,17 +578,8 @@ public class JMX
             {
                try
                {
-                  Method method = null;
-                  try
-                  {
-                     method = instance.getClass().getMethod("get" + name, (Class[])null);
-                  }
-                  catch (Throwable t)
-                  {
-                     method = instance.getClass().getMethod("is" + name, (Class[])null);
-                  }
-
-                  method = instance.getClass().getMethod("set" + name, new Class[] {method.getReturnType()});
+                  Class<?> type = Class.forName(mai.getType(), true, instance.getClass().getClassLoader());
+                  Method method = instance.getClass().getMethod("set" + name, new Class[] {type});
 
                   method.invoke(instance, new Object[] {attribute.getValue()});
                }
