@@ -20,6 +20,7 @@
 
 package com.github.fungal.api.util;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,8 +51,6 @@ import javax.management.ReflectionException;
  *
  * The various methods allows the developer to filter attributes and operations
  * from the generated dynamic management view.
- *
- * Note, that the generated MBean holds a strong reference to the POJO object it represents.
  */
 public class JMX
 {
@@ -157,7 +156,7 @@ public class JMX
     */
    static class ManagementDelegator implements DynamicMBean
    {
-      private Object instance;
+      private WeakReference<Object> ref;
       private MBeanInfo info;
 
       /**
@@ -178,7 +177,7 @@ public class JMX
                                  Set<String> excludeOperations)
          throws SecurityException
       {
-         this.instance = instance;
+         this.ref = new WeakReference<Object>(instance);
 
          List<MBeanAttributeInfo> attrs = new ArrayList<MBeanAttributeInfo>();
          List<MBeanOperationInfo> ops = new ArrayList<MBeanOperationInfo>();
@@ -222,7 +221,7 @@ public class JMX
          Method[] methods = instance.getClass().getMethods();
          for (Method method : methods)
          {
-            if (!method.getDeclaringClass().equals(Object.class))
+            if (!method.getDeclaringClass().getName().startsWith("java."))
             {
                if ((method.getName().startsWith("get") || method.getName().startsWith("is")) && 
                    method.getParameterTypes().length == 0)
@@ -258,74 +257,74 @@ public class JMX
                      attributeMap.put(name, m);
                   }
                }
-            }
-            else if (method.getName().startsWith("set") && method.getParameterTypes().length == 1)
-            {
-               String s = method.getName().substring(3);
-
-               String name = s.substring(0, 1).toUpperCase(Locale.US);
-               if (s.length() > 1)
-                  name += s.substring(1);
-
-               boolean include = true;
-
-               if (attributePatterns != null)
+               else if (method.getName().startsWith("set") && method.getParameterTypes().length == 1)
                {
-                  Iterator<Pattern> it = attributePatterns.iterator();
-                  while (include && it.hasNext())
-                  {
-                     Pattern p = it.next();
-                     if (p.matcher(name).matches())
-                        include = false;
-                  }
-               }
+                  String s = method.getName().substring(3);
 
-               if (include)
-               {
-                  if (writeableAttributePatterns != null)
-                  {
-                     boolean writeable = false;
+                  String name = s.substring(0, 1).toUpperCase(Locale.US);
+                  if (s.length() > 1)
+                     name += s.substring(1);
 
-                     Iterator<Pattern> it = writeableAttributePatterns.iterator();
-                     while (!writeable && it.hasNext())
+                  boolean include = true;
+
+                  if (attributePatterns != null)
+                  {
+                     Iterator<Pattern> it = attributePatterns.iterator();
+                     while (include && it.hasNext())
                      {
                         Pattern p = it.next();
                         if (p.matcher(name).matches())
-                           writeable = true;
-                     }
-
-                     if (writeable)
-                     {
-                        Map<String, Method> m = attributeMap.get(name);
-
-                        if (m == null)
-                           m = new HashMap<String, Method>(2);
-
-                        m.put(SET, method);
-                        attributeMap.put(name, m);
+                           include = false;
                      }
                   }
-               }
-            }
-            else
-            {
-               String name = method.getName();
-               boolean include = true;
-
-               if (operationPatterns != null)
-               {
-                  Iterator<Pattern> it = operationPatterns.iterator();
-                  while (include && it.hasNext())
+                  
+                  if (include)
                   {
-                     Pattern p = it.next();
-                     if (p.matcher(name).matches())
-                        include = false;
+                     if (writeableAttributePatterns != null)
+                     {
+                        boolean writeable = false;
+
+                        Iterator<Pattern> it = writeableAttributePatterns.iterator();
+                        while (!writeable && it.hasNext())
+                        {
+                           Pattern p = it.next();
+                           if (p.matcher(name).matches())
+                              writeable = true;
+                        }
+
+                        if (writeable)
+                        {
+                           Map<String, Method> m = attributeMap.get(name);
+
+                           if (m == null)
+                              m = new HashMap<String, Method>(2);
+                           
+                           m.put(SET, method);
+                           attributeMap.put(name, m);
+                        }
+                     }
                   }
                }
-
-               if (include)
+               else
                {
-                  operationMap.put(name, method);
+                  String name = method.getName();
+                  boolean include = true;
+                  
+                  if (operationPatterns != null)
+                  {
+                     Iterator<Pattern> it = operationPatterns.iterator();
+                     while (include && it.hasNext())
+                     {
+                        Pattern p = it.next();
+                        if (p.matcher(name).matches())
+                           include = false;
+                     }
+                  }
+                  
+                  if (include)
+                  {
+                     operationMap.put(name, method);
+                  }
                }
             }
          }
@@ -422,6 +421,10 @@ public class JMX
          if (attribute == null)
             throw new AttributeNotFoundException("Invalid attribute name: null");
 
+         Object instance = ref.get();
+         if (instance == null)
+            throw new MBeanException(null, "Instance garbaged collected");
+
          String name = attribute.substring(0, 1).toUpperCase(Locale.US);
          if (attribute.length() > 1)
             name += attribute.substring(1);
@@ -496,6 +499,10 @@ public class JMX
       public Object invoke(String actionName, Object[] params, String[] signature) throws MBeanException,
                                                                                           ReflectionException
       {
+         Object instance = ref.get();
+         if (instance == null)
+            throw new MBeanException(null, "Instance garbaged collected");
+
          for (MBeanOperationInfo moi : info.getOperations())
          {
             if (actionName.equals(moi.getName()))
@@ -567,6 +574,10 @@ public class JMX
       {
          if (attribute == null)
             throw new AttributeNotFoundException("Invalid attribute name: null");
+
+         Object instance = ref.get();
+         if (instance == null)
+            throw new MBeanException(null, "Instance garbaged collected");
 
          String name = attribute.getName().substring(0, 1).toUpperCase(Locale.US);
          if (attribute.getName().length() > 1)
