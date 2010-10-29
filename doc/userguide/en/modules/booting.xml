@@ -152,10 +152,10 @@ ${jboss.jca.host:localhost}
   </servers>
   <dependencies>
     <dependency>
-      <groupId>com.acme.project</groupId>
-      <artifactId>project-lib</artifactId>
-      <version>1.0.0</version>
-      <type>jar</type>
+      <organisation>com.acme.project</organisation>
+      <artifact>project-lib</artifact>
+      <revision>1.0.0</revision>
+      <ext>jar</ext>
     </dependency>
   </dependencies>
 </bootstrap>
@@ -169,7 +169,41 @@ ${jboss.jca.host:localhost}
        is installed. The default value is <code>lib</code> - e.g. install the dependency in the <code>lib</code>
        directory and activate it in the kernel classloader.</para>
 
-     <para>The netboot features supports the Apache Maven layout.</para>
+     <para>The netboot features supports the following configuration parameters:</para>
+
+      <itemizedlist>
+        <listitem>
+          <code>&lt;organisation&gt;</code>
+          <para>The organisation for the artifact</para>
+        </listitem>
+        <listitem>
+          <code>&lt;module&gt;</code>
+          <para>The module name - defaults to <code>artifact</code></para>
+        </listitem>
+        <listitem>
+          <code>&lt;artifact&gt;</code>
+          <para>The artifact name</para>
+        </listitem>
+        <listitem>
+          <code>&lt;revision&gt;</code>
+          <para>The version of the artifact</para>
+        </listitem>
+        <listitem>
+          <code>&lt;classifier&gt;</code>
+          <para>The classifier for the artifact</para>
+        </listitem>
+        <listitem>
+          <code>&lt;ext&gt;</code>
+          <para>The extension of the artifact</para>
+        </listitem>
+      </itemizedlist>
+
+     <para>Using the Apache Maven layout is the default:</para>
+     <programlisting>
+<![CDATA[
+[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier]).[ext]
+ ]]>
+     </programlisting>
 
      <para>The netboot sequence is executed before the <code>POST_CLASSLOADER</code> event.</para>
 
