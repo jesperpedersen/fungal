@@ -40,10 +40,10 @@ ${jboss.jca.host:localhost}
   &lt;/servers&gt;
   &lt;dependencies&gt;
     &lt;dependency&gt;
-      &lt;groupId&gt;com.acme.project&lt;/groupId&gt;
-      &lt;artifactId&gt;project-lib&lt;/artifactId&gt;
-      &lt;version&gt;1.0.0&lt;/version&gt;
-      &lt;type&gt;jar&lt;/type&gt;
+      &lt;organisation&gt;com.acme.project&lt;/organisation&gt;
+      &lt;artifact&gt;project-lib&lt;/artifact&gt;
+      &lt;revision&gt;1.0.0&lt;/revision&gt;
+      &lt;ext&gt;jar&lt;/ext&gt;
     &lt;/dependency&gt;
   &lt;/dependencies&gt;
 &lt;/bootstrap&gt;
@@ -51,4 +51,8 @@ ${jboss.jca.host:localhost}
      </pre><p>will download <tt class="code">http://repository.acme.com/maven2/com/acme/project/project-lib/1.0.0/project-lib-1.0.0.jar</tt>
        and install it under <tt class="code">lib/project-lib.jar</tt>.</p><p>The <tt class="code">target</tt> attribute on the <tt class="code">dependency</tt> decides where the dependency
        is installed. The default value is <tt class="code">lib</tt> - e.g. install the dependency in the <tt class="code">lib</tt>
-       directory and activate it in the kernel classloader.</p><p>The netboot features supports the Apache Maven layout.</p><p>The netboot sequence is executed before the <tt class="code">POST_CLASSLOADER</tt> event.</p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="configuration.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="index.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="lifecycle.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;5.&nbsp;Configuration&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;7.&nbsp;Lifecycle</td></tr></table></div></body></html>
+       directory and activate it in the kernel classloader.</p><p>The netboot features supports the following configuration parameters:</p><div class="itemizedlist"><ul type="disc"><li><tt class="code">&lt;organisation&gt;</tt><p>The organisation for the artifact</p></li><li><tt class="code">&lt;module&gt;</tt><p>The module name - defaults to <tt class="code">artifact</tt></p></li><li><tt class="code">&lt;artifact&gt;</tt><p>The artifact name</p></li><li><tt class="code">&lt;revision&gt;</tt><p>The version of the artifact</p></li><li><tt class="code">&lt;classifier&gt;</tt><p>The classifier for the artifact</p></li><li><tt class="code">&lt;ext&gt;</tt><p>The extension of the artifact</p></li></ul></div><p>Using the Apache Maven layout is the default:</p><pre class="programlisting">
+
+[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier]).[ext]
+ 
+     </pre><p>The netboot sequence is executed before the <tt class="code">POST_CLASSLOADER</tt> event.</p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="configuration.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="index.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="lifecycle.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;5.&nbsp;Configuration&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;7.&nbsp;Lifecycle</td></tr></table></div></body></html>
