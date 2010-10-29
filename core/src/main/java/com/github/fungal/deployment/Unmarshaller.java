@@ -801,8 +801,8 @@ public class Unmarshaller
          eventCode = xmlStreamReader.next();
       }
 
-      if (!"map".equals(xmlStreamReader.getLocalName()))
-         throw new XMLStreamException("map tag not completed", xmlStreamReader.getLocation());
+      if (!"entry".equals(xmlStreamReader.getLocalName()))
+         throw new XMLStreamException("entry tag not completed", xmlStreamReader.getLocation());
 
       return result;
    }
