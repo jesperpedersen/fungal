@@ -1,6 +1,6 @@
 #!/bin/sh
 PWD=`pwd`
-VERSION=0.9.0.Beta4
+VERSION=0.9.0.Beta5
 mvn deploy:deploy-file -Dfile=../../target/fungal.jar -DpomFile=core.xml -Durl=file:$PWD/../../../www/fungal/maven2/
 mvn deploy:deploy-file -Dfile=../../target/fungal-sources.jar -DgeneratePom=false -DgroupId=com.github.fungal -DartifactId=fungal -Dversion=$VERSION -Dclassifier=sources -Dpackaging=jar -Durl=file:$PWD/../../../www/fungal/maven2/
 mvn deploy:deploy-file -Dfile=../../target/fungal-javadoc.jar -DgeneratePom=false -DgroupId=com.github.fungal -DartifactId=fungal -Dversion=$VERSION -Dclassifier=javadoc -Dpackaging=jar -Durl=file:$PWD/../../../www/fungal/maven2/
