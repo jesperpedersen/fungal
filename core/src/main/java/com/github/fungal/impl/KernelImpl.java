@@ -836,7 +836,7 @@ public class KernelImpl implements Kernel
          if (l == null)
          {
             List<CountDownLatch> newList = Collections.synchronizedList(new ArrayList<CountDownLatch>(1));
-            l = beanLatches.putIfAbsent(name, newList);
+            beanLatches.putIfAbsent(name, newList);
          }
       }
       else if (status == ServiceLifecycle.STARTED || status == ServiceLifecycle.ERROR)

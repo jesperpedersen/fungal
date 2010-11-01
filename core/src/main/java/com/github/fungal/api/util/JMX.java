@@ -22,7 +22,9 @@ package com.github.fungal.api.util;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -555,7 +557,7 @@ public class JMX
                   catch (Exception e)
                   {
                      throw new MBeanException(e, "Exception during invoke(" + actionName + ", " +
-                                              params + ", " + signature + ")");
+                                              Arrays.toString(params) + ", " + Arrays.toString(signature) + ")");
                   }
                }
             }
@@ -634,8 +636,10 @@ public class JMX
    /**
     * Comparator for MBeanAttributeInfo sorting
     */
-   static class MBeanAttributeComparator implements Comparator<MBeanAttributeInfo>
+   static class MBeanAttributeComparator implements Comparator<MBeanAttributeInfo>, Serializable
    {
+      private static final long serialVersionUID = 1L;
+
       /**
        * Constructor
        */
@@ -667,7 +671,7 @@ public class JMX
          if (obj == this)
             return true;
 
-         return obj.getClass().equals(MBeanAttributeComparator.class);
+         return obj instanceof MBeanAttributeComparator;
       }
 
       /**
@@ -683,8 +687,10 @@ public class JMX
    /**
     * Comparator for MBeanOperationInfo sorting
     */
-   static class MBeanOperationComparator implements Comparator<MBeanOperationInfo>
+   static class MBeanOperationComparator implements Comparator<MBeanOperationInfo>, Serializable
    {
+      private static final long serialVersionUID = 1L;
+
       /**
        * Constructor
        */
@@ -748,7 +754,7 @@ public class JMX
          if (obj == this)
             return true;
 
-         return obj.getClass().equals(MBeanOperationComparator.class);
+         return obj instanceof MBeanOperationComparator;
       }
 
       /**

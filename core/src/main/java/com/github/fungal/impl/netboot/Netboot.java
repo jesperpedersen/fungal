@@ -150,7 +150,7 @@ public class Netboot
          }
          catch (InterruptedException ie)
          {
-            Thread.currentThread().interrupted();
+            Thread.interrupted();
             throw new ResolveException("Interrupted while resolving dependencies");
          }
          catch (Throwable t)

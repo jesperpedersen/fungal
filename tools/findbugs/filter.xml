@@ -1,5 +1,11 @@
 <FindBugsFilter>
 
+  <!-- com.github.fungal.api -->
+  <Match>
+    <Class name="com.github.fungal.api.util.JMX$ManagementDelegator"/>
+    <Bug code="REC"/>
+  </Match>
+
   <!-- com.github.fungal.impl -->
   <Match>
     <Class name="com.github.fungal.impl.DeploymentDeployer$BeanDeployer"/>
