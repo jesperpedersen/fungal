@@ -102,6 +102,10 @@ public class KernelImpl implements Kernel
    /** Bean dependants */
    private ConcurrentMap<String, Set<String>> beanDependants = new ConcurrentHashMap<String, Set<String>>(1);
 
+   /** Bean latches */
+   private ConcurrentMap<String, List<CountDownLatch>> beanLatches =
+      new ConcurrentHashMap<String, List<CountDownLatch>>(1);
+
    /** Bean deployments */
    private AtomicInteger beanDeployments;
 
@@ -825,6 +829,28 @@ public class KernelImpl implements Kernel
    void setBeanStatus(String name, ServiceLifecycle status)
    {
       beanStatus.put(name, status);
+
+      if (status == ServiceLifecycle.NOT_STARTED)
+      {
+         List<CountDownLatch> l = beanLatches.get(name);
+         if (l == null)
+         {
+            List<CountDownLatch> newList = Collections.synchronizedList(new ArrayList<CountDownLatch>(1));
+            l = beanLatches.putIfAbsent(name, newList);
+         }
+      }
+      else if (status == ServiceLifecycle.STARTED || status == ServiceLifecycle.ERROR)
+      {
+         List<CountDownLatch> l = beanLatches.get(name);
+         if (l != null)
+         {
+            for (CountDownLatch cdl : l)
+            {
+               if (cdl.getCount() > 0)
+                  cdl.countDown();
+            }
+         }
+      }
    }
 
    /**
@@ -895,6 +921,7 @@ public class KernelImpl implements Kernel
       deployerPhasesBeans.remove(name);
       beans.remove(name);
       beanStatus.remove(name);
+      beanLatches.remove(name);
    }
 
    /**
@@ -939,9 +966,11 @@ public class KernelImpl implements Kernel
     * Add a bean to the dependants map
     * @param from The name of the from bean
     * @param to The name of the to bean
+    * @param cdl The count down latch that should be notified
     */
-   void addBeanDependants(String from, String to)
+   void addBeanDependants(String from, String to, CountDownLatch cdl)
    {
+      // Register the 'from' -> 'to' binding
       Set<String> dependants = beanDependants.get(from);
       if (dependants == null)
       {
@@ -954,6 +983,28 @@ public class KernelImpl implements Kernel
       }
       
       dependants.add(to);
+
+      // Register the count down latch if the 'to' hasn't started
+      ServiceLifecycle slc = getBeanStatus(to);
+      if (slc != ServiceLifecycle.STARTED && slc != ServiceLifecycle.ERROR)
+      {
+         List<CountDownLatch> l = beanLatches.get(to);
+         if (l == null)
+         {
+            List<CountDownLatch> newList = Collections.synchronizedList(new ArrayList<CountDownLatch>(1));
+            l = beanLatches.putIfAbsent(to, newList);
+            if (l == null)
+            {
+               l = newList;
+            }
+         }
+         
+         l.add(cdl);
+      }
+      else
+      {
+         cdl.countDown();
+      }
    }
 
    /**
@@ -1270,6 +1321,8 @@ public class KernelImpl implements Kernel
     */
    void postDeploy(boolean delegate) throws Throwable
    {
+      beanLatches.clear();
+
       if (newDeployerPhasesBeans.size() > 0)
       {
          deployerPhasesBeans.addAll(newDeployerPhasesBeans);

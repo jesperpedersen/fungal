@@ -265,20 +265,16 @@ public final class DeploymentDeployer implements CloneableDeployer
          {
             if (kernel.getBean(beanName) == null)
             {
-               Set<String> dependencies = getDependencies(bt);
-               int notStarted = getNotStarted(dependencies);
+               CountDownLatch dependencies = getDependencies(bt);
 
-               while (notStarted > 0)
+               try
                {
-                  try
-                  {
-                     Thread.sleep(10);
-                     notStarted = getNotStarted(dependencies);
-                  }
-                  catch (InterruptedException ie)
-                  {
-                     Thread.interrupted();
-                  }
+                  if (dependencies != null)
+                     dependencies.await();
+               }
+               catch (InterruptedException ie)
+               {
+                  Thread.interrupted();
                }
 
                kernel.setBeanStatus(beanName, ServiceLifecycle.STARTING);
@@ -317,20 +313,20 @@ public final class DeploymentDeployer implements CloneableDeployer
       /**
        * Get the depedencies for a bean
        * @paran bt The bean type
-       * @return The set of dependencies; <code>null</code> if no dependencies
+       * @return The count down latch for the dependencies; <code>null</code> if no dependencies
+       * @exception DeployException Thrown if an error occurs
        */
-      private Set<String> getDependencies(BeanType bt)
+      private CountDownLatch getDependencies(BeanType bt) throws DeployException
       {
-         Set<String> result = null;
+         Set<String> deps = null;
 
          List<DependsType> dts = bt.getDepends();
          if (dts.size() > 0)
          {
-            result = new HashSet<String>(dts.size());
+            deps = new HashSet<String>(dts.size());
             for (DependsType dt : dts)
             {
-               result.add(dt.getValue());
-               kernel.addBeanDependants(bt.getName(), dt.getValue());
+               deps.add(dt.getValue());
             }
          }
 
@@ -343,12 +339,11 @@ public final class DeploymentDeployer implements CloneableDeployer
 
                if (element != null && element instanceof InjectType)
                {
-                  if (result == null)
-                     result = new HashSet<String>(1);
+                  if (deps == null)
+                     deps = new HashSet<String>(1);
 
                   InjectType it = (InjectType)element;
-                  result.add(it.getBean());
-                  kernel.addBeanDependants(bt.getName(), it.getBean());
+                  deps.add(it.getBean());
                }
             }
          }
@@ -358,11 +353,10 @@ public final class DeploymentDeployer implements CloneableDeployer
          {
             if (ct.getFactory() != null)
             {
-               if (result == null)
-                  result = new HashSet<String>(1);
+               if (deps == null)
+                  deps = new HashSet<String>(1);
 
-               result.add(ct.getFactory().getBean());
-               kernel.addBeanDependants(bt.getName(), ct.getFactory().getBean());
+               deps.add(ct.getFactory().getBean());
             }
             
             if (ct.getParameter() != null && ct.getParameter().size() > 0)
@@ -372,45 +366,34 @@ public final class DeploymentDeployer implements CloneableDeployer
                   Object v = pt.getContent().get(0);
                   if (v instanceof InjectType)
                   {
-                     if (result == null)
-                        result = new HashSet<String>(1);
+                     if (deps == null)
+                        deps = new HashSet<String>(1);
 
                      InjectType it = (InjectType)v;
-                     result.add(it.getBean());
-                     kernel.addBeanDependants(bt.getName(), it.getBean());
+                     deps.add(it.getBean());
                   }
                }
             }
          }
 
-         return result;
-      }
-
-      /**
-       * Get the number of services that are not started yet
-       * @paran dependencies The dependencies for a service
-       * @return The number of not started services
-       * @exception DeployException Thrown if an unknown dependency is found
-       */
-      private int getNotStarted(Set<String> dependencies) throws DeployException
-      {
-         if (dependencies == null || dependencies.size() == 0)
-            return 0;
-
-         int count = 0;
-         for (String dependency : dependencies)
+         if (deps != null && deps.size() > 0)
          {
-            ServiceLifecycle dependencyStatus = kernel.getBeanStatus(dependency);
+            CountDownLatch cdl = new CountDownLatch(deps.size());
 
-            if (dependencyStatus == null && kernel.isAllBeansRegistered())
-               throw new DeployException("Unknown dependency: " + dependency);
+            for (String dependency : deps)
+            {
+               ServiceLifecycle dependencyStatus = kernel.getBeanStatus(dependency);
+               
+               if (dependencyStatus == null && kernel.isAllBeansRegistered())
+                  throw new DeployException("Unknown dependency: " + dependency);
 
-            if (dependencyStatus == null || 
-                (dependencyStatus != ServiceLifecycle.STARTED && dependencyStatus != ServiceLifecycle.ERROR))
-               count += 1;
+               kernel.addBeanDependants(bt.getName(), dependency, cdl);
+            }
+
+            return cdl;
          }
 
-         return count;
+         return null;
       }
 
       /**
