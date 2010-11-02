@@ -34,7 +34,7 @@
   <property name="major" value="0"/>
   <property name="minor" value="9"/>
   <property name="patch" value="0"/>
-  <property name="type" value="Beta5"/>
+  <property name="type" value="Beta6"/>
 
   <!-- ================================= 
        Repositories              
