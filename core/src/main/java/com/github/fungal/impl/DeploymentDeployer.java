@@ -311,7 +311,7 @@ public final class DeploymentDeployer implements CloneableDeployer
       }
 
       /**
-       * Get the depedencies for a bean
+       * Get the dependencies for a bean
        * @paran bt The bean type
        * @return The count down latch for the dependencies; <code>null</code> if no dependencies
        * @exception DeployException Thrown if an error occurs
@@ -788,7 +788,7 @@ public final class DeploymentDeployer implements CloneableDeployer
          Object injectionObject = kernel.getBean(it.getBean());
 
          if (injectionObject == null)
-            throw new Exception("Injection depedency " + it.getBean() + " not found");
+            throw new Exception("Required dependency " + it.getBean() + " not found");
 
          if (it.getProperty() != null)
          {
