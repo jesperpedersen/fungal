@@ -914,6 +914,52 @@ public final class DeploymentDeployer implements CloneableDeployer
       }
 
       /**
+       * Find the set-method
+       * @param instance The object instance
+       * @param n The name
+       * @param pc The parameter class
+       * @param cl The class loader
+       * @return The method
+       * @exception Exception Thrown if an error occurs
+       */
+      @SuppressWarnings("unchecked") 
+      private Method findSetMethod(Object instance, String n, String pc, ClassLoader cl) throws Exception
+      {
+         Class clz = instance.getClass();
+         Class pClz = null;
+
+         if (pc != null && !pc.trim().equals(""))
+            pClz = Class.forName(pc, true, cl);
+
+         while (!clz.equals(Object.class))
+         {
+            Method[] ms = clz.getDeclaredMethods();
+            if (ms != null)
+            {
+               for (int i = 0; i < ms.length; i++)
+               {
+                  if (ms[i].getName().equals(n) &&
+                      ms[i].getParameterTypes() != null &&
+                      ms[i].getParameterTypes().length == 1)
+                  {
+                     boolean found = false;
+
+                     if (pClz == null || pClz.isAssignableFrom(ms[i].getParameterTypes()[0]))
+                        found = true;
+
+                     if (found)
+                        return ms[i];
+                  }
+               }
+            }
+            
+            clz = clz.getSuperclass();
+         }
+
+         return null;
+      }
+
+      /**
        * Set a property on an object instance
        * @param instance The object instance
        * @param pt The property type definition
@@ -923,34 +969,12 @@ public final class DeploymentDeployer implements CloneableDeployer
       @SuppressWarnings("unchecked") 
       private void setBeanProperty(Object instance, PropertyType pt, ClassLoader cl) throws Exception
       {
-         String name = "set" + pt.getName().substring(0, 1).toUpperCase(Locale.US) + pt.getName().substring(1);
-         Method m = null;
+         String name = "set" + pt.getName().substring(0, 1).toUpperCase(Locale.US);
+         if (pt.getName().length() > 1)
+            name += pt.getName().substring(1);
+
+         Method m = findSetMethod(instance, name, pt.getClazz(), cl);
       
-         if (pt.getClazz() == null)
-         {
-            Method[] ms = instance.getClass().getMethods();
-            if (ms != null)
-            {
-               boolean found = false;
-
-               for (int i = 0; !found && i < ms.length; i++)
-               {
-                  if (ms[i].getName().equals(name) &&
-                      ms[i].getParameterTypes() != null &&
-                      ms[i].getParameterTypes().length == 1)
-                  {
-                     m = ms[i];
-                     found = true;
-                  }
-               }
-            }
-         }
-         else
-         {
-            Class clz = Class.forName(pt.getClazz(), true, cl);
-            m = instance.getClass().getMethod(name, clz);
-         }
-
          if (m == null)
             throw new Exception("Property " + pt.getName() + " not found on " + instance.getClass().getName());
 
