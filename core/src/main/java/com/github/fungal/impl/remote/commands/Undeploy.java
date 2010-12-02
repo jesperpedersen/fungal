@@ -38,14 +38,14 @@ import java.util.logging.Logger;
  */
 public class Undeploy implements Command
 {
-   /** The logger */
-   private static Logger log = Logger.getLogger(Undeploy.class.getName());
-
-   /** Trace logging enabled */
-   private static boolean trace = log.isLoggable(Level.FINEST);
-
    /** Command name */
    private static final String NAME = "undeploy";
+
+   /** The logger */
+   private Logger log = Logger.getLogger(Undeploy.class.getName());
+
+   /** Trace logging enabled */
+   private boolean trace = log.isLoggable(Level.FINEST);
 
    /** The main deployer */
    private MainDeployer mainDeployer;

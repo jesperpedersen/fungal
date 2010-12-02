@@ -39,10 +39,10 @@ import java.util.logging.Logger;
 public class Communication implements Runnable
 {
    /** The logger */
-   private static Logger log = Logger.getLogger(Communication.class.getName());
+   private Logger log = Logger.getLogger(Communication.class.getName());
 
    /** Trace logging enabled */
-   private static boolean trace = log.isLoggable(Level.FINEST);
+   private boolean trace = log.isLoggable(Level.FINEST);
 
    /** The communication server */
    private CommunicationServer cs;

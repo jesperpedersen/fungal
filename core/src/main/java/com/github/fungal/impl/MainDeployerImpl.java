@@ -37,21 +37,26 @@ import java.util.List;
  */
 public final class MainDeployerImpl implements Cloneable, MainDeployerImplMBean
 {
-   private static List<Deployer> deployers = Collections.synchronizedList(new ArrayList<Deployer>());
-
    private KernelImpl kernel;
+   private Deployers deployers;
+
    private List<Deployer> copy;
 
    /**
     * Constructor
     * @param kernel The kernel
+    * @param deployers The deployers
     */
-   public MainDeployerImpl(KernelImpl kernel)
+   public MainDeployerImpl(KernelImpl kernel, Deployers deployers)
    {
       if (kernel == null)
          throw new IllegalArgumentException("Kernel is null");
 
+      if (deployers == null)
+         throw new IllegalArgumentException("Deployers is null");
+
       this.kernel = kernel;
+      this.deployers = deployers;
       this.copy = null;
    }
 
@@ -61,10 +66,7 @@ public final class MainDeployerImpl implements Cloneable, MainDeployerImplMBean
     */
    public void addDeployer(Deployer deployer)
    {
-      if (deployer == null)
-         throw new IllegalArgumentException("Deployer is null");
-
-      deployers.add(deployer);
+      deployers.addDeployer(deployer);
    }
 
    /**
@@ -93,12 +95,12 @@ public final class MainDeployerImpl implements Cloneable, MainDeployerImplMBean
       if (classLoader == null)
          throw new IllegalArgumentException("ClassLoader is null");
 
-      if (copy == null || copy.size() != deployers.size())
+      if (copy == null || copy.size() != deployers.getDeployers().size())
       {
          List sorted = new ArrayList();
          List unsorted = new ArrayList();
 
-         for (Deployer deployer : deployers)
+         for (Deployer deployer : deployers.getDeployers())
          {
             if (deployer instanceof DeployerOrder)
             {
@@ -144,7 +146,7 @@ public final class MainDeployerImpl implements Cloneable, MainDeployerImplMBean
 
          Collections.sort(sorted, new DeployerOrderComparator());
 
-         copy = new ArrayList<Deployer>(deployers.size());
+         copy = new ArrayList<Deployer>(deployers.getDeployers().size());
          copy.addAll(sorted);
          copy.addAll(unsorted);
       }
@@ -226,6 +228,11 @@ public final class MainDeployerImpl implements Cloneable, MainDeployerImplMBean
     */
    public Object clone() throws CloneNotSupportedException
    {
-      return new MainDeployerImpl(kernel);
+      MainDeployerImpl md = (MainDeployerImpl)super.clone();
+      md.kernel = kernel;
+      md.deployers = deployers;
+      md.copy = null;
+      
+      return md;
    }
 }

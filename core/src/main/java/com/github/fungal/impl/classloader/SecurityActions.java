@@ -44,36 +44,41 @@ class SecurityActions
     * @param id The class loader id
     * @param url The URL
     * @param exportPackages The export packages for the class loader
+    * @param repository The repository
     * @return The class loader
     */
-   static ArchiveClassLoader createArchiveClassLoader(final Integer id, final URL url, final Set<String> exportPackages)
+   static ArchiveClassLoader createArchiveClassLoader(final Integer id, 
+                                                      final URL url,
+                                                      final Set<String> exportPackages,
+                                                      final ExportClassLoaderRepository repository)
    {
       if (System.getSecurityManager() == null)
-         return new ArchiveClassLoader(id, url, exportPackages);
+         return new ArchiveClassLoader(id, url, exportPackages, repository);
 
       return AccessController.doPrivileged(new PrivilegedAction<ArchiveClassLoader>() 
       {
          public ArchiveClassLoader run()
          {
-            return new ArchiveClassLoader(id, url, exportPackages);
+            return new ArchiveClassLoader(id, url, exportPackages, repository);
          }
       });
    }
 
    /**
     * Create a NonExportClassLoader
+    * @param repository The repository
     * @return The class loader
     */
-   static NonExportClassLoader createNonExportClassLoader()
+   static NonExportClassLoader createNonExportClassLoader(final ExportClassLoaderRepository repository)
    {
       if (System.getSecurityManager() == null)
-         return new NonExportClassLoader();
+         return new NonExportClassLoader(repository);
 
       return AccessController.doPrivileged(new PrivilegedAction<NonExportClassLoader>() 
       {
          public NonExportClassLoader run()
          {
-            return new NonExportClassLoader();
+            return new NonExportClassLoader(repository);
          }
       });
    }

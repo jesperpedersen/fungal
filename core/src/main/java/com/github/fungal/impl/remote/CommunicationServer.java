@@ -41,10 +41,10 @@ import java.util.logging.Logger;
 public class CommunicationServer implements Runnable
 {
    /** The logger */
-   private static Logger log = Logger.getLogger(CommunicationServer.class.getName());
+   private Logger log = Logger.getLogger(CommunicationServer.class.getName());
 
    /** Trace logging enabled */
-   private static boolean trace = log.isLoggable(Level.FINEST);
+   private boolean trace = log.isLoggable(Level.FINEST);
 
    /** The kernel */
    private KernelImpl kernel;

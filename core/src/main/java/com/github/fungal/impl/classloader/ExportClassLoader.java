@@ -37,6 +37,9 @@ import java.util.Vector;
  */
 public class ExportClassLoader extends KernelClassLoader
 {
+   /** Export class loader repository */
+   private ExportClassLoaderRepository eclr;
+
    /** Class Loaders */
    private Set<Integer> classLoaders;
 
@@ -49,9 +52,10 @@ public class ExportClassLoader extends KernelClassLoader
    {
       super(new URL[0], parent);
 
+      this.eclr = new ExportClassLoaderRepository();
+
       if (urls != null)
       {
-         ExportClassLoaderRepository eclr = ExportClassLoaderRepository.getInstance();
          classLoaders = eclr.register(urls);
       }
    }
@@ -66,8 +70,6 @@ public class ExportClassLoader extends KernelClassLoader
 
       if (result != null)
          return result;
-
-      ExportClassLoaderRepository eclr = ExportClassLoaderRepository.getInstance();
 
       if (classLoaders != null)
       {
@@ -114,7 +116,6 @@ public class ExportClassLoader extends KernelClassLoader
    public URL getResource(String name)
    {
       URL resource = null;
-      ExportClassLoaderRepository eclr = ExportClassLoaderRepository.getInstance();
 
       if (classLoaders != null)
       {
@@ -147,7 +148,6 @@ public class ExportClassLoader extends KernelClassLoader
    public InputStream getResourceAsStream(String name)
    {
       InputStream is = null;
-      ExportClassLoaderRepository eclr = ExportClassLoaderRepository.getInstance();
 
       if (classLoaders != null)
       {
@@ -181,7 +181,6 @@ public class ExportClassLoader extends KernelClassLoader
       throws IOException
    {
       Vector<URL> v = new Vector<URL>();
-      ExportClassLoaderRepository eclr = ExportClassLoaderRepository.getInstance();
       Enumeration<URL> e = null;
 
       if (classLoaders != null)
@@ -234,8 +233,6 @@ public class ExportClassLoader extends KernelClassLoader
    @Override 
    public void clearAssertionStatus()
    {
-      ExportClassLoaderRepository eclr = ExportClassLoaderRepository.getInstance();
-
       if (classLoaders != null)
       {
          for (Integer id : classLoaders)
@@ -260,8 +257,6 @@ public class ExportClassLoader extends KernelClassLoader
    @Override
    public void setClassAssertionStatus(String className, boolean enabled)
    {
-      ExportClassLoaderRepository eclr = ExportClassLoaderRepository.getInstance();
-
       if (classLoaders != null)
       {
          for (Integer id : classLoaders)
@@ -286,8 +281,6 @@ public class ExportClassLoader extends KernelClassLoader
    @Override
    public void setDefaultAssertionStatus(boolean enabled)
    {
-      ExportClassLoaderRepository eclr = ExportClassLoaderRepository.getInstance();
-
       if (classLoaders != null)
       {
          for (Integer id : classLoaders)
@@ -312,8 +305,6 @@ public class ExportClassLoader extends KernelClassLoader
    @Override
    public void setPackageAssertionStatus(String packageName, boolean enabled)
    {
-      ExportClassLoaderRepository eclr = ExportClassLoaderRepository.getInstance();
-
       if (classLoaders != null)
       {
          for (Integer id : classLoaders)
@@ -339,7 +330,6 @@ public class ExportClassLoader extends KernelClassLoader
    public URL[] getURLs()
    {
       List<URL> result = null;
-      ExportClassLoaderRepository eclr = ExportClassLoaderRepository.getInstance();
       URL[] urls = null;
 
       if (classLoaders != null)
@@ -394,5 +384,22 @@ public class ExportClassLoader extends KernelClassLoader
          return new URL[0];
 
       return result.toArray(new URL[result.size()]);
+   }
+
+   /**
+    * String representation
+    * @return The string
+    */
+   @Override
+   public String toString()
+   {
+      StringBuilder sb = new StringBuilder();
+
+      sb.append("ExportClassLoader@").append(Integer.toHexString(System.identityHashCode(this)));
+      sb.append("[ExportClassLoaderRepository=").append(eclr);
+      sb.append(", ClassLoaders=").append(classLoaders);
+      sb.append("]");
+
+      return sb.toString();
    }
 }

@@ -35,14 +35,14 @@ import java.util.logging.Logger;
  */
 public class Help implements Command
 {
-   /** The logger */
-   private static Logger log = Logger.getLogger(Help.class.getName());
-
-   /** Trace logging enabled */
-   private static boolean trace = log.isLoggable(Level.FINEST);
-
    /** Command name */
    private static final String NAME = "help";
+
+   /** The logger */
+   private Logger log = Logger.getLogger(Help.class.getName());
+
+   /** Trace logging enabled */
+   private boolean trace = log.isLoggable(Level.FINEST);
 
    /** The communication server */
    private CommunicationServer cs;

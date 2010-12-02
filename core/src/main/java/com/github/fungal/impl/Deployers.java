@@ -18,51 +18,48 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.github.fungal.impl.classloader;
+package com.github.fungal.impl;
 
-import com.github.fungal.api.classloading.KernelClassLoader;
+import com.github.fungal.spi.deployers.Deployer;
 
-import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
- * Parent first class loader
+ * The active deployers
  * @author <a href="mailto:jesper.pedersen@comcast.net">Jesper Pedersen</a>
  */
-public class ParentFirstClassLoader extends KernelClassLoader
+final class Deployers
 {
+   private List<Deployer> deployers;
+
    /**
     * Constructor
-    * @param urls The URLs for JAR archives or directories
-    * @param parent The parent class loader
     */
-   public ParentFirstClassLoader(URL[] urls, ClassLoader parent)
+   Deployers()
    {
-      super(urls, parent);
+      this.deployers = Collections.synchronizedList(new ArrayList<Deployer>());
    }
 
    /**
-    * Load a class
-    * @param name The fully qualified class name
-    * @return The class
-    * @throws ClassNotFoundException If the class could not be found 
+    * Add deployer
+    * @param deployer The deployer
     */
-   @Override
-   public Class<?> loadClass(String name) throws ClassNotFoundException
+   void addDeployer(Deployer deployer)
    {
-      Class<?> result = super.loadClass(name);
+      if (deployer == null)
+         throw new IllegalArgumentException("Deployer is null");
 
-      if (result != null)
-         return result;
+      deployers.add(deployer);
+   }
 
-      try
-      {
-         return loadClass(name, false);
-      }
-      catch (Throwable t)
-      {
-         // Ignore
-      }
-
-      return getParent().loadClass(name);
+   /**
+    * Get deployers
+    * @return The list of current deployers
+    */
+   List<Deployer> getDeployers()
+   {
+      return deployers;
    }
 }

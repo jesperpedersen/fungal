@@ -39,10 +39,10 @@ import java.util.logging.Logger;
 public final class HotDeployer implements HotDeployerMBean, Runnable
 {
    /** The logger */
-   private static Logger log = Logger.getLogger(HotDeployer.class.getName());
+   private Logger log = Logger.getLogger(HotDeployer.class.getName());
 
    /** Trace logging enabled */
-   private static boolean trace = log.isLoggable(Level.FINEST);
+   private boolean trace = log.isLoggable(Level.FINEST);
 
    private int interval;
    private File directory;

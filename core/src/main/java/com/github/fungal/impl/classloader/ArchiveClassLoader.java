@@ -41,18 +41,35 @@ class ArchiveClassLoader extends KernelClassLoader
    /** Import classloaders */
    private Set<Integer> importClassLoaders;
 
+   /** The repository */
+   private ExportClassLoaderRepository eclr;
+
    /**
     * Constructor
     * @param id The class loader id
     * @param url The URL for JAR archive or directory
     * @param exportPackages The export packages
+    * @param eclr The repository
     */
-   ArchiveClassLoader(Integer id, URL url, Set<String> exportPackages)
+   ArchiveClassLoader(Integer id, URL url, Set<String> exportPackages, ExportClassLoaderRepository eclr)
    {
       super(new URL[] {url}, ClassLoader.getSystemClassLoader());
 
+      if (id == null)
+         throw new IllegalArgumentException("Id is null");
+
+      if (url == null)
+         throw new IllegalArgumentException("Url is null");
+
+      if (exportPackages == null)
+         throw new IllegalArgumentException("ExportPackages is null");
+
+      if (eclr == null)
+         throw new IllegalArgumentException("ECLR is null");
+
       this.id = id;
       this.exportPackages = exportPackages;
+      this.eclr = eclr;
    }
 
    /**
@@ -96,7 +113,6 @@ class ArchiveClassLoader extends KernelClassLoader
          }
          catch (ClassNotFoundException cnfe)
          {
-            ExportClassLoaderRepository eclr = ExportClassLoaderRepository.getInstance();
             if (importClassLoaders != null)
             {
                for (Integer id : importClassLoaders)
@@ -162,7 +178,6 @@ class ArchiveClassLoader extends KernelClassLoader
       {
          if (fullScan && importClassLoaders != null)
          {
-            ExportClassLoaderRepository eclr = ExportClassLoaderRepository.getInstance();
             for (Integer id : importClassLoaders)
             {
                ArchiveClassLoader acl = eclr.getClassLoader(id);
@@ -238,8 +253,8 @@ class ArchiveClassLoader extends KernelClassLoader
    {
       StringBuilder sb = new StringBuilder();
 
-      sb = sb.append(ArchiveClassLoader.class.getName());
-      sb = sb.append("{");
+      sb.append("ArchiveClassLoader@").append(Integer.toHexString(System.identityHashCode(this)));
+      sb = sb.append("[");
 
       sb = sb.append("Id=");
       sb = sb.append(id);
@@ -255,8 +270,12 @@ class ArchiveClassLoader extends KernelClassLoader
       
       sb = sb.append("ImportClassLoaders=");
       sb = sb.append(importClassLoaders);
+      sb = sb.append(",");
 
-      sb = sb.append("}");
+      sb = sb.append("ExportClassLoaderRepository=");
+      sb = sb.append(Integer.toHexString(System.identityHashCode(eclr)));
+
+      sb = sb.append("]");
 
       return sb.toString();
    }

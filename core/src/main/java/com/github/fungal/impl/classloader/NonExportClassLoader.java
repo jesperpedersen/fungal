@@ -31,22 +31,32 @@ import java.util.Set;
  */
 class NonExportClassLoader extends KernelClassLoader
 {
+   /** The repository */
+   private ExportClassLoaderRepository eclr;
+
    /**
     * Constructor
+    * @param eclr The repository
     */
-   NonExportClassLoader()
+   NonExportClassLoader(ExportClassLoaderRepository eclr)
    {
-      this(new URL[0], ClassLoader.getSystemClassLoader());
+      this(new URL[0], ClassLoader.getSystemClassLoader(), eclr);
    }
 
    /**
     * Constructor
     * @param urls The URLs
     * @param cl The parent class loader
+    * @param eclr The repository
     */
-   private NonExportClassLoader(URL[] urls, ClassLoader cl)
+   private NonExportClassLoader(URL[] urls, ClassLoader cl, ExportClassLoaderRepository eclr)
    {
       super(urls, cl);
+
+      if (eclr == null)
+         throw new IllegalArgumentException("ECLR is null");
+
+      this.eclr = eclr;
    }
 
    /**
@@ -66,7 +76,6 @@ class NonExportClassLoader extends KernelClassLoader
       }
       catch (ClassNotFoundException cnfe)
       {
-         ExportClassLoaderRepository eclr = ExportClassLoaderRepository.getInstance();
          Set<Integer> classLoaders = eclr.getClassLoaders();
 
          for (Integer id : classLoaders)
@@ -100,7 +109,6 @@ class NonExportClassLoader extends KernelClassLoader
       }
       catch (ClassNotFoundException cnfe)
       {
-         ExportClassLoaderRepository eclr = ExportClassLoaderRepository.getInstance();
          Set<Integer> cls = eclr.getClassLoaders(name);
 
          if (cls != null)
@@ -135,7 +143,6 @@ class NonExportClassLoader extends KernelClassLoader
       }
       catch (Throwable t)
       {
-         ExportClassLoaderRepository eclr = ExportClassLoaderRepository.getInstance();
          Set<Integer> classLoaders = eclr.getClassLoaders();
 
          for (Integer id : classLoaders)
@@ -166,5 +173,21 @@ class NonExportClassLoader extends KernelClassLoader
    public synchronized void addURL(URL url)
    {
       super.addURL(url);
+   }
+
+   /**
+    * String representation
+    * @return The string
+    */
+   @Override
+   public String toString()
+   {
+      StringBuilder sb = new StringBuilder();
+
+      sb.append("NonExportClassLoader@").append(Integer.toHexString(System.identityHashCode(this)));
+      sb.append("[Eclr=").append(Integer.toHexString(System.identityHashCode(eclr)));
+      sb.append("]");
+
+      return sb.toString();
    }
 }

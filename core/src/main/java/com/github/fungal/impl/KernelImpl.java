@@ -78,17 +78,17 @@ import javax.management.ObjectName;
  */
 public class KernelImpl implements Kernel
 {
-   /** The logger */
-   private static Logger log = null;
-
-   /** Trace logging enabled */
-   private static boolean trace = false;
-
    /** Version information */
    private static final String VERSION = "Fungal 0.9.0.Beta6";
 
    /** Kernel configuration */
    private KernelConfiguration kernelConfiguration;
+
+   /** The logger */
+   private Logger log = null;
+
+   /** Trace logging enabled */
+   private boolean trace = false;
 
    /** Deployments */
    private List<Deployment> deployments = Collections.synchronizedList(new ArrayList<Deployment>(1));
@@ -155,11 +155,37 @@ public class KernelImpl implements Kernel
    public KernelImpl(KernelConfiguration kc)
    {
       this.kernelConfiguration = kc;
+
+      initialize();
+   }
+
+   /**
+    * Initialize
+    */
+   private void initialize()
+   {
+      this.log = null;
+      this.trace = false;
+      this.deployments.clear();
+      this.beans.clear();
+      this.beanStatus.clear();
+      this.beanDependants.clear();
+      this.beanLatches.clear();
       this.beanDeployments = new AtomicInteger(0);
-      this.temporaryEnvironment = false;
-      this.mainDeployer = null;
+
+      setExecutorService(null);
+
+      this.oldClassLoader = null;
       this.kernelClassLoader = null;
+      this.mainDeployer = null;
       this.mbeanServer = null;
+      this.remote = null;
+      this.temporaryEnvironment = false;
+      this.incallbacks.clear();
+      this.uncallbacks.clear();
+      this.callbackBeans.clear();
+      this.deployerPhasesBeans.clear();
+      this.newDeployerPhasesBeans.clear();
       this.hotDeployer = null;
    }
 
@@ -169,6 +195,9 @@ public class KernelImpl implements Kernel
     */
    public MBeanServer getMBeanServer()
    {
+      if (mbeanServer == null)
+         throw new IllegalStateException("Kernel not started");
+
       return mbeanServer;
    }
 
@@ -217,13 +246,15 @@ public class KernelImpl implements Kernel
       BlockingQueue<Runnable> threadPoolQueue = new SynchronousQueue<Runnable>(true);
       ThreadFactory tf = new FungalThreadFactory(tg);
 
-      threadPoolExecutor = new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors(), Integer.MAX_VALUE,
-                                                  60, TimeUnit.SECONDS,
-                                                  threadPoolQueue,
-                                                  tf);
+      ThreadPoolExecutor tpe = new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors(), Integer.MAX_VALUE,
+                                                      60, TimeUnit.SECONDS,
+                                                      threadPoolQueue,
+                                                      tf);
 
-      threadPoolExecutor.allowCoreThreadTimeOut(true);
-      threadPoolExecutor.prestartAllCoreThreads();
+      tpe.allowCoreThreadTimeOut(false);
+      tpe.prestartAllCoreThreads();
+
+      setExecutorService(tpe);
 
       File root = null;
 
@@ -345,7 +376,7 @@ public class KernelImpl implements Kernel
       mbeanServer = MBeanServerFactory.createMBeanServer(kernelConfiguration.getName());
 
       // Main deployer
-      mainDeployer = new MainDeployerImpl(this);
+      mainDeployer = new MainDeployerImpl(this, new Deployers());
       ObjectName mainDeployerObjectName = new ObjectName(kernelConfiguration.getName() + ":name=MainDeployer");
       mbeanServer.registerMBean(mainDeployer, mainDeployerObjectName);
 
@@ -541,7 +572,7 @@ public class KernelImpl implements Kernel
 
          remote.start();
 
-         threadPoolExecutor.submit(remote);
+         getExecutorService().submit(remote);
       }
 
       // Memory information
@@ -693,8 +724,8 @@ public class KernelImpl implements Kernel
          MBeanServerFactory.releaseMBeanServer(mbeanServer);
 
       // Shutdown thread pool
-      if (threadPoolExecutor != null)
-         threadPoolExecutor.shutdown();
+      if (getExecutorService() != null)
+         getExecutorService().shutdown();
 
       // Cleanup temporary environment
       if (temporaryEnvironment)
@@ -704,6 +735,9 @@ public class KernelImpl implements Kernel
 
          recursiveDelete(root);
       }
+
+      SecurityActions.setSystemProperty(kernelConfiguration.getName() + ".home", "");
+      SecurityActions.setSystemProperty(kernelConfiguration.getName() + ".bindaddress", "");
 
       // Log shutdown
       if (log != null)
@@ -726,8 +760,6 @@ public class KernelImpl implements Kernel
          {
             // Swallow
          }
-
-         kernelClassLoader = null;
       }
 
       // Reset to the old class loader
@@ -741,6 +773,8 @@ public class KernelImpl implements Kernel
             el.event(this, Event.STOPPED);
          }
       }
+
+      initialize();
    }
 
    /**
@@ -790,7 +824,19 @@ public class KernelImpl implements Kernel
     */
    public KernelClassLoader getKernelClassLoader()
    {
+      if (kernelClassLoader == null)
+         throw new IllegalStateException("Kernel not started");
+
       return kernelClassLoader;
+   }
+
+   /**
+    * Set the executor service
+    * @param v The value
+    */
+   private void setExecutorService(ThreadPoolExecutor v)
+   {
+      this.threadPoolExecutor = v;
    }
 
    /** 
@@ -799,6 +845,9 @@ public class KernelImpl implements Kernel
     */
    public ExecutorService getExecutorService()
    {
+      if (threadPoolExecutor == null)
+         throw new IllegalStateException("Thread pool is null");
+
       return threadPoolExecutor;
    }
 
@@ -1039,6 +1088,9 @@ public class KernelImpl implements Kernel
     */
    public MainDeployer getMainDeployer()
    {
+      if (mainDeployer == null)
+         throw new IllegalStateException("Kernel not started");
+
       try
       {
          return (MainDeployer)mainDeployer.clone();

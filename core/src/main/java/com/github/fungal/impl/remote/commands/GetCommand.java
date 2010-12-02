@@ -34,14 +34,14 @@ import java.util.logging.Logger;
  */
 public class GetCommand implements Command
 {
-   /** The logger */
-   private static Logger log = Logger.getLogger(GetCommand.class.getName());
-
-   /** Trace logging enabled */
-   private static boolean trace = log.isLoggable(Level.FINEST);
-
    /** Command name */
    private static final String NAME = "getcommand";
+
+   /** The logger */
+   private Logger log = Logger.getLogger(GetCommand.class.getName());
+
+   /** Trace logging enabled */
+   private boolean trace = log.isLoggable(Level.FINEST);
 
    /** The communication server */
    private CommunicationServer cs;

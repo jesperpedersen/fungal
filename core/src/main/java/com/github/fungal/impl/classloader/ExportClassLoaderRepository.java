@@ -47,39 +47,27 @@ import java.util.jar.Manifest;
  */
 class ExportClassLoaderRepository
 {
-   /** Instance */
-   private static final ExportClassLoaderRepository INSTANCE = new ExportClassLoaderRepository();
-
-   /** Nob export class loader */
-   private static NonExportClassLoader nonExportClassLoader;
+   /** Non export class loader */
+   private NonExportClassLoader nonExportClassLoader;
 
    /** Id counter */
-   private static AtomicInteger idCounter;
+   private AtomicInteger idCounter;
 
    /** Class loaders */
-   private static ConcurrentMap<Integer, ArchiveClassLoader> classLoaders;
+   private ConcurrentMap<Integer, ArchiveClassLoader> classLoaders;
 
    /** Package + Version mapping */
-   private static ConcurrentMap<String, SortedMap<String, Set<Integer>>> packages;
+   private ConcurrentMap<String, SortedMap<String, Set<Integer>>> packages;
 
    /**
     * Constructor
     */
-   private ExportClassLoaderRepository()
+   ExportClassLoaderRepository()
    {
-      nonExportClassLoader = SecurityActions.createNonExportClassLoader();
+      nonExportClassLoader = SecurityActions.createNonExportClassLoader(this);
       idCounter = new AtomicInteger(0);
       classLoaders = new ConcurrentHashMap<Integer, ArchiveClassLoader>();
       packages = new ConcurrentHashMap<String, SortedMap<String, Set<Integer>>>();
-   }
-
-   /**
-    * Get the singleton
-    * @return The instance
-    */
-   static ExportClassLoaderRepository getInstance()
-   {
-      return INSTANCE;
    }
 
    /**
@@ -228,6 +216,9 @@ class ExportClassLoaderRepository
                            }
                         }
 
+                        if (sb.length() > 0)
+                           exportPackages.add(sb.toString().trim());
+
                         // Import-Package
                         input = mainAttributes.getValue("Import-Package");
 
@@ -318,7 +309,7 @@ class ExportClassLoaderRepository
                         }
                      
                         ArchiveClassLoader acl = 
-                           SecurityActions.createArchiveClassLoader(identifier, url, exportPackages);
+                           SecurityActions.createArchiveClassLoader(identifier, url, exportPackages, this);
 
                         classLoaders.put(acl.getId(), acl);
 
@@ -416,5 +407,24 @@ class ExportClassLoaderRepository
          packageName = name.substring(0, lastDot);
 
       return packageName;
+   }
+
+   /**
+    * String representation
+    * @return The string
+    */
+   @Override
+   public String toString()
+   {
+      StringBuilder sb = new StringBuilder();
+
+      sb.append("ExportClassLoaderRepository@").append(Integer.toHexString(System.identityHashCode(this)));
+      sb.append("[NonExportClassLoader=").append(Integer.toHexString(System.identityHashCode(nonExportClassLoader)));
+      sb.append(", IdCounter=").append(idCounter);
+      sb.append(", ClassLoaders=").append(classLoaders);
+      sb.append(", Packages=").append(packages);
+      sb.append("]");
+
+      return sb.toString();
    }
 }

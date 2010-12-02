@@ -72,10 +72,10 @@ import java.util.logging.Logger;
 public final class DeploymentDeployer implements CloneableDeployer
 {
    /** The logger */
-   private static Logger log = Logger.getLogger(DeploymentDeployer.class.getName());
+   private Logger log = Logger.getLogger(DeploymentDeployer.class.getName());
 
    /** Trace logging enabled */
-   private static boolean trace = log.isLoggable(Level.FINEST);
+   private boolean trace = log.isLoggable(Level.FINEST);
 
    /** The kernel */
    private KernelImpl kernel;
@@ -132,7 +132,7 @@ public final class DeploymentDeployer implements CloneableDeployer
             for (BeanType bt : deployment.getBean())
             {
                BeanDeployer deployer = new BeanDeployer(bt, beans, uninstall, ignoreStops, ignoreDestroys, kernel,
-                                                        beansLatch, parent);
+                                                        beansLatch, parent, log);
                deployers.add(deployer);
 
                kernel.getExecutorService().submit(deployer);
@@ -196,6 +196,9 @@ public final class DeploymentDeployer implements CloneableDeployer
       /** The classloader */
       private ClassLoader classLoader;
 
+      /** The log */
+      private Logger log;
+
       /** DeployException */
       private DeployException deployException;
 
@@ -232,6 +235,7 @@ public final class DeploymentDeployer implements CloneableDeployer
        * @param kernel The kernel
        * @param beansLatch The beans latch
        * @param classLoader The class loader
+       * @param log The logger
        */
       public BeanDeployer(BeanType bt, 
                           List<String> beans,
@@ -240,7 +244,8 @@ public final class DeploymentDeployer implements CloneableDeployer
                           Set<String> ignoreDestroys,
                           KernelImpl kernel,
                           CountDownLatch beansLatch,
-                          ClassLoader classLoader)
+                          ClassLoader classLoader,
+                          Logger log)
       {
          this.bt = bt;
          this.beans = beans;
@@ -250,6 +255,7 @@ public final class DeploymentDeployer implements CloneableDeployer
          this.kernel = kernel;
          this.beansLatch = beansLatch;
          this.classLoader = classLoader;
+         this.log = log;
          this.deployException = null;
       }
 
@@ -1200,6 +1206,9 @@ public final class DeploymentDeployer implements CloneableDeployer
     */
    public Deployer clone() throws CloneNotSupportedException
    {
-      return new DeploymentDeployer(kernel);
+      DeploymentDeployer dd = (DeploymentDeployer)super.clone();
+      dd.kernel = kernel;
+
+      return dd;
    }
 }
