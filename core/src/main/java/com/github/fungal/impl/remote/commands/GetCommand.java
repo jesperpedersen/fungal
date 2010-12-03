@@ -70,7 +70,7 @@ public class GetCommand implements Command
     */
    public Class[] getParameterTypes()
    {
-      return new Class[] {String.class};
+      return new Class<?>[] {String.class};
    }
 
    /**

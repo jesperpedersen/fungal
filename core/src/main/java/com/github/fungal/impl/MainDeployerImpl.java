@@ -97,7 +97,10 @@ public final class MainDeployerImpl implements Cloneable, MainDeployerImplMBean
 
       if (copy == null || copy.size() != deployers.getDeployers().size())
       {
+         @SuppressWarnings("rawtypes")
          List sorted = new ArrayList();
+
+         @SuppressWarnings("rawtypes")
          List unsorted = new ArrayList();
 
          for (Deployer deployer : deployers.getDeployers())

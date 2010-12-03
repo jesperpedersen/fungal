@@ -547,7 +547,7 @@ public class JMX
                            l.add(clz);
                         }
 
-                        paramTypes = l.toArray(new Class[l.size()]);
+                        paramTypes = l.toArray(new Class<?>[l.size()]);
                      }
 
                      Method method = instance.getClass().getMethod(actionName, paramTypes);
@@ -592,7 +592,7 @@ public class JMX
                try
                {
                   Class<?> type = Class.forName(mai.getType(), true, instance.getClass().getClassLoader());
-                  Method method = instance.getClass().getMethod("set" + name, new Class[] {type});
+                  Method method = instance.getClass().getMethod("set" + name, new Class<?>[] {type});
 
                   method.invoke(instance, new Object[] {attribute.getValue()});
                }

@@ -79,7 +79,7 @@ public class Deploy implements Command
     */
    public Class[] getParameterTypes()
    {
-      return new Class[] {URL.class};
+      return new Class<?>[] {URL.class};
    }
 
    /**

@@ -85,7 +85,7 @@ public class Injection
       if (propertyType == null || propertyType.trim().equals(""))
          throw new IllegalArgumentException("PropertyType is undefined");
 
-      Class parameterClass = null;
+      Class<?> parameterClass = null;
       Object parameterValue = null;
 
       String substituredValue = getSubstitutionValue(propertyValue);
@@ -148,7 +148,7 @@ public class Injection
          try
          {
             parameterClass = Class.forName(propertyType, true, object.getClass().getClassLoader());
-            Constructor constructor = parameterClass.getConstructor(String.class);
+            Constructor<?> constructor = parameterClass.getConstructor(String.class);
             parameterValue = constructor.newInstance(substituredValue);
          }
          catch (Throwable t)

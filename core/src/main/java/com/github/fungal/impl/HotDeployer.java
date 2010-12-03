@@ -267,7 +267,7 @@ public final class HotDeployer implements HotDeployerMBean, Runnable
             if (sleep <= 10)
                sleep = 10;
 
-            Thread.currentThread().sleep(sleep);
+            Thread.sleep(sleep);
          }
          catch (Throwable t)
          {

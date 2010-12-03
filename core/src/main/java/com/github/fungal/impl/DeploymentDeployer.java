@@ -451,7 +451,7 @@ public final class DeploymentDeployer implements CloneableDeployer
                }
                else
                {
-                  Constructor factoryConstructor = findConstructor(factoryClass, ct.getParameter(), cl);
+                  Constructor<?> factoryConstructor = findConstructor(factoryClass, ct.getParameter(), cl);
                   Object[] args = getArguments(ct.getParameter(), factoryConstructor.getParameterTypes(), cl);
 
                   instance = factoryConstructor.newInstance(args);
@@ -637,7 +637,7 @@ public final class DeploymentDeployer implements CloneableDeployer
        * @exception Throwable Thrown if a constructor cannot be found
        */
       @SuppressWarnings("unchecked") 
-      private Constructor findConstructor(Class clz, List<ParameterType> parameters, ClassLoader cl)
+      private Constructor<?> findConstructor(Class<?> clz, List<ParameterType> parameters, ClassLoader cl)
          throws Throwable
       {
          if (parameters == null || parameters.size() == 0)
@@ -648,7 +648,7 @@ public final class DeploymentDeployer implements CloneableDeployer
          {
             Constructor[] constructors = clz.getConstructors();
 
-            for (Constructor c : constructors)
+            for (Constructor<?> c : constructors)
             {
                if (parameters.size() == c.getParameterTypes().length)
                {
@@ -694,7 +694,7 @@ public final class DeploymentDeployer implements CloneableDeployer
        * @exception Throwable Thrown if a constructor cannot be found
        */
       @SuppressWarnings("unchecked") 
-      private Method findMethod(Class clz, String name, List<ParameterType> parameters, ClassLoader cl)
+      private Method findMethod(Class<?> clz, String name, List<ParameterType> parameters, ClassLoader cl)
          throws Throwable
       {
          if (parameters == null || parameters.size() == 0)
@@ -899,7 +899,7 @@ public final class DeploymentDeployer implements CloneableDeployer
          // Try String constructor
          try
          {
-            Constructor constructor = clz.getConstructor(String.class);
+            Constructor<?> constructor = clz.getConstructor(String.class);
             return constructor.newInstance(s);
          }
          catch (Throwable t)
@@ -931,8 +931,8 @@ public final class DeploymentDeployer implements CloneableDeployer
       @SuppressWarnings("unchecked") 
       private Method findSetMethod(Object instance, String n, String pc, ClassLoader cl) throws Exception
       {
-         Class clz = instance.getClass();
-         Class pClz = null;
+         Class<?> clz = instance.getClass();
+         Class<?> pClz = null;
 
          if (pc != null && !pc.trim().equals(""))
             pClz = Class.forName(pc, true, cl);
@@ -984,7 +984,7 @@ public final class DeploymentDeployer implements CloneableDeployer
          if (m == null)
             throw new Exception("Property " + pt.getName() + " not found on " + instance.getClass().getName());
 
-         Class parameterClass = m.getParameterTypes()[0];
+         Class<?> parameterClass = m.getParameterTypes()[0];
       
          Object parameterValue = null;
          Object element = pt.getContent().get(0);
@@ -1000,22 +1000,22 @@ public final class DeploymentDeployer implements CloneableDeployer
          {
             MapType mt = (MapType)element;
 
-            Map map = null;
+            Map<Object, Object> map = null;
             
             if (mt.getClazz() == null)
             {
-               map = new HashMap(mt.getEntry().size());
+               map = new HashMap<Object, Object>(mt.getEntry().size());
             }
             else
             {
-               Class mapClass = Class.forName(mt.getClazz(), true, cl);
+               Class<?> mapClass = Class.forName(mt.getClazz(), true, cl);
 
                if (mt.getClazz().equals("java.util.HashMap") ||
                    mt.getClazz().equals("java.util.Hashtable") ||
                    mt.getClazz().equals("java.util.LinkedHashMap") ||
                    mt.getClazz().equals("java.util.WeakHashMap"))
                {
-                  Constructor con = mapClass.getConstructor(int.class);
+                  Constructor<?> con = mapClass.getConstructor(int.class);
                   map = (Map)con.newInstance(mt.getEntry().size());
                }
                else
@@ -1024,8 +1024,8 @@ public final class DeploymentDeployer implements CloneableDeployer
                }
             }
 
-            Class keyClass = Class.forName(mt.getKeyClass(), true, cl);
-            Class valueClass = Class.forName(mt.getValueClass(), true, cl);
+            Class<?> keyClass = Class.forName(mt.getKeyClass(), true, cl);
+            Class<?> valueClass = Class.forName(mt.getValueClass(), true, cl);
 
             for (EntryType et : mt.getEntry())
             {
@@ -1041,20 +1041,20 @@ public final class DeploymentDeployer implements CloneableDeployer
          {
             ListType lt = (ListType)element;
 
-            List list = null;
+            List<Object> list = null;
             
             if (lt.getClazz() == null)
             {
-               list = new ArrayList(lt.getValue().size());
+               list = new ArrayList<Object>(lt.getValue().size());
             }
             else
             {
-               Class listClass = Class.forName(lt.getClazz(), true, cl);
+               Class<?> listClass = Class.forName(lt.getClazz(), true, cl);
 
                if (lt.getClazz().equals("java.util.ArrayList") ||
                    lt.getClazz().equals("java.util.Vector"))
                {
-                  Constructor con = listClass.getConstructor(int.class);
+                  Constructor<?> con = listClass.getConstructor(int.class);
                   list = (List)con.newInstance(lt.getValue().size());
                }
                else
@@ -1063,7 +1063,7 @@ public final class DeploymentDeployer implements CloneableDeployer
                }
             }
 
-            Class elementClass = Class.forName(lt.getElementClass(), true, cl);
+            Class<?> elementClass = Class.forName(lt.getElementClass(), true, cl);
 
             for (ValueType vt : lt.getValue())
             {
@@ -1077,19 +1077,19 @@ public final class DeploymentDeployer implements CloneableDeployer
          {
             SetType st = (SetType)element;
 
-            Set set = null;
+            Set<Object> set = null;
             
             if (st.getClazz() == null)
             {
-               set = new HashSet(st.getValue().size());
+               set = new HashSet<Object>(st.getValue().size());
             }
             else
             {
-               Class setClass = Class.forName(st.getClazz(), true, cl);
+               Class<?> setClass = Class.forName(st.getClazz(), true, cl);
 
                if (st.getClazz().equals("java.util.HashSet"))
                {
-                  Constructor con = setClass.getConstructor(int.class);
+                  Constructor<?> con = setClass.getConstructor(int.class);
                   set = (Set)con.newInstance(st.getValue().size());
                }
                else
@@ -1098,7 +1098,7 @@ public final class DeploymentDeployer implements CloneableDeployer
                }
             }
 
-            Class elementClass = Class.forName(st.getElementClass(), true, cl);
+            Class<?> elementClass = Class.forName(st.getElementClass(), true, cl);
 
             for (ValueType vt : st.getValue())
             {
