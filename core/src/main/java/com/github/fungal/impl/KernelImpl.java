@@ -251,7 +251,7 @@ public class KernelImpl implements Kernel
                                                       threadPoolQueue,
                                                       tf);
 
-      tpe.allowCoreThreadTimeOut(false);
+      tpe.allowCoreThreadTimeOut(true);
       tpe.prestartAllCoreThreads();
 
       setExecutorService(tpe);
