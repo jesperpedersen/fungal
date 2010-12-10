@@ -109,7 +109,7 @@ public class Netboot
 
                   for (PropertyType property : pt.getProperty())
                   {
-                     injection.inject(null, property.getName(), property.getValue(), p);
+                     injection.inject(p, property.getName(), property.getValue());
                   }
                   
                   protocolMap.put(pt.getId(), p);

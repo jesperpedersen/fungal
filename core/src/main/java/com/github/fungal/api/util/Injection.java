@@ -22,6 +22,7 @@ package com.github.fungal.api.util;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Locale;
@@ -42,23 +43,59 @@ public class Injection
 
    /**
     * Inject a value into an object property
-    * @param propertyType The property type as a fully quilified class name
+    * @param object The object
     * @param propertyName The property name
     * @param propertyValue The property value
-    * @param object The object
     * @exception NoSuchMethodException If the property method cannot be found
     * @exception IllegalAccessException If the property method cannot be accessed
     * @exception InvocationTargetException If the property method cannot be executed
     */
    @SuppressWarnings("unchecked")
-   public void inject(String propertyType, String propertyName, String propertyValue, Object object)
+   public void inject(Object object, String propertyName, Object propertyValue)
       throws NoSuchMethodException, IllegalAccessException, InvocationTargetException
    {
-      if (propertyName == null || propertyName.trim().equals(""))
-         throw new IllegalArgumentException("PropertyName is undefined");
+      inject(object, propertyName, propertyValue, null, false);
+   }
 
+   /**
+    * Inject a value into an object property
+    * @param object The object
+    * @param propertyName The property name
+    * @param propertyValue The property value
+    * @param propertyType The property type as a fully quilified class name
+    * @exception NoSuchMethodException If the property method cannot be found
+    * @exception IllegalAccessException If the property method cannot be accessed
+    * @exception InvocationTargetException If the property method cannot be executed
+    */
+   @SuppressWarnings("unchecked")
+   public void inject(Object object, String propertyName, Object propertyValue, String propertyType)
+      throws NoSuchMethodException, IllegalAccessException, InvocationTargetException
+   {
+      inject(object, propertyName, propertyValue, propertyType, false);
+   }
+
+   /**
+    * Inject a value into an object property
+    * @param object The object
+    * @param propertyName The property name
+    * @param propertyValue The property value
+    * @param propertyType The property type as a fully quilified class name
+    * @param includeFields Should fields be included for injection if a method can't be found
+    * @exception NoSuchMethodException If the property method cannot be found
+    * @exception IllegalAccessException If the property method cannot be accessed
+    * @exception InvocationTargetException If the property method cannot be executed
+    */
+   @SuppressWarnings("unchecked")
+   public void inject(Object object, 
+                      String propertyName, Object propertyValue, String propertyType,
+                      boolean includeFields)
+      throws NoSuchMethodException, IllegalAccessException, InvocationTargetException
+   {
       if (object == null)
          throw new IllegalArgumentException("Object is null");
+
+      if (propertyName == null || propertyName.trim().equals(""))
+         throw new IllegalArgumentException("PropertyName is undefined");
 
       String methodName = "set" + propertyName.substring(0, 1).toUpperCase(Locale.US);
       if (propertyName.length() > 1)
@@ -66,152 +103,166 @@ public class Injection
          methodName += propertyName.substring(1);
       }
 
-      if (propertyType == null || propertyType.trim().equals(""))
+      Method method = findMethod(object.getClass(), methodName, propertyType);
+
+      if (method != null)
       {
-         Method[] methods = object.getClass().getMethods();
-         if (methods != null)
+         Class<?> parameterClass = method.getParameterTypes()[0];
+         Object parameterValue = getValue(propertyName, parameterClass, propertyValue);
+                
+         if (!parameterClass.isPrimitive() || parameterValue != null)
+            method.invoke(object, new Object[] {parameterValue});
+      }
+      else
+      {
+         if (!includeFields)
+            throw new NoSuchMethodException("Method " + methodName + " not found");
+
+         // Ok, we didn't find a method - assume field
+         Field field = findField(object.getClass(), propertyName, propertyType);
+
+         if (field != null)
          {
-            for (int i = 0; propertyType == null && i < methods.length; i++)
+            Class<?> fieldClass = field.getType();
+            Object fieldValue = getValue(propertyName, fieldClass, propertyValue);
+
+            field.set(object, fieldValue);
+         }
+         else
+         {
+            throw new NoSuchMethodException("Field " + propertyName + " not found");
+         }
+      }
+   }
+
+   /**
+    * Find a method
+    * @param clz The class
+    * @param methodName The method name
+    * @param propertyType The property type; can be <code>null</code>
+    * @return The method; <code>null</code> if not found
+    */
+   private Method findMethod(Class<?> clz, String methodName, String propertyType)
+   {
+      while (!clz.equals(Object.class))
+      {
+         Method[] methods = clz.getDeclaredMethods();
+         for (int i = 0; i < methods.length; i++)
+         {
+            Method method = methods[i];
+            if (methodName.equals(method.getName()) && method.getParameterTypes().length == 1)
             {
-               Method method = methods[i];
-               if (methodName.equals(method.getName()) && method.getParameterTypes().length == 1)
-               {
-                  propertyType = method.getParameterTypes()[0].getName();
-               }
+               if (propertyType == null || propertyType.equals(method.getParameterTypes()[0]))
+                  return method;
+            }
+         }
+
+         clz = clz.getSuperclass();
+      }
+      
+      return null;
+   }
+
+   /**
+    * Find a field
+    * @param clz The class
+    * @param fieldName The field name
+    * @param fieldType The field type; can be <code>null</code>
+    * @return The field; <code>null</code> if not found
+    */
+   private Field findField(Class<?> clz, String fieldName, String fieldType)
+   {
+      while (!clz.equals(Object.class))
+      {
+         Field[] fields = clz.getDeclaredFields();
+         for (int i = 0; i < fields.length; i++)
+         {
+            Field field = fields[i];
+            if (fieldName.equals(field.getName()))
+            {
+               if (fieldType == null || fieldType.equals(field.getType()))
+                  return field;
+            }
+         }
+
+         clz = clz.getSuperclass();
+      }
+      
+      return null;
+   }
+
+   /**
+    * Get the value
+    * @param name The value name
+    * @param clz The value class
+    * @param v The value
+    * @return The substituted value
+    */
+   private Object getValue(String name, Class<?> clz, Object v)
+   {
+      if (v instanceof String)
+      {
+         String substituredValue = getSubstitutionValue((String)v);
+
+         if (clz.equals(String.class))
+         {
+            v = substituredValue;
+         }
+         else if (clz.equals(byte.class) || clz.equals(Byte.class))
+         {
+            if (substituredValue != null && !substituredValue.trim().equals(""))
+               v = Byte.valueOf(substituredValue);
+         }
+         else if (clz.equals(short.class) || clz.equals(Short.class))
+         {
+            if (substituredValue != null && !substituredValue.trim().equals(""))
+               v = Short.valueOf(substituredValue);
+         }
+         else if (clz.equals(int.class) || clz.equals(Integer.class))
+         {
+            if (substituredValue != null && !substituredValue.trim().equals(""))
+               v = Integer.valueOf(substituredValue);
+         }
+         else if (clz.equals(long.class) || clz.equals(Long.class))
+         {
+            if (substituredValue != null && !substituredValue.trim().equals(""))
+               v = Long.valueOf(substituredValue);
+         }
+         else if (clz.equals(float.class) || clz.equals(Float.class))
+         {
+            if (substituredValue != null && !substituredValue.trim().equals(""))
+               v = Float.valueOf(substituredValue);
+         }
+         else if (clz.equals(double.class) || clz.equals(Double.class))
+         {
+            if (substituredValue != null && !substituredValue.trim().equals(""))
+               v = Double.valueOf(substituredValue);
+         }
+         else if (clz.equals(boolean.class) || clz.equals(Boolean.class))
+         {
+            if (substituredValue != null && !substituredValue.trim().equals(""))
+               v = Boolean.valueOf(substituredValue);
+         }
+         else if (clz.equals(char.class) || clz.equals(Character.class))
+         {
+            if (substituredValue != null && !substituredValue.trim().equals(""))
+               v = Character.valueOf(substituredValue.charAt(0));
+         }
+         else
+         {
+            try
+            {
+               Constructor<?> constructor = clz.getConstructor(String.class);
+               v = constructor.newInstance(substituredValue);
+            }
+            catch (Throwable t)
+            {
+               throw new IllegalArgumentException("Unknown property resolution for property " + name);
             }
          }
       }
 
-      if (propertyType == null || propertyType.trim().equals(""))
-         throw new IllegalArgumentException("PropertyType is undefined");
-
-      Class<?> parameterClass = null;
-      Object parameterValue = null;
-
-      String substituredValue = getSubstitutionValue(propertyValue);
-
-      if (propertyType.equals("java.lang.String"))
-      {
-         parameterClass = String.class;
-         parameterValue = substituredValue;
-      }
-      else if (propertyType.equals("byte") || propertyType.equals("java.lang.Byte"))
-      {
-         parameterClass = Byte.class;
-         if (substituredValue != null && !substituredValue.trim().equals(""))
-            parameterValue = Byte.valueOf(substituredValue);
-      }
-      else if (propertyType.equals("short") || propertyType.equals("java.lang.Short"))
-      {
-         parameterClass = Short.class;
-         if (substituredValue != null && !substituredValue.trim().equals(""))
-            parameterValue = Short.valueOf(substituredValue);
-      }
-      else if (propertyType.equals("int") || propertyType.equals("java.lang.Integer"))
-      {
-         parameterClass = Integer.class;
-         if (substituredValue != null && !substituredValue.trim().equals(""))
-            parameterValue = Integer.valueOf(substituredValue);
-      }
-      else if (propertyType.equals("long") || propertyType.equals("java.lang.Long"))
-      {
-         parameterClass = Long.class;
-         if (substituredValue != null && !substituredValue.trim().equals(""))
-            parameterValue = Long.valueOf(substituredValue);
-      }
-      else if (propertyType.equals("float") || propertyType.equals("java.lang.Float"))
-      {
-         parameterClass = Float.class;
-         if (substituredValue != null && !substituredValue.trim().equals(""))
-            parameterValue = Float.valueOf(substituredValue);
-      }
-      else if (propertyType.equals("double") || propertyType.equals("java.lang.Double"))
-      {
-         parameterClass = Double.class;
-         if (substituredValue != null && !substituredValue.trim().equals(""))
-            parameterValue = Double.valueOf(substituredValue);
-      }
-      else if (propertyType.equals("boolean") || propertyType.equals("java.lang.Boolean"))
-      {
-         parameterClass = Boolean.class;
-         if (substituredValue != null && !substituredValue.trim().equals(""))
-            parameterValue = Boolean.valueOf(substituredValue);
-      }
-      else if (propertyType.equals("char") || propertyType.equals("java.lang.Character"))
-      {
-         parameterClass = Character.class;
-         if (substituredValue != null && !substituredValue.trim().equals(""))
-            parameterValue = Character.valueOf(substituredValue.charAt(0));
-      }
-      else
-      {
-         try
-         {
-            parameterClass = Class.forName(propertyType, true, object.getClass().getClassLoader());
-            Constructor<?> constructor = parameterClass.getConstructor(String.class);
-            parameterValue = constructor.newInstance(substituredValue);
-         }
-         catch (Throwable t)
-         {
-            throw new IllegalArgumentException("Unknown property type: " + propertyType + " for " +
-                                               "property " + propertyName);
-         }
-      }
-
-      Method method = null;
-      boolean objectInjection = true;
-
-      try
-      {
-         method = object.getClass().getMethod(methodName, parameterClass);
-      }
-      catch (NoSuchMethodException nsme)
-      {
-         objectInjection = false;
-
-         if (parameterClass.equals(Byte.class))
-         {
-            parameterClass = byte.class;
-         }
-         else if (parameterClass.equals(Short.class))
-         {
-            parameterClass = short.class;
-         }
-         else if (parameterClass.equals(Integer.class))
-         {
-            parameterClass = int.class;
-         }
-         else if (parameterClass.equals(Long.class))
-         {
-            parameterClass = long.class;
-         }
-         else if (parameterClass.equals(Float.class))
-         {
-            parameterClass = float.class;
-         }
-         else if (parameterClass.equals(Double.class))
-         {
-            parameterClass = double.class;
-         }
-         else if (parameterClass.equals(Boolean.class))
-         {
-            parameterClass = boolean.class;
-         }
-         else if (parameterClass.equals(Character.class))
-         {
-            parameterClass = char.class;
-         }
-         else
-         {
-            throw new IllegalArgumentException("Unknown property type: " + propertyType + " for " +
-                                               "property " + propertyName);
-         }
-
-         method = object.getClass().getMethod(methodName, parameterClass);
-      }
-
-      if (objectInjection || parameterValue != null)
-         method.invoke(object, new Object[] {parameterValue});
+      return v;
    }
 
    /**
