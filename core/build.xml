@@ -92,13 +92,14 @@
              docletpathref="fungal.lib.path.id"
              author="true"
              version="true"
+             public="true"
              windowtitle="Fungal"
              doctitle="Fungal"
              use="true"
              additionalparam="-author -version"
              classpath="${build.core.dir}/impl"
              classpathref="fungal.lib.path.id"
-             bottom="Copyright &#169; 2010 The Fungal Project (http://fungal.github.com/)">
+             bottom="Copyright &#169; 2010 The Fungal Project (http://jesperpedersen.github.com/fungal/)">
       <packageset dir="src/main/java" defaultexcludes="yes">
         <include name="com/github/fungal/**"/>
         <exclude name="com/github/fungal/bootstrap/**"/>

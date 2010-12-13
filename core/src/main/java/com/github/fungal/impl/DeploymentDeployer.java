@@ -760,6 +760,7 @@ public final class DeploymentDeployer implements CloneableDeployer
 
          Object[] args = new Object[types.length];
 
+         Injection injection = new Injection();
          for (int i = 0; i < definitions.size(); i++)
          {
             ParameterType parameter = definitions.get(i);
@@ -776,7 +777,7 @@ public final class DeploymentDeployer implements CloneableDeployer
             }
             else
             {
-               args[i] = getValue((String)v, types[i], cl);
+               args[i] = injection.getValue(parameter.toString(), types[i], (String)v, cl);
             }
          }
 
@@ -840,132 +841,6 @@ public final class DeploymentDeployer implements CloneableDeployer
       }
 
       /**
-       * Get a value from a string
-       * @param s The string representation
-       * @param clz The class
-       * @param cl The class loader
-       * @return The value
-       * @exception Exception If the string cant be converted
-       */
-      private Object getValue(String s, Class<?> clz, ClassLoader cl) throws Exception
-      {
-         s = getSubstitutionValue(s);
-
-         if (clz.equals(String.class))
-         {
-            return s;
-         }
-         else if (clz.equals(byte.class) || clz.equals(Byte.class))
-         {
-            return Byte.valueOf(s);
-         }
-         else if (clz.equals(short.class) || clz.equals(Short.class))
-         {
-            return Short.valueOf(s);
-         }
-         else if (clz.equals(int.class) || clz.equals(Integer.class))
-         {
-            return Integer.valueOf(s);
-         }
-         else if (clz.equals(long.class) || clz.equals(Long.class))
-         {
-            return Long.valueOf(s);
-         }
-         else if (clz.equals(float.class) || clz.equals(Float.class))
-         {
-            return Float.valueOf(s);
-         }
-         else if (clz.equals(double.class) || clz.equals(Double.class))
-         {
-            return Double.valueOf(s);
-         }
-         else if (clz.equals(boolean.class) || clz.equals(Boolean.class))
-         {
-            return Boolean.valueOf(s);
-         }
-         else if (clz.equals(char.class) || clz.equals(Character.class))
-         {
-            return Character.valueOf(s.charAt(0));
-         }
-         else if (clz.equals(InetAddress.class))
-         {
-            return InetAddress.getByName(s);
-         }
-         else if (clz.equals(Class.class))
-         {
-            return Class.forName(s, true, cl);
-         }
-
-         // Try String constructor
-         try
-         {
-            Constructor<?> constructor = clz.getConstructor(String.class);
-            return constructor.newInstance(s);
-         }
-         catch (Throwable t)
-         {
-            // Try static String valueOf method
-            try
-            {
-               Method valueOf = clz.getMethod("valueOf", String.class);
-               return valueOf.invoke((Object)null, s);
-            }
-            catch (Throwable inner)
-            {
-               // Ok - give up
-            }
-         }
-         
-         throw new Exception("Unknown class " + clz.getName() + " for " + s);
-      }
-
-      /**
-       * Find the set-method
-       * @param instance The object instance
-       * @param n The name
-       * @param pc The parameter class
-       * @param cl The class loader
-       * @return The method
-       * @exception Exception Thrown if an error occurs
-       */
-      @SuppressWarnings("unchecked") 
-      private Method findSetMethod(Object instance, String n, String pc, ClassLoader cl) throws Exception
-      {
-         Class<?> clz = instance.getClass();
-         Class<?> pClz = null;
-
-         if (pc != null && !pc.trim().equals(""))
-            pClz = Class.forName(pc, true, cl);
-
-         while (!clz.equals(Object.class))
-         {
-            Method[] ms = clz.getDeclaredMethods();
-            if (ms != null)
-            {
-               for (int i = 0; i < ms.length; i++)
-               {
-                  if (ms[i].getName().equals(n) &&
-                      ms[i].getParameterTypes() != null &&
-                      ms[i].getParameterTypes().length == 1)
-                  {
-                     boolean found = false;
-
-                     if (pClz == null || pClz.isAssignableFrom(ms[i].getParameterTypes()[0]))
-                        found = true;
-
-                     if (found)
-                        return ms[i];
-                  }
-               }
-            }
-            
-            clz = clz.getSuperclass();
-         }
-
-         return null;
-      }
-
-      /**
        * Set a property on an object instance
        * @param instance The object instance
        * @param pt The property type definition
@@ -975,11 +850,13 @@ public final class DeploymentDeployer implements CloneableDeployer
       @SuppressWarnings("unchecked") 
       private void setBeanProperty(Object instance, PropertyType pt, ClassLoader cl) throws Exception
       {
+         Injection injection = new Injection();
+
          String name = "set" + pt.getName().substring(0, 1).toUpperCase(Locale.US);
          if (pt.getName().length() > 1)
             name += pt.getName().substring(1);
 
-         Method m = findSetMethod(instance, name, pt.getClazz(), cl);
+         Method m = injection.findMethod(instance.getClass(), name, pt.getClazz());
       
          if (m == null)
             throw new Exception("Property " + pt.getName() + " not found on " + instance.getClass().getName());
@@ -1029,8 +906,8 @@ public final class DeploymentDeployer implements CloneableDeployer
 
             for (EntryType et : mt.getEntry())
             {
-               Object key = getValue(et.getKey().getValue(), keyClass, cl);
-               Object value = getValue(et.getValue().getValue(), valueClass, cl);
+               Object key = injection.getValue(et.toString(), keyClass, et.getKey().getValue(), cl);
+               Object value = injection.getValue(et.toString(), valueClass, et.getValue().getValue(), cl);
 
                map.put(key, value);
             }
@@ -1067,7 +944,7 @@ public final class DeploymentDeployer implements CloneableDeployer
 
             for (ValueType vt : lt.getValue())
             {
-               Object value = getValue(vt.getValue(), elementClass, cl);
+               Object value = injection.getValue(vt.toString(), elementClass, vt.getValue(), cl);
                list.add(value);
             }
 
@@ -1102,7 +979,7 @@ public final class DeploymentDeployer implements CloneableDeployer
 
             for (ValueType vt : st.getValue())
             {
-               Object value = getValue(vt.getValue(), elementClass, cl);
+               Object value = injection.getValue(vt.toString(), elementClass, vt.getValue(), cl);
                set.add(value);
             }
 
@@ -1118,84 +995,14 @@ public final class DeploymentDeployer implements CloneableDeployer
          }
          else if (element instanceof ValueType)
          {
-            parameterValue = getValue(((ValueType)element).getValue(), parameterClass, cl);
+            parameterValue = injection.getValue(pt.getName(), parameterClass, ((ValueType)element).getValue(), cl);
          }
          else
          {
-            parameterValue = getValue((String)element, parameterClass, cl);
+            parameterValue = injection.getValue(pt.getName(), parameterClass, (String)element, cl);
          }
 
          m.invoke(instance, parameterValue);
-      }
-
-      /**
-       * System property substitution
-       * @param input The input string
-       * @return The output
-       */
-      private String getSubstitutionValue(String input)
-      {
-         if (input == null || input.trim().equals(""))
-            return input;
-
-         while (input.indexOf("${") != -1)
-         {
-            int from = input.indexOf("${");
-            int to = input.indexOf("}");
-            int dv = input.indexOf(":", from + 2);
-
-            if (dv != -1)
-            {
-               if (dv > to)
-                  dv = -1;
-            }
-         
-            String systemProperty = "";
-            String defaultValue = "";
-            if (dv == -1)
-            {
-               String s = input.substring(from + 2, to);
-               if ("/".equals(s))
-               {
-                  systemProperty = File.separator;
-               }
-               else if (":".equals(s))
-               {
-                  systemProperty = File.pathSeparator;
-               }
-               else
-               {
-                  systemProperty = SecurityActions.getSystemProperty(s);
-               }
-            }
-            else
-            {
-               systemProperty = SecurityActions.getSystemProperty(input.substring(from + 2, dv));
-               defaultValue = input.substring(dv + 1, to);
-            }
-            String prefix = "";
-            String postfix = "";
-
-            if (from != 0)
-            {
-               prefix = input.substring(0, from);
-            }
-         
-            if (to + 1 < input.length() - 1)
-            {
-               postfix = input.substring(to + 1);
-            }
-
-            if (systemProperty != null && !systemProperty.trim().equals(""))
-            {
-               input = prefix + systemProperty + postfix;
-            }
-            else if (defaultValue != null && !defaultValue.trim().equals(""))
-            {
-               input = prefix + defaultValue + postfix;
-            }
-         }
-         return input;
       }
    }
 

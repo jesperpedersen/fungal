@@ -21,6 +21,7 @@
 package com.github.fungal.api.util;
 
 import java.io.File;
+import java.net.InetAddress;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -108,7 +109,16 @@ public class Injection
       if (method != null)
       {
          Class<?> parameterClass = method.getParameterTypes()[0];
-         Object parameterValue = getValue(propertyName, parameterClass, propertyValue);
+         Object parameterValue = null;
+         try
+         {
+            parameterValue = getValue(propertyName, parameterClass, propertyValue, 
+                                      object.getClass().getClassLoader());
+         }
+         catch (Throwable t)
+         {
+            throw new InvocationTargetException(t, t.getMessage());
+         }
                 
          if (!parameterClass.isPrimitive() || parameterValue != null)
             method.invoke(object, new Object[] {parameterValue});
@@ -116,7 +126,8 @@ public class Injection
       else
       {
          if (!includeFields)
-            throw new NoSuchMethodException("Method " + methodName + " not found");
+            throw new NoSuchMethodException("Method " + methodName + " not found (" +
+                                            object.getClass().getName() + ")");
 
          // Ok, we didn't find a method - assume field
          Field field = findField(object.getClass(), propertyName, propertyType);
@@ -124,13 +135,23 @@ public class Injection
          if (field != null)
          {
             Class<?> fieldClass = field.getType();
-            Object fieldValue = getValue(propertyName, fieldClass, propertyValue);
+            Object fieldValue = null;
+            try
+            {
+               fieldValue = getValue(propertyName, fieldClass, propertyValue,
+                                     object.getClass().getClassLoader());
+            }
+            catch (Throwable t)
+            {
+               throw new InvocationTargetException(t, t.getMessage());
+            }
 
             field.set(object, fieldValue);
          }
          else
          {
-            throw new NoSuchMethodException("Field " + propertyName + " not found");
+            throw new NoSuchMethodException("Field " + propertyName + " not found (" +
+                                            object.getClass().getName() + ")");
          }
       }
    }
@@ -142,7 +163,7 @@ public class Injection
     * @param propertyType The property type; can be <code>null</code>
     * @return The method; <code>null</code> if not found
     */
-   private Method findMethod(Class<?> clz, String methodName, String propertyType)
+   protected Method findMethod(Class<?> clz, String methodName, String propertyType)
    {
       while (!clz.equals(Object.class))
       {
@@ -152,7 +173,7 @@ public class Injection
             Method method = methods[i];
             if (methodName.equals(method.getName()) && method.getParameterTypes().length == 1)
             {
-               if (propertyType == null || propertyType.equals(method.getParameterTypes()[0]))
+               if (propertyType == null || propertyType.equals(method.getParameterTypes()[0].getName()))
                   return method;
             }
          }
@@ -170,7 +191,7 @@ public class Injection
     * @param fieldType The field type; can be <code>null</code>
     * @return The field; <code>null</code> if not found
     */
-   private Field findField(Class<?> clz, String fieldName, String fieldType)
+   protected Field findField(Class<?> clz, String fieldName, String fieldType)
    {
       while (!clz.equals(Object.class))
       {
@@ -180,7 +201,7 @@ public class Injection
             Field field = fields[i];
             if (fieldName.equals(field.getName()))
             {
-               if (fieldType == null || fieldType.equals(field.getType()))
+               if (fieldType == null || fieldType.equals(field.getType().getName()))
                   return field;
             }
          }
@@ -196,9 +217,11 @@ public class Injection
     * @param name The value name
     * @param clz The value class
     * @param v The value
+    * @param cl The class loader
     * @return The substituted value
+    * @exception Exception Thrown in case of an error
     */
-   private Object getValue(String name, Class<?> clz, Object v)
+   protected Object getValue(String name, Class<?> clz, Object v, ClassLoader cl) throws Exception
    {
       if (v instanceof String)
       {
@@ -248,6 +271,14 @@ public class Injection
             if (substituredValue != null && !substituredValue.trim().equals(""))
                v = Character.valueOf(substituredValue.charAt(0));
          }
+         else if (clz.equals(InetAddress.class))
+         {
+            v = InetAddress.getByName(substituredValue);
+         }
+         else if (clz.equals(Class.class))
+         {
+            v = Class.forName(substituredValue, true, cl);
+         }
          else
          {
             try
@@ -257,7 +288,16 @@ public class Injection
             }
             catch (Throwable t)
             {
-               throw new IllegalArgumentException("Unknown property resolution for property " + name);
+               // Try static String valueOf method
+               try
+               {
+                  Method valueOf = clz.getMethod("valueOf", String.class);
+                  v = valueOf.invoke((Object)null, substituredValue);
+               }
+               catch (Throwable inner)
+               {
+                  throw new IllegalArgumentException("Unknown property resolution for property " + name);
+               }
             }
          }
       }
@@ -270,7 +310,7 @@ public class Injection
     * @param input The input string
     * @return The output
     */
-   private String getSubstitutionValue(String input)
+   protected String getSubstitutionValue(String input)
    {
       if (input == null || input.trim().equals(""))
          return input;
