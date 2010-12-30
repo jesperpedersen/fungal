@@ -148,6 +148,9 @@ public class KernelImpl implements Kernel
    /** Hot deployer */
    private HotDeployer hotDeployer;
 
+   /** Remote JMX access */
+   private JmxRemote jmxRemote;
+
    /**
     * Constructor
     * @param kc The kernel configuration
@@ -187,6 +190,7 @@ public class KernelImpl implements Kernel
       this.deployerPhasesBeans.clear();
       this.newDeployerPhasesBeans.clear();
       this.hotDeployer = null;
+      this.jmxRemote = null;
    }
 
    /**
@@ -575,6 +579,18 @@ public class KernelImpl implements Kernel
          getExecutorService().submit(remote);
       }
 
+      // JMX Remote
+      if (kernelConfiguration.isRemoteJmxAccess() &&
+          kernelConfiguration.getBindAddress() != null)
+      {
+         jmxRemote = new JmxRemote(mbeanServer,
+                                   kernelConfiguration.getBindAddress(),
+                                   kernelConfiguration.getRmiRegistryPort(),
+                                   kernelConfiguration.getRmiServerPort());
+
+         jmxRemote.start();
+      }
+
       // Memory information
       if (log.isLoggable(Level.FINE))
       {
@@ -683,6 +699,11 @@ public class KernelImpl implements Kernel
       if (remote != null)
       {
          remote.stop();
+      }
+
+      if (jmxRemote != null)
+      {
+         jmxRemote.stop();
       }
 
       // PreUndeploy

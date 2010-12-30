@@ -92,6 +92,15 @@ public class KernelConfiguration
    /** Deployment order */
    private DeploymentOrder deploymentOrder;
 
+   /** Remote JMX access */
+   private boolean remoteJmxAccess;
+
+   /** RMI registry port */
+   private int rmiRegistryPort;
+
+   /** RMI server port */
+   private int rmiServerPort;
+
    /**
     * Constructor
     */
@@ -115,6 +124,9 @@ public class KernelConfiguration
       eventListeners = null;
       commands = null;
       deploymentOrder = null;
+      remoteJmxAccess = false;
+      rmiRegistryPort = 1203;
+      rmiServerPort = 1204;
    }
 
    /**
@@ -510,5 +522,68 @@ public class KernelConfiguration
          return new DeploymentOrder();
 
       return deploymentOrder;
+   }
+
+   /**
+    * Set the remote JMX access; default <code>false</code>
+    * @param v The value
+    * @return The configuration
+    */
+   public KernelConfiguration remoteJmxAccess(boolean v)
+   {
+      this.remoteJmxAccess = v;
+
+      return this;
+   }
+
+   /**
+    * Is remote JMX access enabled ?
+    * @return The value
+    */
+   public boolean isRemoteJmxAccess()
+   {
+      return remoteJmxAccess;
+   }
+
+   /**
+    * Set the RMI registry port; default <code>1203</code>
+    * @param port The port
+    * @return The configuration
+    */
+   public KernelConfiguration rmiRegistryPort(int port)
+   {
+      this.rmiRegistryPort = port;
+
+      return this;
+   }
+
+   /**
+    * Get the RMI registry port
+    * @return The port
+    */
+   public int getRmiRegistryPort()
+   {
+      return rmiRegistryPort;
+   }
+
+   /**
+    * Set the RMI server port; default <code>1204</code>
+    * @param port The port
+    * @return The configuration
+    */
+   public KernelConfiguration rmiServerPort(int port)
+   {
+      this.rmiServerPort = port;
+
+      return this;
+   }
+
+   /**
+    * Get the RMI server port
+    * @return The port
+    */
+   public int getRmiServerPort()
+   {
+      return rmiServerPort;
    }
 }

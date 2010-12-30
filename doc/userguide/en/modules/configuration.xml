@@ -234,6 +234,19 @@ kernelConfiguration.remoteAccess(true);
 
       </section>
 
+      <section id="kernel_configuration_remotejmxaccess">
+        <title><code>remoteJmxAccess</code></title>
+
+        <para>The <code>remoteJmxAccess</code> parameter specifies if remote access to kernel JMX layer should
+          be enabled (JSR-160).</para>
+
+        <para>An example</para>
+        <programlisting>
+kernelConfiguration.remoteJmxAccess(true);
+        </programlisting>
+
+      </section>
+
       <section id="kernel_configuration_remoteport">
         <title><code>remotePort</code></title>
 
@@ -257,6 +270,32 @@ kernelConfiguration.remotePort(1202);
 kernelConfiguration.repository("repository");
         </programlisting>
         
+      </section>
+
+      <section id="kernel_configuration_rmiregistryport">
+        <title><code>rmiRegistryPort</code></title>
+
+        <para>The <code>rmiRegistryPort</code> parameter specifies the port number for RMI registry
+          which is used for remote access to the JMX layer.</para>
+
+        <para>An example</para>
+        <programlisting>
+kernelConfiguration.rmiRegistryPort(1203);
+        </programlisting>
+
+      </section>
+
+      <section id="kernel_configuration_rmiserverport">
+        <title><code>rmiServerPort</code></title>
+
+        <para>The <code>rmiServerPort</code> parameter specifies the port number for RMI server
+          which is used for remote access to the JMX layer.</para>
+
+        <para>An example</para>
+        <programlisting>
+kernelConfiguration.rmiServerPort(1204);
+        </programlisting>
+
       </section>
 
       <section id="kernel_configuration_system">
