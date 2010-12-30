@@ -81,6 +81,9 @@ class JmxRemote
    /**
     * Constructor
     * @param mbeanServer The MBean server
+    * @param bindAddress The bind address
+    * @param registryPort The registry port
+    * @param serverPort The server port
     */
    JmxRemote(MBeanServer mbeanServer, String bindAddress, int registryPort, int serverPort)
    {

@@ -89,7 +89,7 @@ public class MBeanService
 
    /**
     * Start
-    * @exception Thrown in case of an error
+    * @exception Throwable Thrown in case of an error
     */
    public void start() throws Throwable
    {
@@ -121,11 +121,11 @@ public class MBeanService
 
    /**
     * Stop
-    * @exception Thrown in case of an error
+    * @exception Throwable Thrown in case of an error
     */
    public void stop() throws Throwable
    {
       if (registered)
          mbeanServer.unregisterMBean(on); 
-  }
+   }
 }
