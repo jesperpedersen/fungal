@@ -108,6 +108,8 @@ public class Injection
 
       if (method != null)
       {
+         method.setAccessible(true);
+
          Class<?> parameterClass = method.getParameterTypes()[0];
          Object parameterValue = null;
          try
@@ -134,6 +136,8 @@ public class Injection
 
          if (field != null)
          {
+            field.setAccessible(true);
+
             Class<?> fieldClass = field.getType();
             Object fieldValue = null;
             try

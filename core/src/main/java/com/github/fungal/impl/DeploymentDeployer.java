@@ -417,7 +417,11 @@ public final class DeploymentDeployer implements CloneableDeployer
          if (bt.getClazz() != null && bt.getConstructor() == null)
          {
             clz = Class.forName(bt.getClazz(), true, cl);
-            instance = clz.newInstance();
+
+            Constructor<?> con = findConstructor(clz, null, cl);
+            con.setAccessible(true);
+
+            instance = con.newInstance();
          }
          else
          {
@@ -445,7 +449,10 @@ public final class DeploymentDeployer implements CloneableDeployer
             {
                if (ct.getParameter() == null || ct.getParameter().size() == 0)
                {
-                  instance = factoryClass.newInstance();
+                  Constructor<?> con = findConstructor(factoryClass, null, cl);
+                  con.setAccessible(true);
+
+                  instance = con.newInstance();
                   clz = instance.getClass();
                }
                else
@@ -453,6 +460,7 @@ public final class DeploymentDeployer implements CloneableDeployer
                   Constructor<?> factoryConstructor = findConstructor(factoryClass, ct.getParameter(), cl);
                   Object[] args = getArguments(ct.getParameter(), factoryConstructor.getParameterTypes(), cl);
 
+                  factoryConstructor.setAccessible(true);
                   instance = factoryConstructor.newInstance(args);
                   clz = instance.getClass();
                }
@@ -460,10 +468,11 @@ public final class DeploymentDeployer implements CloneableDeployer
             else
             {
                Method factoryMethod = findMethod(factoryClass, ct.getFactoryMethod(), ct.getParameter(), cl);
+               factoryMethod.setAccessible(true);
 
                if (ct.getParameter() == null || ct.getParameter().size() == 0)
                {
-                  instance = factoryMethod.invoke(factoryObject, (Object[])null);
+                  instance = factoryMethod.invoke(factoryObject);
                   clz = instance.getClass();
                }
                else
@@ -489,7 +498,8 @@ public final class DeploymentDeployer implements CloneableDeployer
             try
             {
                Method createMethod = clz.getMethod("create", (Class[])null);
-               createMethod.invoke(instance, (Object[])null);
+               createMethod.setAccessible(true);
+               createMethod.invoke(instance);
             }
             catch (NoSuchMethodException nsme)
             {
@@ -506,7 +516,8 @@ public final class DeploymentDeployer implements CloneableDeployer
             try
             {
                Method startMethod = clz.getMethod("start", (Class[])null);
-               startMethod.invoke(instance, (Object[])null);
+               startMethod.setAccessible(true);
+               startMethod.invoke(instance);
             }
             catch (NoSuchMethodException nsme)
             {
@@ -532,7 +543,8 @@ public final class DeploymentDeployer implements CloneableDeployer
                try
                {
                   Method method = clz.getMethod(it.getMethod(), (Class[])null);
-                  method.invoke(instance, (Object[])null);
+                  method.setAccessible(true);
+                  method.invoke(instance);
                }
                catch (InvocationTargetException ite)
                {
@@ -550,6 +562,7 @@ public final class DeploymentDeployer implements CloneableDeployer
                try
                {
                   Method method = clz.getMethod(ut.getMethod(), (Class[])null);
+                  method.setAccessible(true);
                   methods.add(method);
                }
                catch (NoSuchMethodException nsme)
@@ -577,6 +590,8 @@ public final class DeploymentDeployer implements CloneableDeployer
                if (candidates.size() > 0)
                {
                   Method method = candidates.get(0);
+                  method.setAccessible(true);
+
                   Class<?> parameter = method.getParameterTypes()[0];
 
                   Callback cb = new Callback(parameter, method, instance);
@@ -603,6 +618,8 @@ public final class DeploymentDeployer implements CloneableDeployer
                if (candidates.size() > 0)
                {
                   Method method = candidates.get(0);
+                  method.setAccessible(true);
+
                   Class<?> parameter = method.getParameterTypes()[0];
 
                   Callback cb = new Callback(parameter, method, instance);
@@ -641,42 +658,66 @@ public final class DeploymentDeployer implements CloneableDeployer
       {
          if (parameters == null || parameters.size() == 0)
          {
-            return clz.getConstructor((Class<?>)null);
+            Class<?> constructorClass = clz;
+
+            while (!constructorClass.equals(Object.class))
+            {
+               Constructor[] constructors = constructorClass.getDeclaredConstructors();
+
+               if (constructors != null)
+               {
+                  for (int i = 0; i < constructors.length; i++)
+                  {
+                     Constructor<?> con = constructors[i];
+                     if (con.getParameterTypes().length == 0)
+                        return con;
+                  }
+               }
+
+               constructorClass = constructorClass.getSuperclass();
+            }
          }
          else
          {
-            Constructor[] constructors = clz.getConstructors();
+            Class<?> constructorClass = clz;
 
-            for (Constructor<?> c : constructors)
+            while (!constructorClass.equals(Object.class))
             {
-               if (parameters.size() == c.getParameterTypes().length)
+               Constructor[] constructors = constructorClass.getDeclaredConstructors();
+
+               for (Constructor<?> c : constructors)
                {
-                  boolean include = true;
-
-                  for (int i = 0; include && i < parameters.size(); i++)
+                  if (parameters.size() == c.getParameterTypes().length)
                   {
-                     ParameterType pt = parameters.get(i);
-                     Class<?> parameterClass = c.getParameterTypes()[i];
+                     boolean include = true;
 
-                     if (pt.getClazz() == null)
+                     for (int i = 0; include && i < parameters.size(); i++)
                      {
-                        if ((!(pt.getContent().get(0) instanceof InjectType)) &&
-                            (!(pt.getContent().get(0) instanceof NullType)))
-                           if (!SUPPORTED_TYPES.contains(parameterClass))
+                        ParameterType pt = parameters.get(i);
+                        Class<?> parameterClass = c.getParameterTypes()[i];
+
+                        if (pt.getClazz() == null)
+                        {
+                           if ((!(pt.getContent().get(0) instanceof InjectType)) &&
+                               (!(pt.getContent().get(0) instanceof NullType)))
+                              if (!SUPPORTED_TYPES.contains(parameterClass))
+                                 include = false;
+                        }
+                        else
+                        {
+                           Class<?> pClz = Class.forName(pt.getClazz(), true, cl);
+
+                           if (!parameterClass.equals(pClz))
                               include = false;
+                        }
                      }
-                     else
-                     {
-                        Class<?> pClz = Class.forName(pt.getClazz(), true, cl);
 
-                        if (!parameterClass.equals(pClz))
-                           include = false;
-                     }
+                     if (include)
+                        return c;
                   }
-
-                  if (include)
-                     return c;
                }
+
+               constructorClass = constructorClass.getSuperclass();
             }
          }
 
@@ -698,45 +739,69 @@ public final class DeploymentDeployer implements CloneableDeployer
       {
          if (parameters == null || parameters.size() == 0)
          {
-            return clz.getMethod(name, (Class<?>[])null);
+            Class<?> methodClass = clz;
+
+            while (!methodClass.equals(Object.class))
+            {
+               Method[] methods = methodClass.getDeclaredMethods();
+
+               if (methods != null)
+               {
+                  for (int i = 0; i < methods.length; i++)
+                  {
+                     Method method = methods[i];
+                     if (name.equals(method.getName()) && method.getParameterTypes().length == 0)
+                        return method;
+                  }
+               }
+
+               methodClass = methodClass.getSuperclass();
+            }
          }
          else
          {
-            Method[] methods = clz.getMethods();
+            Class<?> methodClass = clz;
 
-            for (Method m : methods)
+            while (!methodClass.equals(Object.class))
             {
-               if (m.getName().equals(name))
+               Method[] methods = methodClass.getDeclaredMethods();
+
+               for (Method m : methods)
                {
-                  if (parameters.size() == m.getParameterTypes().length)
+                  if (m.getName().equals(name))
                   {
-                     boolean include = true;
-
-                     for (int i = 0; include && i < parameters.size(); i++)
+                     if (parameters.size() == m.getParameterTypes().length)
                      {
-                        ParameterType pt = parameters.get(i);
-                        Class<?> parameterClass = m.getParameterTypes()[i];
+                        boolean include = true;
 
-                        if (pt.getClazz() == null)
+                        for (int i = 0; include && i < parameters.size(); i++)
                         {
-                           if ((!(pt.getContent().get(0) instanceof InjectType)) &&
-                               (!(pt.getContent().get(0) instanceof NullType)))
-                              if (!SUPPORTED_TYPES.contains(parameterClass))
-                                 include = false;
-                        }
-                        else
-                        {
-                           Class<?> pClz = Class.forName(pt.getClazz(), true, cl);
+                           ParameterType pt = parameters.get(i);
+                           Class<?> parameterClass = m.getParameterTypes()[i];
+
+                           if (pt.getClazz() == null)
+                           {
+                              if ((!(pt.getContent().get(0) instanceof InjectType)) &&
+                                  (!(pt.getContent().get(0) instanceof NullType)))
+                                 if (!SUPPORTED_TYPES.contains(parameterClass))
+                                    include = false;
+                           }
+                           else
+                           {
+                              Class<?> pClz = Class.forName(pt.getClazz(), true, cl);
                            
-                           if (!parameterClass.equals(pClz))
-                              include = false;
+                              if (!parameterClass.equals(pClz))
+                                 include = false;
+                           }
                         }
-                     }
 
-                     if (include)
-                        return m;
+                        if (include)
+                           return m;
+                     }
                   }
                }
+
+               methodClass = methodClass.getSuperclass();
             }
          }
 
@@ -826,10 +891,12 @@ public final class DeploymentDeployer implements CloneableDeployer
 
             if (method != null)
             {
-               return method.invoke(injectionObject, (Object[])null);
+               method.setAccessible(true);
+               return method.invoke(injectionObject);
             }
             else
             {
+               field.setAccessible(true);
                return field.get(injectionObject);
             }
          }
@@ -859,6 +926,8 @@ public final class DeploymentDeployer implements CloneableDeployer
       
          if (m == null)
             throw new Exception("Property " + pt.getName() + " not found on " + instance.getClass().getName());
+
+         m.setAccessible(true);
 
          Class<?> parameterClass = m.getParameterTypes()[0];
       
@@ -892,6 +961,7 @@ public final class DeploymentDeployer implements CloneableDeployer
                    mt.getClazz().equals("java.util.WeakHashMap"))
                {
                   Constructor<?> con = mapClass.getConstructor(int.class);
+                  con.setAccessible(true);
                   map = (Map)con.newInstance(mt.getEntry().size());
                }
                else
@@ -931,6 +1001,7 @@ public final class DeploymentDeployer implements CloneableDeployer
                    lt.getClazz().equals("java.util.Vector"))
                {
                   Constructor<?> con = listClass.getConstructor(int.class);
+                  con.setAccessible(true);
                   list = (List)con.newInstance(lt.getValue().size());
                }
                else
@@ -966,6 +1037,7 @@ public final class DeploymentDeployer implements CloneableDeployer
                if (st.getClazz().equals("java.util.HashSet"))
                {
                   Constructor<?> con = setClass.getConstructor(int.class);
+                  con.setAccessible(true);
                   set = (Set)con.newInstance(st.getValue().size());
                }
                else

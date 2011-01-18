@@ -79,7 +79,7 @@ import javax.management.ObjectName;
 public class KernelImpl implements Kernel
 {
    /** Version information */
-   private static final String VERSION = "Fungal 0.9.0.RC1";
+   private static final String VERSION = "Fungal 0.9.0.RC2";
 
    /** Kernel configuration */
    private KernelConfiguration kernelConfiguration;
@@ -811,6 +811,7 @@ public class KernelImpl implements Kernel
       try
       {
          Method stopMethod = deployment.getClass().getMethod("stop", (Class[])null);
+         stopMethod.setAccessible(true);
          stopMethod.invoke(deployment, (Object[])null);
       }
       catch (NoSuchMethodException nsme)
@@ -825,6 +826,7 @@ public class KernelImpl implements Kernel
       try
       {
          Method destroyMethod = deployment.getClass().getMethod("destroy", (Class[])null);
+         destroyMethod.setAccessible(true);
          destroyMethod.invoke(deployment, (Object[])null);
       }
       catch (NoSuchMethodException nsme)
@@ -971,7 +973,8 @@ public class KernelImpl implements Kernel
                         {
                            Method m = cb.getMethod();
                            Object instance = cb.getInstance();
-                           
+
+                           m.setAccessible(true);
                            m.invoke(instance, new Object[] {bean});
                         }
                         catch (Throwable t)
@@ -1206,6 +1209,7 @@ public class KernelImpl implements Kernel
                            Method m = cb.getMethod();
                            Object instance = cb.getInstance();
                            
+                           m.setAccessible(true);
                            m.invoke(instance, new Object[] {bean});
 
                            registeredCallbacks.add(cb);

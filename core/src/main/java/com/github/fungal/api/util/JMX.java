@@ -448,6 +448,8 @@ public class JMX
                      method = instance.getClass().getMethod("is" + name, (Class[])null);
                   }
 
+                  method.setAccessible(true);
+
                   return method.invoke(instance, (Object[])null);
                }
                catch (Exception e)
@@ -551,6 +553,7 @@ public class JMX
                      }
 
                      Method method = instance.getClass().getMethod(actionName, paramTypes);
+                     method.setAccessible(true);
 
                      return method.invoke(instance, params);
                   }
@@ -593,6 +596,7 @@ public class JMX
                {
                   Class<?> type = Class.forName(mai.getType(), true, instance.getClass().getClassLoader());
                   Method method = instance.getClass().getMethod("set" + name, new Class<?>[] {type});
+                  method.setAccessible(true);
 
                   method.invoke(instance, new Object[] {attribute.getValue()});
                }

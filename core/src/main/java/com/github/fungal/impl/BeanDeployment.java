@@ -162,6 +162,7 @@ public class BeanDeployment implements Deployment
                {
                   try
                   {
+                     m.setAccessible(true);
                      m.invoke(bean, (Object[])null);
                   }
                   catch (InvocationTargetException ite)
@@ -176,6 +177,7 @@ public class BeanDeployment implements Deployment
                try
                {
                   Method stopMethod = bean.getClass().getMethod("stop", (Class[])null);
+                  stopMethod.setAccessible(true);
                   stopMethod.invoke(bean, (Object[])null);
                }
                catch (NoSuchMethodException nsme)
@@ -193,6 +195,7 @@ public class BeanDeployment implements Deployment
                try
                {
                   Method destroyMethod = bean.getClass().getMethod("destroy", (Class[])null);
+                  destroyMethod.setAccessible(true);
                   destroyMethod.invoke(bean, (Object[])null);
                }
                catch (NoSuchMethodException nsme)
