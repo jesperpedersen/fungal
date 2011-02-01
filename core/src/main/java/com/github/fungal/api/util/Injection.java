@@ -169,9 +169,11 @@ public class Injection
     */
    protected Method findMethod(Class<?> clz, String methodName, String propertyType)
    {
-      while (!clz.equals(Object.class))
+      Class<?> c = clz;
+
+      while (c != null)
       {
-         Method[] methods = clz.getDeclaredMethods();
+         Method[] methods = c.getDeclaredMethods();
          for (int i = 0; i < methods.length; i++)
          {
             Method method = methods[i];
@@ -182,7 +184,7 @@ public class Injection
             }
          }
 
-         clz = clz.getSuperclass();
+         c = c.getSuperclass();
       }
       
       return null;
@@ -197,9 +199,11 @@ public class Injection
     */
    protected Field findField(Class<?> clz, String fieldName, String fieldType)
    {
-      while (!clz.equals(Object.class))
+      Class<?> c = clz;
+
+      while (c != null)
       {
-         Field[] fields = clz.getDeclaredFields();
+         Field[] fields = c.getDeclaredFields();
          for (int i = 0; i < fields.length; i++)
          {
             Field field = fields[i];
@@ -210,7 +214,7 @@ public class Injection
             }
          }
 
-         clz = clz.getSuperclass();
+         c = c.getSuperclass();
       }
       
       return null;

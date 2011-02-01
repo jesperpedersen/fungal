@@ -660,7 +660,7 @@ public final class DeploymentDeployer implements CloneableDeployer
          {
             Class<?> constructorClass = clz;
 
-            while (!constructorClass.equals(Object.class))
+            while (constructorClass != null)
             {
                Constructor[] constructors = constructorClass.getDeclaredConstructors();
 
@@ -681,7 +681,7 @@ public final class DeploymentDeployer implements CloneableDeployer
          {
             Class<?> constructorClass = clz;
 
-            while (!constructorClass.equals(Object.class))
+            while (constructorClass != null)
             {
                Constructor[] constructors = constructorClass.getDeclaredConstructors();
 
@@ -741,7 +741,7 @@ public final class DeploymentDeployer implements CloneableDeployer
          {
             Class<?> methodClass = clz;
 
-            while (!methodClass.equals(Object.class))
+            while (methodClass != null)
             {
                Method[] methods = methodClass.getDeclaredMethods();
 
@@ -762,7 +762,7 @@ public final class DeploymentDeployer implements CloneableDeployer
          {
             Class<?> methodClass = clz;
 
-            while (!methodClass.equals(Object.class))
+            while (methodClass != null)
             {
                Method[] methods = methodClass.getDeclaredMethods();
 
