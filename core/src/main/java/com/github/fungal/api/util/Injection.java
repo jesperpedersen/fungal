@@ -375,6 +375,10 @@ public class Injection
          {
             input = prefix + defaultValue + postfix;
          }
+         else
+         {
+            input = prefix + postfix;
+         }
       }
       return input;
    }
