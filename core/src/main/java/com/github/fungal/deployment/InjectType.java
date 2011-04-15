@@ -92,4 +92,22 @@ public class InjectType
    {
       this.property = value;
    }
+
+   /**
+    * String representation
+    * @return The string
+    */
+   @Override
+   public String toString()
+   {
+      StringBuilder sb = new StringBuilder();
+
+      sb.append("InjectType@").append(Integer.toHexString(System.identityHashCode(this)));
+      sb.append("[value=").append(value);
+      sb.append(" bean=").append(bean);
+      sb.append(" property=").append(property);
+      sb.append("]");
+
+      return sb.toString();
+   }
 }

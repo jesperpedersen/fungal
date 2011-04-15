@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.JarURLConnection;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -38,6 +40,12 @@ import javax.xml.stream.XMLStreamReader;
  */
 public class Unmarshaller
 {
+   /** The logger */
+   private Logger log = Logger.getLogger(Unmarshaller.class.getName());
+
+   /** Trace logging enabled */
+   private boolean trace = log.isLoggable(Level.FINEST);
+
    /**
     * Constructor
     */

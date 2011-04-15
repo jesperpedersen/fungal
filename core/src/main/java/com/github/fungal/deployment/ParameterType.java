@@ -72,13 +72,18 @@ public class ParameterType
 
    /**
     * String representation
-    * @return The value
+    * @return The string
     */
+   @Override
    public String toString()
    {
-      if (clazz == null)
-         return "<Unknown>";
+      StringBuilder sb = new StringBuilder();
 
-      return clazz;
+      sb.append("ParameterType@").append(Integer.toHexString(System.identityHashCode(this)));
+      sb.append("[clazz=").append(clazz);
+      sb.append(" content=").append(content);
+      sb.append("]");
+
+      return sb.toString();
    }
 }
