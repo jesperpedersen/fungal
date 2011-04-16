@@ -188,7 +188,7 @@ public class JMX
          Set<Pattern> operationPatterns = null;
 
          Map<String, Map<String, Method>> attributeMap = new HashMap<String, Map<String, Method>>();
-         Map<String, Method> operationMap = new HashMap<String, Method>();
+         Map<String, Set<Method>> operationMap = new HashMap<String, Set<Method>>();
 
          if (writeableAttributes != null)
          {
@@ -325,7 +325,12 @@ public class JMX
                   
                   if (include)
                   {
-                     operationMap.put(name, method);
+                     Set<Method> ms = operationMap.get(name);
+                     if (ms == null)
+                        ms = new HashSet<Method>();
+
+                     ms.add(method);
+                     operationMap.put(name, ms);
                   }
                }
             }
@@ -356,13 +361,13 @@ public class JMX
             }
          }
 
-         Iterator<Map.Entry<String, Method>> oit = operationMap.entrySet().iterator();
+         Iterator<Map.Entry<String, Set<Method>>> oit = operationMap.entrySet().iterator();
          while (oit.hasNext())
          {
-            Map.Entry<String, Method> entry = oit.next();
+            Map.Entry<String, Set<Method>> entry = oit.next();
 
             String name = entry.getKey();
-            Method operation = entry.getValue();
+            Set<Method> operations = entry.getValue();
 
             try
             {
@@ -370,28 +375,31 @@ public class JMX
                if (descriptions != null && descriptions.get(name) != null)
                   desc = descriptions.get(name);
 
-               MBeanParameterInfo[] signature = null;
-
-               if (operation.getParameterTypes().length > 0)
+               for (Method operation : operations)
                {
-                  signature = new MBeanParameterInfo[operation.getParameterTypes().length];
-                  for (int i = 0; i < operation.getParameterTypes().length; i++)
+                  MBeanParameterInfo[] signature = null;
+
+                  if (operation.getParameterTypes().length > 0)
                   {
-                     MBeanParameterInfo pi = new MBeanParameterInfo("p" + (i + 1),
-                                                                    operation.getParameterTypes()[i].getName(),
-                                                                    "");
+                     signature = new MBeanParameterInfo[operation.getParameterTypes().length];
+                     for (int i = 0; i < operation.getParameterTypes().length; i++)
+                     {
+                        MBeanParameterInfo pi = new MBeanParameterInfo("p" + (i + 1),
+                                                                       operation.getParameterTypes()[i].getName(),
+                                                                       "");
 
-                     signature[i] = pi;
+                        signature[i] = pi;
+                     }
                   }
+
+                  MBeanOperationInfo moi = new MBeanOperationInfo(name,
+                                                                  desc, 
+                                                                  signature,
+                                                                  operation.getReturnType().getName(),
+                                                                  MBeanOperationInfo.UNKNOWN);
+
+                  ops.add(moi);
                }
-
-               MBeanOperationInfo moi = new MBeanOperationInfo(name,
-                                                               desc, 
-                                                               signature,
-                                                               operation.getReturnType().getName(),
-                                                               MBeanOperationInfo.UNKNOWN);
-
-               ops.add(moi);
             }
             catch (Throwable t)
             {
