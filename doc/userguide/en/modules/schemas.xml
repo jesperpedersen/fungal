@@ -106,6 +106,10 @@
        <xsd:element name="depends" type="dependsType" maxOccurs="unbounded" minOccurs="0"/>
        <xsd:element name="install" type="installType" maxOccurs="unbounded" minOccurs="0"/>
        <xsd:element name="uninstall" type="uninstallType" maxOccurs="unbounded" minOccurs="0"/>
+       <xsd:element name="create" type="createType" maxOccurs="1" minOccurs="0"/>
+       <xsd:element name="start" type="startType" maxOccurs="1" minOccurs="0"/>
+       <xsd:element name="stop" type="stopType" maxOccurs="1" minOccurs="0"/>
+       <xsd:element name="destroy" type="destroyType" maxOccurs="1" minOccurs="0"/>
        <xsd:element name="ignoreCreate" type="ignoreCreateType" maxOccurs="1" minOccurs="0"/>
        <xsd:element name="ignoreStart" type="ignoreStartType" maxOccurs="1" minOccurs="0"/>
        <xsd:element name="ignoreStop" type="ignoreStopType" maxOccurs="1" minOccurs="0"/>
@@ -230,6 +234,22 @@
    </xsd:complexType>
 
    <xsd:complexType name="uncallbackType">
+     <xsd:attribute name="method" type="xsd:token"/>
+   </xsd:complexType>
+
+   <xsd:complexType name="createType">
+     <xsd:attribute name="method" type="xsd:token"/>
+   </xsd:complexType>
+
+   <xsd:complexType name="startType">
+     <xsd:attribute name="method" type="xsd:token"/>
+   </xsd:complexType>
+
+   <xsd:complexType name="stopType">
+     <xsd:attribute name="method" type="xsd:token"/>
+   </xsd:complexType>
+
+   <xsd:complexType name="destroyType">
      <xsd:attribute name="method" type="xsd:token"/>
    </xsd:complexType>
 

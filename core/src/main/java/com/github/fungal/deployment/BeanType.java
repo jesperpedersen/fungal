@@ -35,6 +35,10 @@ public class BeanType
    private List<UninstallType> uninstall;
    private List<IncallbackType> incallback;
    private List<UncallbackType> uncallback;
+   private CreateType create;
+   private StartType start;
+   private StopType stop;
+   private DestroyType destroy;
    private IgnoreCreateType ignoreCreate;
    private IgnoreStartType ignoreStart;
    private IgnoreStopType ignoreStop;
@@ -55,6 +59,10 @@ public class BeanType
       uninstall = null;
       incallback = null;
       uncallback = null;
+      create = null;
+      start = null;
+      stop = null;
+      destroy = null;
       ignoreCreate = null;
       ignoreStart = null;
       ignoreStop = null;
@@ -152,6 +160,78 @@ public class BeanType
          uncallback = new ArrayList<UncallbackType>(1);
 
       return uncallback;
+   }
+
+   /**
+    * Get the create value
+    * @return The value
+    */
+   public CreateType getCreate()
+   {
+      return create;
+   }
+
+   /**
+    * Set the create value
+    * @param value The value
+    */
+   public void setCreate(CreateType value)
+   {
+      create = value;
+   }
+
+   /**
+    * Get the start value
+    * @return The value
+    */
+   public StartType getStart()
+   {
+      return start;
+   }
+
+   /**
+    * Set the start value
+    * @param value The value
+    */
+   public void setStart(StartType value)
+   {
+      start = value;
+   }
+
+   /**
+    * Get the stop value
+    * @return The value
+    */
+   public StopType getStop()
+   {
+      return stop;
+   }
+
+   /**
+    * Set the stop value
+    * @param value The value
+    */
+   public void setStop(StopType value)
+   {
+      stop = value;
+   }
+
+   /**
+    * Get the destroy value
+    * @return The value
+    */
+   public DestroyType getDestroy()
+   {
+      return destroy;
+   }
+
+   /**
+    * Set the destroy value
+    * @param value The value
+    */
+   public void setDestroy(DestroyType value)
+   {
+      destroy = value;
    }
 
    /**

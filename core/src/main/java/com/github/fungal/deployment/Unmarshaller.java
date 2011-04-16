@@ -199,6 +199,22 @@ public class Unmarshaller
                {
                   result.getUncallback().add(readUncallback(xmlStreamReader));
                }
+               else if ("create".equals(name))
+               {
+                  result.setCreate(readCreate(xmlStreamReader));
+               }
+               else if ("start".equals(name))
+               {
+                  result.setStart(readStart(xmlStreamReader));
+               }
+               else if ("stop".equals(name))
+               {
+                  result.setStop(readStop(xmlStreamReader));
+               }
+               else if ("destroy".equals(name))
+               {
+                  result.setDestroy(readDestroy(xmlStreamReader));
+               }
                else if ("ignoreCreate".equals(name))
                {
                   result.setIgnoreCreate(readIgnoreCreate(xmlStreamReader));
@@ -953,6 +969,134 @@ public class Unmarshaller
 
       if (!"factory".equals(xmlStreamReader.getLocalName()))
          throw new XMLStreamException("factory tag not completed", xmlStreamReader.getLocation());
+
+      return result;
+   }
+
+   /**
+    * Read: <create>
+    * @param xmlStreamReader The XML stream
+    * @return The create
+    * @exception XMLStreamException Thrown if an exception occurs
+    */
+   private CreateType readCreate(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   {
+      CreateType result = new CreateType();
+
+      for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++)
+      {
+         String name = xmlStreamReader.getAttributeLocalName(i);
+         if ("method".equals(name))
+         {
+            result.setMethod(xmlStreamReader.getAttributeValue(i));
+         }
+      }
+
+      int eventCode = xmlStreamReader.next();
+
+      while (eventCode != XMLStreamReader.END_ELEMENT)
+      {
+         eventCode = xmlStreamReader.next();
+      }
+
+      if (!"create".equals(xmlStreamReader.getLocalName()))
+         throw new XMLStreamException("create tag not completed", xmlStreamReader.getLocation());
+
+      return result;
+   }
+
+   /**
+    * Read: <start>
+    * @param xmlStreamReader The XML stream
+    * @return The start
+    * @exception XMLStreamException Thrown if an exception occurs
+    */
+   private StartType readStart(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   {
+      StartType result = new StartType();
+
+      for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++)
+      {
+         String name = xmlStreamReader.getAttributeLocalName(i);
+         if ("method".equals(name))
+         {
+            result.setMethod(xmlStreamReader.getAttributeValue(i));
+         }
+      }
+
+      int eventCode = xmlStreamReader.next();
+
+      while (eventCode != XMLStreamReader.END_ELEMENT)
+      {
+         eventCode = xmlStreamReader.next();
+      }
+
+      if (!"start".equals(xmlStreamReader.getLocalName()))
+         throw new XMLStreamException("start tag not completed", xmlStreamReader.getLocation());
+
+      return result;
+   }
+
+   /**
+    * Read: <stop>
+    * @param xmlStreamReader The XML stream
+    * @return The stop
+    * @exception XMLStreamException Thrown if an exception occurs
+    */
+   private StopType readStop(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   {
+      StopType result = new StopType();
+
+      for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++)
+      {
+         String name = xmlStreamReader.getAttributeLocalName(i);
+         if ("method".equals(name))
+         {
+            result.setMethod(xmlStreamReader.getAttributeValue(i));
+         }
+      }
+
+      int eventCode = xmlStreamReader.next();
+
+      while (eventCode != XMLStreamReader.END_ELEMENT)
+      {
+         eventCode = xmlStreamReader.next();
+      }
+
+      if (!"stop".equals(xmlStreamReader.getLocalName()))
+         throw new XMLStreamException("stop tag not completed", xmlStreamReader.getLocation());
+
+      return result;
+   }
+
+   /**
+    * Read: <destroy>
+    * @param xmlStreamReader The XML stream
+    * @return The destroy
+    * @exception XMLStreamException Thrown if an exception occurs
+    */
+   private DestroyType readDestroy(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   {
+      DestroyType result = new DestroyType();
+
+      for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++)
+      {
+         String name = xmlStreamReader.getAttributeLocalName(i);
+         if ("method".equals(name))
+         {
+            result.setMethod(xmlStreamReader.getAttributeValue(i));
+         }
+      }
+
+      int eventCode = xmlStreamReader.next();
+
+      while (eventCode != XMLStreamReader.END_ELEMENT)
+      {
+         eventCode = xmlStreamReader.next();
+      }
+
+      if (!"destroy".equals(xmlStreamReader.getLocalName()))
+         throw new XMLStreamException("destroy tag not completed", xmlStreamReader.getLocation());
 
       return result;
    }

@@ -285,6 +285,28 @@
 
   </section>
 
+  <section id="example_lifecycle">
+    <title>Create / Start / Stop / Destroy</title>
+
+    <para>Specify the names of the <code>create</code>, <code>start</code>, <code>stop</code> and
+      <code>destroy</code> methods on <code>MyBean</code>.</para>
+
+    <programlisting>
+<![CDATA[
+<deployment>
+  <bean name="MyBean"
+        class="com.mypackage.MyBean">
+    <create method="myCreate"/>
+    <start method="myStart"/>
+    <stop method="myStop"/>
+    <destroy method="myDestroy"/>
+  </bean>
+</deployment>
+ ]]>
+    </programlisting>
+
+  </section>
+
   <section id="example_ignore">
     <title>IgnoreCreate / IgnoreStart / IgnoreStop / IgnoreDestroy</title>
 

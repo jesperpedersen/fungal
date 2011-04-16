@@ -47,6 +47,12 @@ public class BeanDeployment implements Deployment
    /** Uninstall methods */
    private Map<String, List<Method>> uninstall;
 
+   /** Stop */
+   private Map<String, String> stops;
+
+   /** Destroy */
+   private Map<String, String> destroys;
+
    /** Ignore stop */
    private Set<String> ignoreStops;
 
@@ -61,6 +67,8 @@ public class BeanDeployment implements Deployment
     * @param deployment The deployment
     * @param beans The list of bean names for the deployment
     * @param uninstall Uninstall methods for beans
+    * @param stops Stop methods for beans
+    * @param destroys Destroy methods for beans
     * @param ignoreStops Ignore stop methods for beans
     * @param ignoreDestroys Ignore destroy methods for beans
     * @param kernel The kernel
@@ -68,6 +76,8 @@ public class BeanDeployment implements Deployment
    public BeanDeployment(URL deployment, 
                          List<String> beans, 
                          Map<String, List<Method>> uninstall,
+                         Map<String, String> stops,
+                         Map<String, String> destroys,
                          Set<String> ignoreStops,
                          Set<String> ignoreDestroys,
                          KernelImpl kernel)
@@ -87,6 +97,8 @@ public class BeanDeployment implements Deployment
       this.deployment = deployment;
       this.beans = beans;
       this.uninstall = uninstall;
+      this.stops = stops;
+      this.destroys = destroys;
       this.ignoreStops = ignoreStops;
       this.ignoreDestroys = ignoreDestroys;
       this.kernel = kernel;
@@ -176,7 +188,11 @@ public class BeanDeployment implements Deployment
             {
                try
                {
-                  Method stopMethod = bean.getClass().getMethod("stop", (Class[])null);
+                  String methodName = "stop";
+                  if (stops != null && stops.containsKey(name))
+                     methodName = stops.get(name);
+
+                  Method stopMethod = bean.getClass().getMethod(methodName, (Class[])null);
                   stopMethod.setAccessible(true);
                   stopMethod.invoke(bean, (Object[])null);
                }
@@ -194,7 +210,11 @@ public class BeanDeployment implements Deployment
             {
                try
                {
-                  Method destroyMethod = bean.getClass().getMethod("destroy", (Class[])null);
+                  String methodName = "destroy";
+                  if (destroys != null && destroys.containsKey(name))
+                     methodName = destroys.get(name);
+
+                  Method destroyMethod = bean.getClass().getMethod(methodName, (Class[])null);
                   destroyMethod.setAccessible(true);
                   destroyMethod.invoke(bean, (Object[])null);
                }

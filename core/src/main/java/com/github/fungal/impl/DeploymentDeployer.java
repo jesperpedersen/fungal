@@ -123,6 +123,10 @@ public final class DeploymentDeployer implements CloneableDeployer
             List<String> beans = Collections.synchronizedList(new ArrayList<String>(deployment.getBean().size()));
             Map<String, List<Method>> uninstall = 
                new ConcurrentHashMap<String, List<Method>>(deployment.getBean().size());
+            Map<String, String> stops =
+               Collections.synchronizedMap(new HashMap<String, String>(deployment.getBean().size()));
+            Map<String, String> destroys =
+               Collections.synchronizedMap(new HashMap<String, String>(deployment.getBean().size()));
             Set<String> ignoreStops = Collections.synchronizedSet(new HashSet<String>(deployment.getBean().size()));
             Set<String> ignoreDestroys = Collections.synchronizedSet(new HashSet<String>(deployment.getBean().size()));
 
@@ -130,8 +134,9 @@ public final class DeploymentDeployer implements CloneableDeployer
 
             for (BeanType bt : deployment.getBean())
             {
-               BeanDeployer deployer = new BeanDeployer(bt, beans, uninstall, ignoreStops, ignoreDestroys, kernel,
-                                                        beansLatch, parent, log);
+               BeanDeployer deployer = new BeanDeployer(bt, beans, uninstall,
+                                                        stops, destroys, ignoreStops, ignoreDestroys,
+                                                        kernel, beansLatch, parent, log);
                deployers.add(deployer);
 
                kernel.getExecutorService().submit(deployer);
@@ -148,7 +153,7 @@ public final class DeploymentDeployer implements CloneableDeployer
             }
 
             if (deployException == null)
-               return new BeanDeployment(url, beans, uninstall, ignoreStops, ignoreDestroys, kernel);
+               return new BeanDeployment(url, beans, uninstall, stops, destroys, ignoreStops, ignoreDestroys, kernel);
          }
       }
       catch (Throwable t)
@@ -179,6 +184,12 @@ public final class DeploymentDeployer implements CloneableDeployer
 
       /** Uninstall methods */
       private Map<String, List<Method>> uninstall;
+
+      /** Stop */
+      private Map<String, String> stops;
+
+      /** Destroy */
+      private Map<String, String> destroys;
 
       /** Ignore stop */
       private Set<String> ignoreStops;
@@ -229,6 +240,8 @@ public final class DeploymentDeployer implements CloneableDeployer
        * @param bt The bean
        * @param beans The list of bean names
        * @param uninstall Uninstall methods for beans
+       * @param stops Stop methods for beans
+       * @param destroys Destroy methods for beans
        * @param ignoreStops Ignore stop methods for beans
        * @param ignoreDestroys Ignore destroy methods for beans
        * @param kernel The kernel
@@ -239,6 +252,8 @@ public final class DeploymentDeployer implements CloneableDeployer
       public BeanDeployer(BeanType bt, 
                           List<String> beans,
                           Map<String, List<Method>> uninstall,
+                          Map<String, String> stops,
+                          Map<String, String> destroys,
                           Set<String> ignoreStops,
                           Set<String> ignoreDestroys,
                           KernelImpl kernel,
@@ -249,6 +264,8 @@ public final class DeploymentDeployer implements CloneableDeployer
          this.bt = bt;
          this.beans = beans;
          this.uninstall = uninstall;
+         this.stops = stops;
+         this.destroys = destroys;
          this.ignoreStops = ignoreStops;
          this.ignoreDestroys = ignoreDestroys;
          this.kernel = kernel;
@@ -497,7 +514,11 @@ public final class DeploymentDeployer implements CloneableDeployer
          {
             try
             {
-               Method createMethod = clz.getMethod("create", (Class[])null);
+               String methodName = "create";
+               if (bt.getCreate() != null && bt.getCreate().getMethod() != null)
+                  methodName = bt.getCreate().getMethod();
+
+               Method createMethod = clz.getMethod(methodName, (Class[])null);
                createMethod.setAccessible(true);
                createMethod.invoke(instance);
             }
@@ -515,7 +536,11 @@ public final class DeploymentDeployer implements CloneableDeployer
          {
             try
             {
-               Method startMethod = clz.getMethod("start", (Class[])null);
+               String methodName = "start";
+               if (bt.getStart() != null && bt.getStart().getMethod() != null)
+                  methodName = bt.getStart().getMethod();
+
+               Method startMethod = clz.getMethod(methodName, (Class[])null);
                startMethod.setAccessible(true);
                startMethod.invoke(instance);
             }
@@ -528,6 +553,12 @@ public final class DeploymentDeployer implements CloneableDeployer
                throw ite.getTargetException();
             }
          }
+
+         if (bt.getStop() != null && bt.getStop().getMethod() != null)
+            stops.put(bt.getName(), bt.getStop().getMethod());
+
+         if (bt.getDestroy() != null && bt.getDestroy().getMethod() != null)
+            destroys.put(bt.getName(), bt.getDestroy().getMethod());
 
          if (bt.getIgnoreStop() != null)
             ignoreStops.add(bt.getName());

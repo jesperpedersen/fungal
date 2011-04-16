@@ -26,6 +26,10 @@
         </listitem>
       </itemizedlist>
 
+      <para>The method name can be changed by using the <code>&lt;create&gt;</code>, <code>&lt;start&gt;</code>,
+        <code>&lt;stop&gt;</code> and <code>&lt;destroy&gt;</code> elements where the <code>method</code> attribute
+        specifies the name of the method that should be called instead.</para>
+
       <para>The lifecycle methods can be ignored by using the following constructs:</para>
 
       <itemizedlist>
