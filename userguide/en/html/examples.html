@@ -197,7 +197,20 @@
   &lt;/bean&gt;
 &lt;/deployment&gt;
  
-    </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="example_ignore"></a>B.6.&nbsp;IgnoreCreate / IgnoreStart / IgnoreStop / IgnoreDestroy</h2></div></div><div></div></div><p>Ignore the <tt class="code">create</tt>, <tt class="code">start</tt>, <tt class="code">stop</tt> and
+    </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="example_lifecycle"></a>B.6.&nbsp;Create / Start / Stop / Destroy</h2></div></div><div></div></div><p>Specify the names of the <tt class="code">create</tt>, <tt class="code">start</tt>, <tt class="code">stop</tt> and
+      <tt class="code">destroy</tt> methods on <tt class="code">MyBean</tt>.</p><pre class="programlisting">
+
+&lt;deployment&gt;
+  &lt;bean name="MyBean"
+        class="com.mypackage.MyBean"&gt;
+    &lt;create method="myCreate"/&gt;
+    &lt;start method="myStart"/&gt;
+    &lt;stop method="myStop"/&gt;
+    &lt;destroy method="myDestroy"/&gt;
+  &lt;/bean&gt;
+&lt;/deployment&gt;
+ 
+    </pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="example_ignore"></a>B.7.&nbsp;IgnoreCreate / IgnoreStart / IgnoreStop / IgnoreDestroy</h2></div></div><div></div></div><p>Ignore the <tt class="code">create</tt>, <tt class="code">start</tt>, <tt class="code">stop</tt> and
       <tt class="code">destroy</tt> methods on <tt class="code">MyBean</tt>.</p><pre class="programlisting">
 
 &lt;deployment&gt;
