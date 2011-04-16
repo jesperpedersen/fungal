@@ -46,6 +46,18 @@
        <listitem>
          Core services
        </listitem>
+       <listitem>
+         Netboot support
+       </listitem>
+       <listitem>
+         Management (JMX) utility
+       </listitem>
+       <listitem>
+         Remote access to management layer (JSR-160)
+       </listitem>
+       <listitem>
+         Support multiple kernels in same VM
+       </listitem>
      </itemizedlist>
      
    </section>

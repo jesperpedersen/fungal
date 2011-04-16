@@ -16,6 +16,10 @@ Highlights of features:
 * Hot deployment
 * Communication protocol
 * Core services
+* Netboot support
+* Management (JMX) utility
+* Remote access to management layer (JSR-160)
+* Support multiple kernels in same VM
 
 Homepage:
 ---------
@@ -27,4 +31,4 @@ http://jesperpedersen.github.com/fungal/maven2
 
 Project:
 --------
-http://github.com/fungal
+http://github.com/jesperpedersen/fungal
