@@ -291,16 +291,32 @@ mvn org.apache.maven.plugins:maven-deploy-plugin:2.6:deploy-file -Dfile=$PWD/@{a
 </concat>
     </sequential>
   </macrodef>
+  <macrodef name="install-file">
+    <attribute name="file"/>
+    <attribute name="artifact"/>
+    <attribute name="extension"/>
+    <sequential>
+      <concat destfile="${target.dir}/@{file}" append="true" force="true" eol="unix">
+mvn install:install-file -Dfile=$PWD/@{artifact}.@{extension} -DpomFile=@{artifact}.xml -Dsources=$PWD/@{artifact}-sources.jar -Djavadoc=$PWD/@{artifact}-javadoc.jar
+</concat>
+    </sequential>
+  </macrodef>
 
   <target name="repo" depends="jars">
     <delete dir="${build.dir}"/>
     <ant dir="core" inheritRefs="true" target="repo"/>
 
     <delete file="${target.dir}/deploy.sh"/>
+    <delete file="${target.dir}/install.sh"/>
+
     <concat destfile="${target.dir}/deploy.sh" append="true" force="true" eol="unix">#!/bin/sh
 PWD=`pwd`
 VERSION=${version}
 REPO=file:$PWD/../../../www/fungal/maven2/
+</concat>
+    <concat destfile="${target.dir}/install.sh" append="true" force="true" eol="unix">#!/bin/sh
+PWD=`pwd`
+VERSION=${version}
 </concat>
 
     <!-- fungal -->
@@ -315,6 +331,7 @@ REPO=file:$PWD/../../../www/fungal/maven2/
     </ivy:makepom>
 
     <deploy-file file="deploy.sh" artifact="${name}" extension="jar"/>
+    <install-file file="install.sh" artifact="${name}" extension="jar"/>
 
     <!-- fungal-cli -->
     <delete file="${target.dir}/${name}-cli.xml"/>
@@ -328,8 +345,10 @@ REPO=file:$PWD/../../../www/fungal/maven2/
     </ivy:makepom>
 
     <deploy-file file="deploy.sh" artifact="${name}-cli" extension="jar"/>
+    <install-file file="install.sh" artifact="${name}-cli" extension="jar"/>
 
     <chmod file="${target.dir}/deploy.sh" perm="755"/>
+    <chmod file="${target.dir}/install.sh" perm="755"/>
 
   </target>
 
