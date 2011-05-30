@@ -55,6 +55,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -76,7 +77,7 @@ import javax.management.ObjectName;
  * The kernel implementation for Fungal
  * @author <a href="mailto:jesper.pedersen@comcast.net">Jesper Pedersen</a>
  */
-public class KernelImpl implements Kernel
+public class KernelImpl implements Kernel, KernelImplMBean
 {
    /** Version information */
    private static final String VERSION = "Fungal 0.10.0.Beta1";
@@ -397,6 +398,9 @@ public class KernelImpl implements Kernel
       // Add the kernel bean reference
       addBean("Kernel", this);
       setBeanStatus("Kernel", ServiceLifecycle.STARTED);
+
+      ObjectName kernelObjectName = new ObjectName(kernelConfiguration.getName() + ":name=Kernel");
+      mbeanServer.registerMBean(this, kernelObjectName);
 
       // Log version information
       log.info(VERSION + " started");
@@ -757,6 +761,10 @@ public class KernelImpl implements Kernel
          ObjectName hotDeployerObjectName = new ObjectName(kernelConfiguration.getName() + ":name=HotDeployer");
          if (mbeanServer.isRegistered(hotDeployerObjectName))
             mbeanServer.unregisterMBean(hotDeployerObjectName);
+
+         ObjectName kernelObjectName = new ObjectName(kernelConfiguration.getName() + ":name=Kernel");
+         if (mbeanServer.isRegistered(kernelObjectName))
+            mbeanServer.unregisterMBean(kernelObjectName);
 
          // Release MBeanServer
          if (!kernelConfiguration.isUsePlatformMBeanServer())
@@ -1151,6 +1159,72 @@ public class KernelImpl implements Kernel
    public HotDeployer getHotDeployer()
    {
       return hotDeployer;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public String dump()
+   {
+      StringBuilder sb = new StringBuilder();
+
+      Iterator<String> it = new TreeSet<String>(beans.keySet()).iterator();
+      while (it.hasNext())
+      {
+         dumpBean(sb, it.next());
+
+         if (it.hasNext())
+            sb.append("\n");
+      }
+
+      return sb.toString();
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public String dump(String name)
+   {
+      StringBuilder sb = new StringBuilder();
+
+      dumpBean(sb, name);
+
+      return sb.toString();
+   }
+
+   /**
+    * Dump a bean
+    * @param sb The string builder
+    * @param name The name
+    */
+   private void dumpBean(StringBuilder sb, String name)
+   {
+      if (beans.containsKey(name))
+      {
+         sb.append("Bean \"").append(name).append("\" (").append(beanStatus.get(name)).append(")\n");
+
+         if (beanDependants.containsKey(name))
+         {
+            sb.append("  Dependants: ");
+            Iterator<String> it = beanDependants.get(name).iterator();
+            while (it.hasNext())
+            {
+               sb.append(it.next());
+               if (it.hasNext())
+                  sb.append(", ");
+            }
+         }
+         else
+         {
+            sb.append("  Dependants: None.");
+         }
+         sb.append("\n");
+         
+      }
+      else
+      {
+         sb.append("Bean \"").append(name).append("\" not found.");
+      }
    }
 
    /**
