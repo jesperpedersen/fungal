@@ -21,7 +21,7 @@
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
 
-  <info organisation="com.githib" 
+  <info organisation="com.github" 
         module="fungal"
         revision="${version}">
     <license name="lgpl" url="http://www.gnu.org/licenses/lgpl-2.1.txt"/>
