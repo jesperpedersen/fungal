@@ -1,21 +1,19 @@
 <!--
- * JBoss, Home of Professional Open Source.
- * Copyright 2008, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @author tags. See the copyright.txt file in the
- * distribution for a full listing of individual contributors.
+ * The Fungal kernel project
+ * Copyright (C) 2011
  *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
  *
- * This software is distributed in the hope that it will be useful,
+ * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
+ * License along with this library; if not, write to the Free Software
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
@@ -23,21 +21,30 @@
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
 
-  <info organisation="com.github" 
-        module="fungal">
-    <license name="lgpl" url="http://repository.jboss.org/licenses/lgpl.txt"/>
-    <repository name="jboss" url="http://fungal.github.com"/>
+  <info organisation="com.githib" 
+        module="fungal"
+        revision="${version}">
+    <license name="lgpl" url="http://www.gnu.org/licenses/lgpl-2.1.txt"/>
+    <repository name="fungal" url="http://jesperpedersen.github.com/fungal/maven2"/>
+    <description homepage="http://jesperpedersen.github.com/fungal/">
+      Fungal - a simple and high performance Java kernel
+    </description>
   </info>
 
-  <configurations>
-    <conf name="fungal" transitive="false"/>
-    <conf name="test" extends="fungal" transitive="false"/>
+  <configurations defaultconfmapping="core->default;test->default">
+    <conf name="core" transitive="false"/>
+    <conf name="test" transitive="false"/>
   </configurations>
 
+  <publications>
+    <artifact name="fungal" type="jar"/>
+    <artifact name="fungal-cli" type="jar"/>
+  </publications>
+
   <dependencies>
-    <dependency org="org.apache.ant" name="ant" rev="${version.ant}" conf="fungal->default"/>
-    <dependency org="org.jboss.apiviz" name="apiviz" rev="${version.apiviz}" conf="fungal->default"/>
-    <dependency org="junit" name="junit" rev="${version.junit}" conf="test->default"/>
+    <dependency org="org.apache.ant" name="ant" rev="${version.ant}" conf="core"/>
+    <dependency org="org.jboss.apiviz" name="apiviz" rev="${version.apiviz}" conf="core"/>
+    <dependency org="junit" name="junit" rev="${version.junit}" conf="test"/>
   </dependencies>
 
 </ivy-module>

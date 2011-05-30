@@ -1,21 +1,19 @@
 <!--
- * JBoss, Home of Professional Open Source.
- * Copyright 2008, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @author tags. See the copyright.txt file in the
- * distribution for a full listing of individual contributors.
+ * The Fungal kernel project
+ * Copyright (C) 2011
  *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
  *
- * This software is distributed in the hope that it will be useful,
+ * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
+ * License along with this library; if not, write to the Free Software
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
@@ -36,6 +34,11 @@
   <property name="patch" value="0"/>
   <property name="type" value="Beta1"/>
 
+  <condition property="version" value="${major}.${minor}.${patch}-SNAPSHOT">
+    <isset property="snapshot"/>
+  </condition>
+  <property name="version" value="${major}.${minor}.${patch}.${type}"/>
+
   <!-- ================================= 
        Repositories              
        ================================= -->
@@ -45,7 +48,7 @@
   <!-- ================================= 
        Ivy              
        ================================= -->
-  <property name="ivy.version" value="2.1.0"/>
+  <property name="ivy.version" value="2.2.0"/>
   <property name="ivy.dir" value="${user.home}/.ivy2/cache/org.apache.ivy/jars"/>
   <property name="ivy.jar.name" value="ivy-${ivy.version}.jar"/>
 
@@ -86,7 +89,7 @@
        Paths              
        ================================= -->
   <path id="fungal.lib.path.id">
-    <fileset dir="${lib.dir}/fungal">
+    <fileset dir="${lib.dir}/core">
       <include name="**/*.jar"/>
     </fileset>
     <fileset dir="${target.dir}">
@@ -95,6 +98,9 @@
   </path>
 
   <path id="test.lib.path.id">
+    <fileset dir="${lib.dir}/core">
+      <include name="**/*.jar"/>
+    </fileset>
     <fileset dir="${lib.dir}/test">
       <include name="**/*.jar"/>
     </fileset>
@@ -105,7 +111,7 @@
 
   <path id="checkstyle.lib.path.id">
     <fileset dir="${tools.dir}/checkstyle/lib"/>
-    <fileset dir="${lib.dir}/fungal">
+    <fileset dir="${lib.dir}/core">
       <include name="**/*.jar"/>
     </fileset>
     <fileset dir="${target.dir}">
@@ -275,9 +281,56 @@
   <!-- ================================= 
        Target: repo
        ================================= -->
+  <macrodef name="deploy-file">
+    <attribute name="file"/>
+    <attribute name="artifact"/>
+    <attribute name="extension"/>
+    <sequential>
+      <concat destfile="${target.dir}/@{file}" append="true" force="true" eol="unix">
+mvn org.apache.maven.plugins:maven-deploy-plugin:2.6:deploy-file -Dfile=$PWD/@{artifact}.@{extension} -DpomFile=@{artifact}.xml -Dsources=$PWD/@{artifact}-sources.jar -Djavadoc=$PWD/@{artifact}-javadoc.jar -Durl=$REPO
+</concat>
+    </sequential>
+  </macrodef>
+
   <target name="repo" depends="jars">
     <delete dir="${build.dir}"/>
     <ant dir="core" inheritRefs="true" target="repo"/>
+
+    <delete file="${target.dir}/deploy.sh"/>
+    <concat destfile="${target.dir}/deploy.sh" append="true" force="true" eol="unix">#!/bin/sh
+PWD=`pwd`
+VERSION=${version}
+REPO=file:$PWD/../../../www/fungal/maven2/
+</concat>
+
+    <!-- fungal -->
+    <delete file="${target.dir}/${name}.xml"/>
+    <ivy:makepom artifactName="${name}" 
+                 conf="${name}"
+                 ivyfile="${basedir}/ivy.xml" 
+                 pomfile="${target.dir}/${name}.xml"
+                 headerFile="${basedir}/tools/mvn/HEADER"
+                 templatefile="${basedir}/tools/mvn/pom.template"
+                 printIvyInfo="false">
+    </ivy:makepom>
+
+    <deploy-file file="deploy.sh" artifact="${name}" extension="jar"/>
+
+    <!-- fungal-cli -->
+    <delete file="${target.dir}/${name}-cli.xml"/>
+    <ivy:makepom artifactName="${name}-cli" 
+                 conf="${name}-cli"
+                 ivyfile="${basedir}/ivy.xml" 
+                 pomfile="${target.dir}/${name}-cli.xml"
+                 headerFile="${basedir}/tools/mvn/HEADER"
+                 templatefile="${basedir}/tools/mvn/pom.template"
+                 printIvyInfo="false">
+    </ivy:makepom>
+
+    <deploy-file file="deploy.sh" artifact="${name}-cli" extension="jar"/>
+
+    <chmod file="${target.dir}/deploy.sh" perm="755"/>
+
   </target>
 
   <!-- ================================= 
