@@ -79,7 +79,7 @@ import javax.management.ObjectName;
 public class KernelImpl implements Kernel
 {
    /** Version information */
-   private static final String VERSION = "Fungal 0.9.0.Final";
+   private static final String VERSION = "Fungal 0.10.0.Beta1";
 
    /** Kernel configuration */
    private KernelConfiguration kernelConfiguration;
