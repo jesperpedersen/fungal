@@ -326,6 +326,20 @@ kernelConfiguration.threadGroup(new MyThreadGroup());
 
       </section>
 
+      <section id="kernel_configuration_useplatformmbeanserver">
+        <title><code>usePlatformMBeanServer</code></title>
+
+        <para>The <code>usePlatformMBeanServer</code> parameter specifies if the platform MBeanServer should be used
+          instead of creating a dedicated MBeanServer instance for the kernel.</para>
+
+        <para>An example</para>
+        <programlisting>
+kernelConfiguration.usePlatformMBeanServer(true);
+        </programlisting>
+
+      </section>
+
+
    </section>
 
 </chapter>

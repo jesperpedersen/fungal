@@ -377,7 +377,14 @@ public class KernelImpl implements Kernel
       }
 
       // Create MBeanServer
-      mbeanServer = MBeanServerFactory.createMBeanServer(kernelConfiguration.getName());
+      if (!kernelConfiguration.isUsePlatformMBeanServer())
+      {
+         mbeanServer = MBeanServerFactory.createMBeanServer(kernelConfiguration.getName());
+      }
+      else
+      {
+         mbeanServer = ManagementFactory.getPlatformMBeanServer();
+      }
 
       // Main deployer
       mainDeployer = new MainDeployerImpl(this, new Deployers());
@@ -740,9 +747,21 @@ public class KernelImpl implements Kernel
          }
       }
 
-      // Release MBeanServer
+      // Unregister MBeans
       if (mbeanServer != null)
-         MBeanServerFactory.releaseMBeanServer(mbeanServer);
+      {
+         ObjectName mainDeployerObjectName = new ObjectName(kernelConfiguration.getName() + ":name=MainDeployer");
+         if (mbeanServer.isRegistered(mainDeployerObjectName))
+            mbeanServer.unregisterMBean(mainDeployerObjectName);
+
+         ObjectName hotDeployerObjectName = new ObjectName(kernelConfiguration.getName() + ":name=HotDeployer");
+         if (mbeanServer.isRegistered(hotDeployerObjectName))
+            mbeanServer.unregisterMBean(hotDeployerObjectName);
+
+         // Release MBeanServer
+         if (!kernelConfiguration.isUsePlatformMBeanServer())
+            MBeanServerFactory.releaseMBeanServer(mbeanServer);
+      }
 
       // Shutdown thread pool
       if (getExecutorService() != null)

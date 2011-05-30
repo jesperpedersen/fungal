@@ -92,6 +92,9 @@ public class KernelConfiguration
    /** Deployment order */
    private DeploymentOrder deploymentOrder;
 
+   /** Use platform MBeanServer */
+   private boolean usePlatformMBeanServer;
+
    /** Remote JMX access */
    private boolean remoteJmxAccess;
 
@@ -124,6 +127,7 @@ public class KernelConfiguration
       eventListeners = null;
       commands = null;
       deploymentOrder = null;
+      usePlatformMBeanServer = false;
       remoteJmxAccess = false;
       rmiRegistryPort = 1203;
       rmiServerPort = 1204;
@@ -522,6 +526,27 @@ public class KernelConfiguration
          return new DeploymentOrder();
 
       return deploymentOrder;
+   }
+
+   /**
+    * Use the platform MBeanServer; default <code>false</code>
+    * @param v The value
+    * @return The configuration
+    */
+   public KernelConfiguration usePlatformMBeanServer(boolean v)
+   {
+      this.usePlatformMBeanServer = v;
+
+      return this;
+   }
+
+   /**
+    * Use platform MBeanServer ?
+    * @return The value
+    */
+   public boolean isUsePlatformMBeanServer()
+   {
+      return usePlatformMBeanServer;
    }
 
    /**
