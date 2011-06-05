@@ -28,6 +28,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
 import java.net.URL;
+import java.util.Arrays;
 
 /**
  * The command line interface for the Fungal kernel
@@ -171,7 +172,14 @@ public class CLI
 
          if (result != null)
          {
-            System.out.println(result);
+            if (!result.getClass().isArray())
+            {
+               System.out.println(result);
+            }
+            else
+            {
+               System.out.println(Arrays.toString((Object[])result));               
+            }
          }
       }
       catch (EOFException ee)
