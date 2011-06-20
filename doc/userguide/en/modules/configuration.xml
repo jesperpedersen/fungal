@@ -195,6 +195,20 @@ kernelConfiguration.library("lib");
 
       </section>
 
+      <section id="kernel_configuration_management">
+        <title><code>management</code></title>
+
+        <para>The <code>management</code> parameter specifies if management should be enabled for the
+        kernel instance. This controls if a MBeanServer instance should be attached to the kernel and
+        the kernel MBeans registered.</para>
+
+        <para>An example</para>
+        <programlisting>
+kernelConfiguration.management(false);
+        </programlisting>
+
+      </section>
+
       <section id="kernel_configuration_name">
         <title><code>name</code></title>
 

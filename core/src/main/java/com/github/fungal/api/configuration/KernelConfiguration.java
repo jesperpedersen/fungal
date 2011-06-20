@@ -92,6 +92,9 @@ public class KernelConfiguration
    /** Deployment order */
    private DeploymentOrder deploymentOrder;
 
+   /**Enable management */
+   private boolean management;
+
    /** Use platform MBeanServer */
    private boolean usePlatformMBeanServer;
 
@@ -127,6 +130,7 @@ public class KernelConfiguration
       eventListeners = null;
       commands = null;
       deploymentOrder = null;
+      management = true;
       usePlatformMBeanServer = false;
       remoteJmxAccess = false;
       rmiRegistryPort = 1203;
@@ -526,6 +530,27 @@ public class KernelConfiguration
          return new DeploymentOrder();
 
       return deploymentOrder;
+   }
+
+   /**
+    * Enable management (MBeanServer); default <code>true</code>
+    * @param v The value
+    * @return The configuration
+    */
+   public KernelConfiguration management(boolean v)
+   {
+      this.management = v;
+
+      return this;
+   }
+
+   /**
+    * Is management enabled ?
+    * @return The value
+    */
+   public boolean isManagement()
+   {
+      return management;
    }
 
    /**

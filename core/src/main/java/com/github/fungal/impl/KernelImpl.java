@@ -200,9 +200,6 @@ public class KernelImpl implements Kernel, KernelImplMBean
     */
    public MBeanServer getMBeanServer()
    {
-      if (mbeanServer == null)
-         throw new IllegalStateException("Kernel not started");
-
       return mbeanServer;
    }
 
@@ -377,20 +374,26 @@ public class KernelImpl implements Kernel, KernelImplMBean
                                            kernelConfiguration.getBindAddress().trim());
       }
 
-      // Create MBeanServer
-      if (!kernelConfiguration.isUsePlatformMBeanServer())
+      if (kernelConfiguration.isManagement())
       {
-         mbeanServer = MBeanServerFactory.createMBeanServer(kernelConfiguration.getName());
-      }
-      else
-      {
-         mbeanServer = ManagementFactory.getPlatformMBeanServer();
+         // Create MBeanServer
+         if (!kernelConfiguration.isUsePlatformMBeanServer())
+         {
+            mbeanServer = MBeanServerFactory.createMBeanServer(kernelConfiguration.getName());
+         }
+         else
+         {
+            mbeanServer = ManagementFactory.getPlatformMBeanServer();
+         }
       }
 
       // Main deployer
       mainDeployer = new MainDeployerImpl(this, new Deployers());
-      ObjectName mainDeployerObjectName = new ObjectName(kernelConfiguration.getName() + ":name=MainDeployer");
-      mbeanServer.registerMBean(mainDeployer, mainDeployerObjectName);
+      if (kernelConfiguration.isManagement())
+      {
+         ObjectName mainDeployerObjectName = new ObjectName(kernelConfiguration.getName() + ":name=MainDeployer");
+         mbeanServer.registerMBean(mainDeployer, mainDeployerObjectName);
+      }
 
       // Add the deployment deployer
       mainDeployer.addDeployer(new DeploymentDeployer(this));
@@ -399,8 +402,11 @@ public class KernelImpl implements Kernel, KernelImplMBean
       addBean("Kernel", this);
       setBeanStatus("Kernel", ServiceLifecycle.STARTED);
 
-      ObjectName kernelObjectName = new ObjectName(kernelConfiguration.getName() + ":name=Kernel");
-      mbeanServer.registerMBean(this, kernelObjectName);
+      if (kernelConfiguration.isManagement())
+      {
+         ObjectName kernelObjectName = new ObjectName(kernelConfiguration.getName() + ":name=Kernel");
+         mbeanServer.registerMBean(this, kernelObjectName);
+      }
 
       // Log version information
       log.info(VERSION + " started");
@@ -513,8 +519,11 @@ public class KernelImpl implements Kernel, KernelImplMBean
                                           deployDirectory,
                                           this);
 
-            ObjectName hotDeployerObjectName = new ObjectName(kernelConfiguration.getName() + ":name=HotDeployer");
-            mbeanServer.registerMBean(hotDeployer, hotDeployerObjectName);
+            if (kernelConfiguration.isManagement())
+            {
+               ObjectName hotDeployerObjectName = new ObjectName(kernelConfiguration.getName() + ":name=HotDeployer");
+               mbeanServer.registerMBean(hotDeployer, hotDeployerObjectName);
+            }
          }
 
          File[] files = deployDirectory.listFiles();
@@ -591,7 +600,8 @@ public class KernelImpl implements Kernel, KernelImplMBean
       }
 
       // JMX Remote
-      if (kernelConfiguration.isRemoteJmxAccess() &&
+      if (kernelConfiguration.isManagement() &&
+          kernelConfiguration.isRemoteJmxAccess() &&
           kernelConfiguration.getBindAddress() != null)
       {
          jmxRemote = new JmxRemote(mbeanServer,
