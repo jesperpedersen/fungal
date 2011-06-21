@@ -43,7 +43,7 @@
        Repositories              
        ================================= -->
   <property name="central.repo" value="http://repo1.maven.org/maven2"/>
-  <property name="jboss.repo" value="http://repository.jboss.org/maven2"/>
+  <property name="jboss.repo" value="http://repository.jboss.org/nexus/content/groups/public/"/>
   
   <!-- ================================= 
        Ivy              
@@ -312,7 +312,7 @@ mvn install:install-file -Dfile=$PWD/@{artifact}.@{extension} -DpomFile=@{artifa
     <concat destfile="${target.dir}/deploy.sh" append="true" force="true" eol="unix">#!/bin/sh
 PWD=`pwd`
 VERSION=${version}
-REPO=file:$PWD/../../../www/fungal/maven2/
+REPO=file:$PWD/../../www/fungal/maven2/
 </concat>
     <concat destfile="${target.dir}/install.sh" append="true" force="true" eol="unix">#!/bin/sh
 PWD=`pwd`
