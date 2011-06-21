@@ -950,13 +950,16 @@ public class KernelImpl implements Kernel, KernelImplMBean
       }
       else if (status == ServiceLifecycle.STARTED || status == ServiceLifecycle.ERROR)
       {
-         List<CountDownLatch> l = beanLatches.get(name);
-         if (l != null)
+         synchronized (beanLatches)
          {
-            for (CountDownLatch cdl : l)
+            List<CountDownLatch> l = beanLatches.get(name);
+            if (l != null)
             {
-               if (cdl.getCount() > 0)
-                  cdl.countDown();
+               for (CountDownLatch cdl : l)
+               {
+                  if (cdl.getCount() > 0)
+                     cdl.countDown();
+               }
             }
          }
       }
@@ -1096,25 +1099,34 @@ public class KernelImpl implements Kernel, KernelImplMBean
 
       // Register the count down latch if the 'to' hasn't started
       ServiceLifecycle slc = getBeanStatus(to);
+      boolean doCountDown = true;
+
       if (slc != ServiceLifecycle.STARTED && slc != ServiceLifecycle.ERROR)
       {
-         List<CountDownLatch> l = beanLatches.get(to);
-         if (l == null)
+         synchronized (beanLatches)
          {
-            List<CountDownLatch> newList = Collections.synchronizedList(new ArrayList<CountDownLatch>(1));
-            l = beanLatches.putIfAbsent(to, newList);
-            if (l == null)
+            slc = getBeanStatus(to);
+            if (slc != ServiceLifecycle.STARTED && slc != ServiceLifecycle.ERROR)
             {
-               l = newList;
+               List<CountDownLatch> l = beanLatches.get(to);
+               if (l == null)
+               {
+                  List<CountDownLatch> newList = Collections.synchronizedList(new ArrayList<CountDownLatch>(1));
+                  l = beanLatches.putIfAbsent(to, newList);
+                  if (l == null)
+                  {
+                     l = newList;
+                  }
+               }
+         
+               l.add(cdl);
+               doCountDown = false;
             }
          }
-         
-         l.add(cdl);
       }
-      else
-      {
+
+      if (doCountDown)
          cdl.countDown();
-      }
    }
 
    /**
