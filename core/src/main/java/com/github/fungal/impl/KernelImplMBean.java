@@ -33,6 +33,12 @@ public interface KernelImplMBean
    public String getName();
 
    /**
+    * Get the version of the kernel
+    * @return The value
+    */
+   public String getVersion();
+
+   /**
     * Dump the bean information
     * @return The information
     */

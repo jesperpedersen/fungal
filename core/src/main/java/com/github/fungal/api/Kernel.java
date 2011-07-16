@@ -45,6 +45,12 @@ public interface Kernel
    public String getName();
 
    /**
+    * Get the version of the kernel
+    * @return The value
+    */
+   public String getVersion();
+
+   /**
     * Get the MBeanServer for the kernel
     * @return The MBeanServer instance
     */
