@@ -49,6 +49,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -104,8 +105,7 @@ public class KernelImpl implements Kernel, KernelImplMBean
    private ConcurrentMap<String, Set<String>> beanDependants = new ConcurrentHashMap<String, Set<String>>(1);
 
    /** Bean latches */
-   private ConcurrentMap<String, List<CountDownLatch>> beanLatches =
-      new ConcurrentHashMap<String, List<CountDownLatch>>(1);
+   private Map<String, List<CountDownLatch>> beanLatches = new HashMap<String, List<CountDownLatch>>(1);
 
    /** Bean deployments */
    private AtomicInteger beanDeployments;
@@ -955,8 +955,7 @@ public class KernelImpl implements Kernel, KernelImplMBean
          List<CountDownLatch> l = beanLatches.get(name);
          if (l == null)
          {
-            List<CountDownLatch> newList = Collections.synchronizedList(new ArrayList<CountDownLatch>(1));
-            beanLatches.putIfAbsent(name, newList);
+            beanLatches.put(name, Collections.synchronizedList(new ArrayList<CountDownLatch>(1)));
          }
       }
       else if (status == ServiceLifecycle.STARTED || status == ServiceLifecycle.ERROR)
@@ -1122,12 +1121,8 @@ public class KernelImpl implements Kernel, KernelImplMBean
                List<CountDownLatch> l = beanLatches.get(to);
                if (l == null)
                {
-                  List<CountDownLatch> newList = Collections.synchronizedList(new ArrayList<CountDownLatch>(1));
-                  l = beanLatches.putIfAbsent(to, newList);
-                  if (l == null)
-                  {
-                     l = newList;
-                  }
+                  l = Collections.synchronizedList(new ArrayList<CountDownLatch>(1));
+                  beanLatches.put(to, l);
                }
          
                l.add(cdl);
