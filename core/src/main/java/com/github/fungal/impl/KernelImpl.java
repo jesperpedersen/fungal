@@ -195,6 +195,17 @@ public class KernelImpl implements Kernel, KernelImplMBean
    }
 
    /**
+    * {@inheritDoc}
+    */
+   public String getName()
+   {
+      if (kernelConfiguration == null)
+         return null;
+
+      return kernelConfiguration.getName();
+   }
+
+   /**
     * Get the MBeanServer for the kernel
     * @return The MBeanServer instance
     */

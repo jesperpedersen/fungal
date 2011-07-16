@@ -39,6 +39,12 @@ import javax.management.MBeanServer;
 public interface Kernel
 {
    /**
+    * Get the name of the kernel
+    * @return The value
+    */
+   public String getName();
+
+   /**
     * Get the MBeanServer for the kernel
     * @return The MBeanServer instance
     */

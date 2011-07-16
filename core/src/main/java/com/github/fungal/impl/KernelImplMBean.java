@@ -27,6 +27,12 @@ package com.github.fungal.impl;
 public interface KernelImplMBean
 {
    /**
+    * Get the name of the kernel
+    * @return The value
+    */
+   public String getName();
+
+   /**
     * Dump the bean information
     * @return The information
     */
