@@ -12,11 +12,12 @@
         <code>java.io.ObjectOutputStream</code> format over a standard <code>java.net.Socket</code>
         connection.</para>
 
-      <para>The protocol consist of two parts</para>
+      <para>The protocol consist of three parts</para>
 
       <orderedlist>
         <listitem>The name of the command</listitem>
-        <listitem>The arguments for the command</listitem>
+        <listitem>The number of arguments</listitem>
+        <listitem>The arguments for the command (optional)</listitem>
       </orderedlist>
 
       <para>The arguments is optional if the command doesn't take any.</para>
@@ -26,6 +27,9 @@
 
       <para>The name of the command is written using <code>writeUTF()</code> and read using
         <code>readUTF()</code>.</para>
+
+      <para>The number of arguments is written using <code>writeInt()</code> and read using
+        <code>readInt()</code>.</para>
 
       <para>Each of the arguments is written using <code>writeObject()</code> and read using
         <code>readObject()</code>.</para>
@@ -62,6 +66,11 @@
                 <entry>UTF</entry>
                 <entry><code>help</code></entry>
                 <entry>Command name</entry>
+              </row>
+              <row>
+                <entry>int</entry>
+                <entry><code>0</code></entry>
+                <entry>Number of arguments</entry>
               </row>
            </tbody>
          </tgroup>
@@ -115,6 +124,11 @@
                 <entry>UTF</entry>
                 <entry><code>deploy</code></entry>
                 <entry>Command name</entry>
+              </row>
+              <row>
+                <entry>int</entry>
+                <entry><code>1</code></entry>
+                <entry>Number of arguments</entry>
               </row>
               <row>
                 <entry>OBJECT</entry>
@@ -173,6 +187,11 @@
                 <entry>UTF</entry>
                 <entry><code>undeploy</code></entry>
                 <entry>Command name</entry>
+              </row>
+              <row>
+                <entry>int</entry>
+                <entry><code>1</code></entry>
+                <entry>Number of arguments</entry>
               </row>
               <row>
                 <entry>OBJECT</entry>
@@ -238,6 +257,11 @@
                 <entry>UTF</entry>
                 <entry><code>getcommand</code></entry>
                 <entry>Command name</entry>
+              </row>
+              <row>
+                <entry>int</entry>
+                <entry><code>1</code></entry>
+                <entry>Number of arguments</entry>
               </row>
               <row>
                 <entry>OBJECT</entry>

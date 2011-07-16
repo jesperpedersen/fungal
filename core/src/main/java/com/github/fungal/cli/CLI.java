@@ -88,6 +88,7 @@ public class CLI
             ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
             
             oos.writeUTF("getcommand");
+            oos.writeInt(1);
             oos.writeObject(command);
             
             oos.flush();
@@ -158,10 +159,15 @@ public class CLI
          
          if (arguments != null)
          {
+            oos.writeInt(arguments.length);
             for (Serializable argument : arguments)
             {
                oos.writeObject(argument);
             }
+         }
+         else
+         {
+            oos.writeInt(0);
          }
          
          oos.flush();

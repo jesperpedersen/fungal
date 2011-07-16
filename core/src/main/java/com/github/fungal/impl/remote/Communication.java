@@ -71,6 +71,8 @@ public class Communication implements Runnable
          ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
 
          String commandName = ois.readUTF();
+         int length = ois.readInt();
+
          Command command = cs.getCommand(commandName);
          Serializable result = null;
 
@@ -78,13 +80,26 @@ public class Communication implements Runnable
          {
             Class[] parameterTypes = command.getParameterTypes();
             Serializable[] arguments = null;
+            int i = 0;
+
+            if (length > 0)
+            {
+               arguments = new Serializable[length];
+            }
 
             if (parameterTypes != null)
             {
-               arguments = new Serializable[parameterTypes.length];
-               for (int i = 0; i < parameterTypes.length; i++)
+               for (i = 0; i < parameterTypes.length; i++)
                {
                   arguments[i] = (Serializable)ois.readObject();
+               }
+            }
+
+            if (i < length)
+            {
+               for (int j = i; j < length; j++)
+               {
+                  arguments[j] = (Serializable)ois.readObject();
                }
             }
 
