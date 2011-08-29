@@ -1238,10 +1238,11 @@ public class KernelImpl implements Kernel, KernelImplMBean
       if (beans.containsKey(name))
       {
          sb.append("Bean \"").append(name).append("\" (").append(beanStatus.get(name)).append(")\n");
+         sb.append("  Class: ").append((beans.get(name)).getClass().getName()).append("\n");
 
          if (beanDependants.containsKey(name))
          {
-            sb.append("  Dependants: ");
+            sb.append("  DependsOn: ");
             Iterator<String> it = beanDependants.get(name).iterator();
             while (it.hasNext())
             {
@@ -1252,14 +1253,14 @@ public class KernelImpl implements Kernel, KernelImplMBean
          }
          else
          {
-            sb.append("  Dependants: None.");
+            sb.append("  DependsOn: None");
          }
          sb.append("\n");
          
       }
       else
       {
-         sb.append("Bean \"").append(name).append("\" not found.");
+         sb.append("Bean \"").append(name).append("\" not found");
       }
    }
 
