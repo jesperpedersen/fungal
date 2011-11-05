@@ -81,7 +81,7 @@ import javax.management.ObjectName;
 public class KernelImpl implements Kernel, KernelImplMBean
 {
    /** Version information */
-   private static final String VERSION = "Fungal 0.10.0.RC1";
+   private static final String VERSION = "Fungal 0.10.0.RC2";
 
    /** Kernel configuration */
    private KernelConfiguration kernelConfiguration;
@@ -509,6 +509,8 @@ public class KernelImpl implements Kernel, KernelImplMBean
 
             Collections.sort(l, kernelConfiguration.getDeploymentOrder());
 
+            log.log(Level.FINE, "System deployments: " + l);
+
             beanDeployments = new AtomicInteger(counter);
 
             if (kernelConfiguration.isParallelDeploy())
@@ -566,6 +568,8 @@ public class KernelImpl implements Kernel, KernelImplMBean
             }
 
             Collections.sort(l, kernelConfiguration.getDeploymentOrder());
+
+            log.log(Level.FINE, "Deploy deployments: " + l);
 
             beanDeployments = new AtomicInteger(counter);
 
