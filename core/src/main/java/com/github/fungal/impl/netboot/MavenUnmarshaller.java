@@ -82,17 +82,7 @@ public class MavenUnmarshaller
 
          is = new BufferedInputStream(is, 4096);
 
-         XMLInputFactory xmlInputFactory = null;
-
-         try
-         {
-            xmlInputFactory = XMLInputFactory.newInstance("javax.xml.stream.XMLInputFactory",
-                                                          Thread.currentThread().getContextClassLoader());
-         }
-         catch (Throwable t)
-         {
-            xmlInputFactory = XMLInputFactory.newInstance();
-         }
+         XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
         
          XMLStreamReader xmlStreamReader = xmlInputFactory.createXMLStreamReader(is);
 

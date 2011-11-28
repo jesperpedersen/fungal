@@ -247,9 +247,6 @@ public class KernelImpl implements Kernel, KernelImplMBean
     */
    public void startup() throws Throwable
    {
-      SecurityActions.setSystemProperty("javax.xml.stream.XMLInputFactory", 
-                                        "com.sun.xml.internal.stream.XMLInputFactoryImpl");
-
       List<EventListener> els = kernelConfiguration.getEventListeners();
       // STARTING
       if (els != null && els.size() > 0)
