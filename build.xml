@@ -30,9 +30,9 @@
        ================================= -->
   <property name="name" value="fungal"/>
   <property name="major" value="0"/>
-  <property name="minor" value="10"/>
+  <property name="minor" value="11"/>
   <property name="patch" value="0"/>
-  <property name="type" value="Final"/>
+  <property name="type" value="Beta1"/>
 
   <condition property="version" value="${major}.${minor}.${patch}-SNAPSHOT">
     <isset property="snapshot"/>
