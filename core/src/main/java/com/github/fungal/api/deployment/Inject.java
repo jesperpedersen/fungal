@@ -1,6 +1,6 @@
 /*
  * The Fungal kernel project
- * Copyright (C) 2011
+ * Copyright (C) 2010
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,40 +18,71 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.github.fungal.deployment;
+package com.github.fungal.api.deployment;
 
 /**
- * Represents a destroy element
+ * Represents an inject element
  */
-public class DestroyType
+public class Inject
 {
-   /** The method attribute */
-   private String method;
+   private String value;
+   private String bean;
+   private String property;
 
    /**
     * Constructor
+    * @param bean The bean
     */
-   public DestroyType()
+   public Inject(String bean)
    {
-      this.method = null;
+      this.bean = bean;
+      this.value = null;
+      this.property = null;
    }
 
    /**
-    * Get the method
+    * Get the value
     * @return The value
     */
-   public String getMethod()
+   public String getValue()
    {
-      return method;
+      return value;
    }
 
    /**
-    * Set the method
+    * Set the value
     * @param value The value
     */
-   public void setMethod(String value)
+   public void setValue(String value)
    {
-      method = value;
+      this.value = value;
+   }
+
+   /**
+    * Get the bean
+    * @return The value
+    */
+   public String getBean()
+   {
+      return bean;
+   }
+
+   /**
+    * Get the property
+    * @return The value
+    */
+   public String getProperty()
+   {
+      return property;
+   }
+   
+   /**
+    * Set the property
+    * @param value The value
+    */
+   public void setProperty(String value)
+   {
+      this.property = value;
    }
 
    /**
@@ -63,8 +94,10 @@ public class DestroyType
    {
       StringBuilder sb = new StringBuilder();
 
-      sb.append("DestroyType@").append(Integer.toHexString(System.identityHashCode(this)));
-      sb.append("[method=").append(method);
+      sb.append("Inject@").append(Integer.toHexString(System.identityHashCode(this)));
+      sb.append("[value=").append(value);
+      sb.append(" bean=").append(bean);
+      sb.append(" property=").append(property);
       sb.append("]");
 
       return sb.toString();

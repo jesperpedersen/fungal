@@ -18,38 +18,68 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.github.fungal.deployment;
+package com.github.fungal.api.deployment;
+
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
- * Represents a factory element
+ * Represents a set
  */
-public class FactoryType
+public class Set
 {
-   private String bean;
-
+   private List<Value> value;
+   private String clazz;
+   private String elementClass;
+   
    /**
     * Constructor
+    * @param elementClass The element class
     */
-   public FactoryType()
+   public Set(String elementClass)
    {
-      bean = null;
+      this.value = null;
+      this.clazz = null;
+      this.elementClass = elementClass;
    }
 
    /**
-    * Get the bean
+    * Get the values
     * @return The value
     */
-   public String getBean()
+   public List<Value> getValue()
    {
-      return bean;
+      if (value == null)
+         value = new ArrayList<Value>(1);
+
+      return value;
    }
 
    /**
-    * Set the bean
+    * Get the class
+    * @return The value
+    */
+   public String getClazz()
+   {
+      return clazz;
+   }
+   
+   /**
+    * Set the class
     * @param value The value
     */
-   public void setBean(String value)
+   public void setClazz(String value)
    {
-      bean = value;
+      clazz = value;
+   }
+
+   /**
+    * Get the element class
+    * @return The value
+    */
+   public String getElementClass()
+   {
+      return elementClass;
    }
 }

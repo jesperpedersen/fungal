@@ -18,43 +18,38 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.github.fungal.deployment;
+package com.github.fungal.api.deployment;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
- * Represents a map
+ * Represents a parameter element
  */
-public class MapType
+public class Parameter
 {
-   private List<EntryType> entry;
+   private List<Object> content;
    private String clazz;
-   private String keyClass;
-   private String valueClass;
-   
+
    /**
     * Constructor
     */
-   public MapType()
+   public Parameter()
    {
-      entry = null;
+      content = null;
       clazz = null;
-      keyClass = null;
-      valueClass = null;
    }
 
    /**
-    * Get the entries
+    * Get the content values
     * @return The value
     */
-   public List<EntryType> getEntry()
+   public List<Object> getContent()
    {
-      if (entry == null)
-         entry = new ArrayList<EntryType>(1);
-
-      return entry;
+      if (content == null)
+         content = new ArrayList<Object>(1);
+      
+      return this.content;
    }
 
    /**
@@ -65,7 +60,7 @@ public class MapType
    {
       return clazz;
    }
-   
+
    /**
     * Set the class
     * @param value The value
@@ -76,38 +71,19 @@ public class MapType
    }
 
    /**
-    * Get the key class
-    * @return The value
+    * String representation
+    * @return The string
     */
-   public String getKeyClass()
+   @Override
+   public String toString()
    {
-      return keyClass;
-   }
+      StringBuilder sb = new StringBuilder();
 
-   /**
-    * Set the key class
-    * @param value The value
-    */
-   public void setKeyClass(String value)
-   {
-      keyClass = value;
-   }
+      sb.append("ParameterType@").append(Integer.toHexString(System.identityHashCode(this)));
+      sb.append("[clazz=").append(clazz);
+      sb.append(" content=").append(content);
+      sb.append("]");
 
-   /**
-    * Get the value class
-    * @return The value
-    */
-   public String getValueClass()
-   {
-      return valueClass;
-   }
-
-   /**
-    * Set the value class
-    * @param value The value
-    */
-   public void setValueClass(String value)
-   {
-      valueClass = value;
+      return sb.toString();
    }
 }

@@ -1,6 +1,6 @@
 /*
  * The Fungal kernel project
- * Copyright (C) 2010
+ * Copyright (C) 2012
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,6 +25,8 @@ import com.github.fungal.api.classloading.ClassLoaderFactory;
 import com.github.fungal.api.classloading.KernelClassLoader;
 import com.github.fungal.api.configuration.KernelConfiguration;
 import com.github.fungal.api.deployer.MainDeployer;
+import com.github.fungal.api.deployment.Bean;
+import com.github.fungal.api.deployment.BeanDeployment;
 import com.github.fungal.api.events.Event;
 import com.github.fungal.api.events.EventListener;
 import com.github.fungal.api.remote.Command;
@@ -35,6 +37,7 @@ import com.github.fungal.impl.remote.commands.Deploy;
 import com.github.fungal.impl.remote.commands.GetCommand;
 import com.github.fungal.impl.remote.commands.Help;
 import com.github.fungal.impl.remote.commands.Undeploy;
+import com.github.fungal.spi.deployers.DeployException;
 import com.github.fungal.spi.deployers.DeployerPhases;
 import com.github.fungal.spi.deployers.Deployment;
 
@@ -1072,6 +1075,92 @@ public class KernelImpl implements Kernel, KernelImplMBean
          throw new IllegalArgumentException("ExpectedType is null");
 
       return expectedType.cast(getBean(name));
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public BeanDeployment install(Bean... beans) throws Throwable
+   {
+      DeployException deployException = null;
+      try
+      {
+         if (beans != null)
+         {
+            for (Bean bt : beans)
+            {
+               setBeanStatus(bt.getName(), ServiceLifecycle.NOT_STARTED);
+            }
+
+            beansRegistered();
+
+            List<BeanDeployer> deployers = new ArrayList<BeanDeployer>(beans.length);
+            List<String> beanNames = Collections.synchronizedList(new ArrayList<String>(beans.length));
+            Map<String, List<Method>> uninstall = 
+               new ConcurrentHashMap<String, List<Method>>(beans.length);
+            Map<String, String> stops =
+               Collections.synchronizedMap(new HashMap<String, String>(beans.length));
+            Map<String, String> destroys =
+               Collections.synchronizedMap(new HashMap<String, String>(beans.length));
+            Set<String> ignoreStops = Collections.synchronizedSet(new HashSet<String>(beans.length));
+            Set<String> ignoreDestroys = Collections.synchronizedSet(new HashSet<String>(beans.length));
+
+            final CountDownLatch beansLatch = new CountDownLatch(beans.length);
+
+            for (Bean bt : beans)
+            {
+               BeanDeployer deployer = new BeanDeployer(bt, beanNames, uninstall,
+                                                        stops, destroys, ignoreStops, ignoreDestroys,
+                                                        this, beansLatch, kernelClassLoader, log);
+               deployers.add(deployer);
+
+               getExecutorService().submit(deployer);
+            }
+
+            beansLatch.await();
+
+            Iterator<BeanDeployer> it = deployers.iterator();
+            while (deployException == null && it.hasNext())
+            {
+               BeanDeployer deployer = it.next();
+               if (deployer.getDeployException() != null)
+                  deployException = deployer.getDeployException();
+            }
+
+            if (deployException == null)
+            {
+               BeanDeployment deployment = new BeanDeploymentImpl(null, beanNames, uninstall, 
+                                                                  stops, destroys, ignoreStops, ignoreDestroys, this);
+               registerDeployment(deployment);
+               return deployment;
+            }
+         }
+      }
+      catch (Throwable t)
+      {
+         log.log(Level.SEVERE, t.getMessage(), t);
+         throw new DeployException("Unable to deploy: " + beans, t);
+      }
+
+      if (deployException != null)
+         throw new DeployException("Unable to deploy: " + beans, deployException);
+
+      return null;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public void uninstall(BeanDeployment beans) throws Throwable
+   {
+      if (beans != null)
+      {
+         preUndeploy(true);
+
+         shutdownDeployment(beans);
+
+         postUndeploy(true);
+      }
    }
 
    /**

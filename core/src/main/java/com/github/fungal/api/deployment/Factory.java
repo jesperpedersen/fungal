@@ -18,18 +18,38 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.github.fungal.deployment;
+package com.github.fungal.api.deployment;
 
 /**
- * Represents a null element
+ * Represents a factory element
  */
-public class NullType
+public class Factory
 {
+   private String bean;
 
    /**
     * Constructor
     */
-   public NullType()
+   public Factory()
    {
+      bean = null;
+   }
+
+   /**
+    * Get the bean
+    * @return The value
+    */
+   public String getBean()
+   {
+      return bean;
+   }
+
+   /**
+    * Set the bean
+    * @param value The value
+    */
+   public void setBean(String value)
+   {
+      bean = value;
    }
 }

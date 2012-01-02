@@ -1,6 +1,6 @@
 /*
  * The Fungal kernel project
- * Copyright (C) 2010
+ * Copyright (C) 2012
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,38 +18,21 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.github.fungal.deployment;
+package com.github.fungal.api.deployment;
+
+import com.github.fungal.spi.deployers.Deployment;
+
+import java.util.List;
 
 /**
- * Represents a key element
+ * A bean deployment for Fungal
+ * @author <a href="mailto:jesper.pedersen@comcast.net">Jesper Pedersen</a>
  */
-public class KeyType
+public interface BeanDeployment extends Deployment
 {
-   private String value;
-
    /**
-    * Constructor
+    * Get the bean names
+    * @return The values
     */
-   public KeyType()
-   {
-      value = null;
-   }
-
-   /**
-    * Get the value
-    * @return The value
-    */
-   public String getValue()
-   {
-      return value;
-   }
-
-   /**
-    * Set the value
-    * @param value The value
-    */
-   public void setValue(String value)
-   {
-      this.value = value;
-   }
+   public List<String> getBeans();
 }

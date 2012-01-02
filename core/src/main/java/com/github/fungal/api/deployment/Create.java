@@ -1,6 +1,6 @@
 /*
  * The Fungal kernel project
- * Copyright (C) 2010
+ * Copyright (C) 2011
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,21 +18,22 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.github.fungal.deployment;
+package com.github.fungal.api.deployment;
 
 /**
- * Represents an uninstall element
+ * Represents a create element
  */
-public class UninstallType
+public class Create
 {
+   /** The method attribute */
    private String method;
 
    /**
     * Constructor
     */
-   public UninstallType()
+   public Create()
    {
-      method = null;
+      this.method = null;
    }
 
    /**
@@ -51,5 +52,21 @@ public class UninstallType
    public void setMethod(String value)
    {
       method = value;
+   }
+
+   /**
+    * String representation
+    * @return The string
+    */
+   @Override
+   public String toString()
+   {
+      StringBuilder sb = new StringBuilder();
+
+      sb.append("Create@").append(Integer.toHexString(System.identityHashCode(this)));
+      sb.append("[method=").append(method);
+      sb.append("]");
+
+      return sb.toString();
    }
 }

@@ -18,25 +18,21 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.github.fungal.deployment;
+package com.github.fungal.api.deployment;
 
 /**
- * Represents an inject element
+ * Represents a depends element
  */
-public class InjectType
+public class Depends
 {
    private String value;
-   private String bean;
-   private String property;
 
    /**
     * Constructor
     */
-   public InjectType()
+   public Depends()
    {
       value = null;
-      bean = null;
-      property = null;
    }
 
    /**
@@ -55,59 +51,5 @@ public class InjectType
    public void setValue(String value)
    {
       this.value = value;
-   }
-
-   /**
-    * Get the bean
-    * @return The value
-    */
-   public String getBean()
-   {
-      return bean;
-   }
-
-   /**
-    * Set the bean
-    * @param value The value
-    */
-   public void setBean(String value)
-   {
-      this.bean = value;
-   }
-
-   /**
-    * Get the property
-    * @return The value
-    */
-   public String getProperty()
-   {
-      return property;
-   }
-   
-   /**
-    * Set the property
-    * @param value The value
-    */
-   public void setProperty(String value)
-   {
-      this.property = value;
-   }
-
-   /**
-    * String representation
-    * @return The string
-    */
-   @Override
-   public String toString()
-   {
-      StringBuilder sb = new StringBuilder();
-
-      sb.append("InjectType@").append(Integer.toHexString(System.identityHashCode(this)));
-      sb.append("[value=").append(value);
-      sb.append(" bean=").append(bean);
-      sb.append(" property=").append(property);
-      sb.append("]");
-
-      return sb.toString();
    }
 }

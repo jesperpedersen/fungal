@@ -1,6 +1,6 @@
 /*
  * The Fungal kernel project
- * Copyright (C) 2010
+ * Copyright (C) 2011
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,6 +20,30 @@
 
 package com.github.fungal.deployment;
 
+import com.github.fungal.api.deployment.Bean;
+import com.github.fungal.api.deployment.Constructor;
+import com.github.fungal.api.deployment.Create;
+import com.github.fungal.api.deployment.Depends;
+import com.github.fungal.api.deployment.Destroy;
+import com.github.fungal.api.deployment.Entry;
+import com.github.fungal.api.deployment.Factory;
+import com.github.fungal.api.deployment.Incallback;
+import com.github.fungal.api.deployment.Inject;
+import com.github.fungal.api.deployment.Install;
+import com.github.fungal.api.deployment.Key;
+import com.github.fungal.api.deployment.List;
+import com.github.fungal.api.deployment.Map;
+import com.github.fungal.api.deployment.Null;
+import com.github.fungal.api.deployment.Parameter;
+import com.github.fungal.api.deployment.Property;
+import com.github.fungal.api.deployment.Set;
+import com.github.fungal.api.deployment.Start;
+import com.github.fungal.api.deployment.Stop;
+import com.github.fungal.api.deployment.This;
+import com.github.fungal.api.deployment.Uncallback;
+import com.github.fungal.api.deployment.Uninstall;
+import com.github.fungal.api.deployment.Value;
+ 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -132,26 +156,35 @@ public class Unmarshaller
     * @return The bean
     * @exception XMLStreamException Thrown if an exception occurs
     */
-   private BeanType readBean(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   private Bean readBean(XMLStreamReader xmlStreamReader) throws XMLStreamException
    {
-      BeanType result = new BeanType();
+      String beanName = null;
+      String beanClazz = null;
+      String beanInterface = null;
 
       for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++)
       {
          String name = xmlStreamReader.getAttributeLocalName(i);
          if ("name".equals(name))
          {
-            result.setName(xmlStreamReader.getAttributeValue(i));
+            beanName = xmlStreamReader.getAttributeValue(i);
          }
          else if ("class".equals(name))
          {
-            result.setClazz(xmlStreamReader.getAttributeValue(i));
+            beanClazz = xmlStreamReader.getAttributeValue(i);
          }
          else if ("interface".equals(name))
          {
-            result.setInterface(xmlStreamReader.getAttributeValue(i));
+            beanInterface = xmlStreamReader.getAttributeValue(i);
          }
       }
+
+      if (beanName == null || beanName.trim().equals(""))
+         throw new XMLStreamException("bean name not defined", xmlStreamReader.getLocation());
+
+      Bean result = new Bean(beanName);
+      result.setClazz(beanClazz);
+      result.setInterface(beanInterface);
 
       int eventCode = xmlStreamReader.next();
 
@@ -241,9 +274,9 @@ public class Unmarshaller
     * @return The constructor
     * @exception XMLStreamException Thrown if an exception occurs
     */
-   private ConstructorType readConstructor(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   private Constructor readConstructor(XMLStreamReader xmlStreamReader) throws XMLStreamException
    {
-      ConstructorType result = new ConstructorType();
+      Constructor result = new Constructor();
 
       for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++)
       {
@@ -295,9 +328,9 @@ public class Unmarshaller
     * @return The parameter
     * @exception XMLStreamException Thrown if an exception occurs
     */
-   private ParameterType readParameter(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   private Parameter readParameter(XMLStreamReader xmlStreamReader) throws XMLStreamException
    {
-      ParameterType result = new ParameterType();
+      Parameter result = new Parameter();
 
       for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++)
       {
@@ -352,22 +385,29 @@ public class Unmarshaller
     * @return The property
     * @exception XMLStreamException Thrown if an exception occurs
     */
-   private PropertyType readProperty(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   private Property readProperty(XMLStreamReader xmlStreamReader) throws XMLStreamException
    {
-      PropertyType result = new PropertyType();
+      String propertyName = null;
+      String clazz = null;
 
       for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++)
       {
          String name = xmlStreamReader.getAttributeLocalName(i);
          if ("name".equals(name))
          {
-            result.setName(xmlStreamReader.getAttributeValue(i));
+            propertyName = xmlStreamReader.getAttributeValue(i);
          }
          else if ("class".equals(name))
          {
-            result.setClazz(xmlStreamReader.getAttributeValue(i));
+            clazz = xmlStreamReader.getAttributeValue(i);
          }
       }
+
+      if (propertyName == null || propertyName.trim().equals(""))
+         throw new XMLStreamException("Name is mandatory", xmlStreamReader.getLocation());
+
+      Property result = new Property(propertyName);
+      result.setClazz(clazz);
 
       int eventCode = xmlStreamReader.next();
 
@@ -429,22 +469,29 @@ public class Unmarshaller
     * @return The inject
     * @exception XMLStreamException Thrown if an exception occurs
     */
-   private InjectType readInject(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   private Inject readInject(XMLStreamReader xmlStreamReader) throws XMLStreamException
    {
-      InjectType result = new InjectType();
+      String bean = null;
+      String property = null;
 
       for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++)
       {
          String name = xmlStreamReader.getAttributeLocalName(i);
          if ("bean".equals(name))
          {
-            result.setBean(xmlStreamReader.getAttributeValue(i));
+            bean = xmlStreamReader.getAttributeValue(i);
          }
          else if ("property".equals(name))
          {
-            result.setProperty(xmlStreamReader.getAttributeValue(i));
+            property = xmlStreamReader.getAttributeValue(i);
          }
       }
+
+      if (bean == null || bean.trim().equals(""))
+         throw new XMLStreamException("Bean is mandatory", xmlStreamReader.getLocation());
+
+      Inject result = new Inject(bean);
+      result.setProperty(property);
 
       int eventCode = xmlStreamReader.next();
 
@@ -474,9 +521,9 @@ public class Unmarshaller
     * @return The depends
     * @exception XMLStreamException Thrown if an exception occurs
     */
-   private DependsType readDepends(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   private Depends readDepends(XMLStreamReader xmlStreamReader) throws XMLStreamException
    {
-      DependsType result = new DependsType();
+      Depends result = new Depends();
 
       int eventCode = xmlStreamReader.next();
 
@@ -506,9 +553,9 @@ public class Unmarshaller
     * @return The install
     * @exception XMLStreamException Thrown if an exception occurs
     */
-   private InstallType readInstall(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   private Install readInstall(XMLStreamReader xmlStreamReader) throws XMLStreamException
    {
-      InstallType result = new InstallType();
+      Install result = new Install();
 
       for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++)
       {
@@ -538,9 +585,9 @@ public class Unmarshaller
     * @return The install
     * @exception XMLStreamException Thrown if an exception occurs
     */
-   private UninstallType readUninstall(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   private Uninstall readUninstall(XMLStreamReader xmlStreamReader) throws XMLStreamException
    {
-      UninstallType result = new UninstallType();
+      Uninstall result = new Uninstall();
 
       for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++)
       {
@@ -570,9 +617,9 @@ public class Unmarshaller
     * @return The incallback
     * @exception XMLStreamException Thrown if an exception occurs
     */
-   private IncallbackType readIncallback(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   private Incallback readIncallback(XMLStreamReader xmlStreamReader) throws XMLStreamException
    {
-      IncallbackType result = new IncallbackType();
+      Incallback result = new Incallback();
 
       for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++)
       {
@@ -602,9 +649,9 @@ public class Unmarshaller
     * @return The uncallback
     * @exception XMLStreamException Thrown if an exception occurs
     */
-   private UncallbackType readUncallback(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   private Uncallback readUncallback(XMLStreamReader xmlStreamReader) throws XMLStreamException
    {
-      UncallbackType result = new UncallbackType();
+      Uncallback result = new Uncallback();
 
       for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++)
       {
@@ -634,26 +681,37 @@ public class Unmarshaller
     * @return The map
     * @exception XMLStreamException Thrown if an exception occurs
     */
-   private MapType readMap(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   private Map readMap(XMLStreamReader xmlStreamReader) throws XMLStreamException
    {
-      MapType result = new MapType();
+      String keyClass = null;
+      String valueClass = null;
+      String clazz = null;
 
       for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++)
       {
          String name = xmlStreamReader.getAttributeLocalName(i);
          if ("keyClass".equals(name))
          {
-            result.setKeyClass(xmlStreamReader.getAttributeValue(i));
+            keyClass = xmlStreamReader.getAttributeValue(i);
          }
          else if ("valueClass".equals(name))
          {
-            result.setValueClass(xmlStreamReader.getAttributeValue(i));
+            valueClass = xmlStreamReader.getAttributeValue(i);
          }
          else if ("class".equals(name))
          {
-            result.setClazz(xmlStreamReader.getAttributeValue(i));
+            clazz = xmlStreamReader.getAttributeValue(i);
          }
       }
+
+      if (keyClass == null || keyClass.trim().equals(""))
+         throw new XMLStreamException("Key class is mandatory", xmlStreamReader.getLocation());
+
+      if (valueClass == null || valueClass.trim().equals(""))
+         throw new XMLStreamException("Value class is mandatory", xmlStreamReader.getLocation());
+
+      Map result = new Map(keyClass, valueClass);
+      result.setClazz(clazz);
 
       int eventCode = xmlStreamReader.next();
 
@@ -687,22 +745,29 @@ public class Unmarshaller
     * @return The set
     * @exception XMLStreamException Thrown if an exception occurs
     */
-   private SetType readSet(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   private Set readSet(XMLStreamReader xmlStreamReader) throws XMLStreamException
    {
-      SetType result = new SetType();
+      String elementClass = null;
+      String clazz = null;
 
       for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++)
       {
          String name = xmlStreamReader.getAttributeLocalName(i);
          if ("elementClass".equals(name))
          {
-            result.setElementClass(xmlStreamReader.getAttributeValue(i));
+            elementClass = xmlStreamReader.getAttributeValue(i);
          }
          else if ("class".equals(name))
          {
-            result.setClazz(xmlStreamReader.getAttributeValue(i));
+            clazz = xmlStreamReader.getAttributeValue(i);
          }
       }
+
+      if (elementClass == null || elementClass.trim().equals(""))
+         throw new XMLStreamException("Element class is mandatory", xmlStreamReader.getLocation());
+
+      Set result = new Set(elementClass);
+      result.setClazz(clazz);
 
       int eventCode = xmlStreamReader.next();
 
@@ -736,22 +801,29 @@ public class Unmarshaller
     * @return The list
     * @exception XMLStreamException Thrown if an exception occurs
     */
-   private ListType readList(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   private List readList(XMLStreamReader xmlStreamReader) throws XMLStreamException
    {
-      ListType result = new ListType();
+      String elementClass = null;
+      String clazz = null;
 
       for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++)
       {
          String name = xmlStreamReader.getAttributeLocalName(i);
          if ("elementClass".equals(name))
          {
-            result.setElementClass(xmlStreamReader.getAttributeValue(i));
+            elementClass = xmlStreamReader.getAttributeValue(i);
          }
          else if ("class".equals(name))
          {
-            result.setClazz(xmlStreamReader.getAttributeValue(i));
+            clazz = xmlStreamReader.getAttributeValue(i);
          }
       }
+
+      if (elementClass == null || elementClass.trim().equals(""))
+         throw new XMLStreamException("Element class is mandatory", xmlStreamReader.getLocation());
+
+      List result = new List(elementClass);
+      result.setClazz(clazz);
 
       int eventCode = xmlStreamReader.next();
 
@@ -785,9 +857,9 @@ public class Unmarshaller
     * @return The entry
     * @exception XMLStreamException Thrown if an exception occurs
     */
-   private EntryType readEntry(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   private Entry readEntry(XMLStreamReader xmlStreamReader) throws XMLStreamException
    {
-      EntryType result = new EntryType();
+      Entry result = new Entry();
 
       int eventCode = xmlStreamReader.next();
 
@@ -827,9 +899,9 @@ public class Unmarshaller
     * @return The key
     * @exception XMLStreamException Thrown if an exception occurs
     */
-   private KeyType readKey(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   private Key readKey(XMLStreamReader xmlStreamReader) throws XMLStreamException
    {
-      KeyType result = new KeyType();
+      Key result = new Key();
 
       int eventCode = xmlStreamReader.next();
 
@@ -859,9 +931,9 @@ public class Unmarshaller
     * @return The value
     * @exception XMLStreamException Thrown if an exception occurs
     */
-   private ValueType readValue(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   private Value readValue(XMLStreamReader xmlStreamReader) throws XMLStreamException
    {
-      ValueType result = new ValueType();
+      Value result = new Value();
 
       int eventCode = xmlStreamReader.next();
 
@@ -891,9 +963,9 @@ public class Unmarshaller
     * @return The null
     * @exception XMLStreamException Thrown if an exception occurs
     */
-   private NullType readNull(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   private Null readNull(XMLStreamReader xmlStreamReader) throws XMLStreamException
    {
-      NullType result = new NullType();
+      Null result = new Null();
 
       int eventCode = xmlStreamReader.next();
 
@@ -914,9 +986,9 @@ public class Unmarshaller
     * @return The this
     * @exception XMLStreamException Thrown if an exception occurs
     */
-   private ThisType readThis(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   private This readThis(XMLStreamReader xmlStreamReader) throws XMLStreamException
    {
-      ThisType result = new ThisType();
+      This result = new This();
 
       int eventCode = xmlStreamReader.next();
 
@@ -937,9 +1009,9 @@ public class Unmarshaller
     * @return The factory
     * @exception XMLStreamException Thrown if an exception occurs
     */
-   private FactoryType readFactory(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   private Factory readFactory(XMLStreamReader xmlStreamReader) throws XMLStreamException
    {
-      FactoryType result = new FactoryType();
+      Factory result = new Factory();
 
       for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++)
       {
@@ -969,9 +1041,9 @@ public class Unmarshaller
     * @return The create
     * @exception XMLStreamException Thrown if an exception occurs
     */
-   private CreateType readCreate(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   private Create readCreate(XMLStreamReader xmlStreamReader) throws XMLStreamException
    {
-      CreateType result = new CreateType();
+      Create result = new Create();
 
       for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++)
       {
@@ -1001,9 +1073,9 @@ public class Unmarshaller
     * @return The start
     * @exception XMLStreamException Thrown if an exception occurs
     */
-   private StartType readStart(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   private Start readStart(XMLStreamReader xmlStreamReader) throws XMLStreamException
    {
-      StartType result = new StartType();
+      Start result = new Start();
 
       for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++)
       {
@@ -1033,9 +1105,9 @@ public class Unmarshaller
     * @return The stop
     * @exception XMLStreamException Thrown if an exception occurs
     */
-   private StopType readStop(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   private Stop readStop(XMLStreamReader xmlStreamReader) throws XMLStreamException
    {
-      StopType result = new StopType();
+      Stop result = new Stop();
 
       for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++)
       {
@@ -1065,9 +1137,9 @@ public class Unmarshaller
     * @return The destroy
     * @exception XMLStreamException Thrown if an exception occurs
     */
-   private DestroyType readDestroy(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   private Destroy readDestroy(XMLStreamReader xmlStreamReader) throws XMLStreamException
    {
-      DestroyType result = new DestroyType();
+      Destroy result = new Destroy();
 
       for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++)
       {
@@ -1097,10 +1169,8 @@ public class Unmarshaller
     * @return The ignoreCreate
     * @exception XMLStreamException Thrown if an exception occurs
     */
-   private IgnoreCreateType readIgnoreCreate(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   private boolean readIgnoreCreate(XMLStreamReader xmlStreamReader) throws XMLStreamException
    {
-      IgnoreCreateType result = new IgnoreCreateType();
-
       int eventCode = xmlStreamReader.next();
 
       while (eventCode != XMLStreamReader.END_ELEMENT)
@@ -1111,7 +1181,7 @@ public class Unmarshaller
       if (!"ignoreCreate".equals(xmlStreamReader.getLocalName()))
          throw new XMLStreamException("ignoreCreate tag not completed", xmlStreamReader.getLocation());
 
-      return result;
+      return true;
    }
 
    /**
@@ -1120,10 +1190,8 @@ public class Unmarshaller
     * @return The ignoreStart
     * @exception XMLStreamException Thrown if an exception occurs
     */
-   private IgnoreStartType readIgnoreStart(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   private boolean readIgnoreStart(XMLStreamReader xmlStreamReader) throws XMLStreamException
    {
-      IgnoreStartType result = new IgnoreStartType();
-
       int eventCode = xmlStreamReader.next();
 
       while (eventCode != XMLStreamReader.END_ELEMENT)
@@ -1134,7 +1202,7 @@ public class Unmarshaller
       if (!"ignoreStart".equals(xmlStreamReader.getLocalName()))
          throw new XMLStreamException("ignoreStart tag not completed", xmlStreamReader.getLocation());
 
-      return result;
+      return true;
    }
 
    /**
@@ -1143,10 +1211,8 @@ public class Unmarshaller
     * @return The ignoreStop
     * @exception XMLStreamException Thrown if an exception occurs
     */
-   private IgnoreStopType readIgnoreStop(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   private boolean readIgnoreStop(XMLStreamReader xmlStreamReader) throws XMLStreamException
    {
-      IgnoreStopType result = new IgnoreStopType();
-
       int eventCode = xmlStreamReader.next();
 
       while (eventCode != XMLStreamReader.END_ELEMENT)
@@ -1157,7 +1223,7 @@ public class Unmarshaller
       if (!"ignoreStop".equals(xmlStreamReader.getLocalName()))
          throw new XMLStreamException("ignoreStop tag not completed", xmlStreamReader.getLocation());
 
-      return result;
+      return true;
    }
 
    /**
@@ -1166,10 +1232,8 @@ public class Unmarshaller
     * @return The ignoreDestroy
     * @exception XMLStreamException Thrown if an exception occurs
     */
-   private IgnoreDestroyType readIgnoreDestroy(XMLStreamReader xmlStreamReader) throws XMLStreamException
+   private boolean readIgnoreDestroy(XMLStreamReader xmlStreamReader) throws XMLStreamException
    {
-      IgnoreDestroyType result = new IgnoreDestroyType();
-
       int eventCode = xmlStreamReader.next();
 
       while (eventCode != XMLStreamReader.END_ELEMENT)
@@ -1180,6 +1244,6 @@ public class Unmarshaller
       if (!"ignoreDestroy".equals(xmlStreamReader.getLocalName()))
          throw new XMLStreamException("ignoreDestroy tag not completed", xmlStreamReader.getLocation());
 
-      return result;
+      return true;
    }
 }

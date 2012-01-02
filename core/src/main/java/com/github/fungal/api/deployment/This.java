@@ -18,38 +18,18 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.github.fungal.deployment;
+package com.github.fungal.api.deployment;
 
 /**
- * Represents an uncallback element
+ * Represents a this element
  */
-public class UncallbackType
+public class This
 {
-   private String method;
 
    /**
     * Constructor
     */
-   public UncallbackType()
+   public This()
    {
-      method = null;
-   }
-
-   /**
-    * Get the method
-    * @return The value
-    */
-   public String getMethod()
-   {
-      return method;
-   }
-
-   /**
-    * Set the method
-    * @param value The value
-    */
-   public void setMethod(String value)
-   {
-      method = value;
    }
 }

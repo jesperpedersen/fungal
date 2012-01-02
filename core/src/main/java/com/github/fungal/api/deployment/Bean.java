@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.github.fungal.deployment;
+package com.github.fungal.api.deployment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,57 +26,58 @@ import java.util.List;
 /**
  * Represents a bean
  */
-public class BeanType
+public class Bean
 {
-   private ConstructorType constructor;
-   private List<PropertyType> property;
-   private List<DependsType> depends;
-   private List<InstallType> install;
-   private List<UninstallType> uninstall;
-   private List<IncallbackType> incallback;
-   private List<UncallbackType> uncallback;
-   private CreateType create;
-   private StartType start;
-   private StopType stop;
-   private DestroyType destroy;
-   private IgnoreCreateType ignoreCreate;
-   private IgnoreStartType ignoreStart;
-   private IgnoreStopType ignoreStop;
-   private IgnoreDestroyType ignoreDestroy;
+   private Constructor constructor;
+   private List<Property> property;
+   private List<Depends> depends;
+   private List<Install> install;
+   private List<Uninstall> uninstall;
+   private List<Incallback> incallback;
+   private List<Uncallback> uncallback;
+   private Create create;
+   private Start start;
+   private Stop stop;
+   private Destroy destroy;
+   private boolean ignoreCreate;
+   private boolean ignoreStart;
+   private boolean ignoreStop;
+   private boolean ignoreDestroy;
    private String name;
    private String interfaze;
    private String clazz;
 
    /**
     * Constructor
+    * @param name The name of the bean
     */
-   public BeanType()
+   public Bean(String name)
    {
-      constructor = null;
-      property = null;
-      depends = null;
-      install = null;
-      uninstall = null;
-      incallback = null;
-      uncallback = null;
-      create = null;
-      start = null;
-      stop = null;
-      destroy = null;
-      ignoreCreate = null;
-      ignoreStart = null;
-      ignoreStop = null;
-      ignoreDestroy = null;
-      name = null;
-      interfaze = null;
-      clazz = null;
+      this.constructor = null;
+      this.property = null;
+      this.depends = null;
+      this.install = null;
+      this.uninstall = null;
+      this.incallback = null;
+      this.uncallback = null;
+      this.create = null;
+      this.start = null;
+      this.stop = null;
+      this.destroy = null;
+      this.ignoreCreate = false;
+      this.ignoreStart = false;
+      this.ignoreStop = false;
+      this.ignoreDestroy = false;
+      this.name = name;
+      this.interfaze = null;
+      this.clazz = null;
    }
 
    /**
     * Get the constructor
     * @return The value
     */
-   public ConstructorType getConstructor()
+   public Constructor getConstructor()
    {
       return constructor;
    }
@@ -85,7 +86,7 @@ public class BeanType
     * Set the constructor
     * @param value The value
     */
-   public void setConstructor(ConstructorType value)
+   public void setConstructor(Constructor value)
    {
       constructor = value;
    }
@@ -94,10 +95,10 @@ public class BeanType
     * Get the property values
     * @return The value
     */
-   public List<PropertyType> getProperty()
+   public List<Property> getProperty()
    {
       if (property == null)
-         property = new ArrayList<PropertyType>(1);
+         property = new ArrayList<Property>(1);
 
       return property;
    }
@@ -106,10 +107,10 @@ public class BeanType
     * Get the depends values
     * @return The value
     */
-   public List<DependsType> getDepends()
+   public List<Depends> getDepends()
    {
       if (depends == null)
-         depends = new ArrayList<DependsType>(1);
+         depends = new ArrayList<Depends>(1);
 
       return depends;
    }
@@ -118,10 +119,10 @@ public class BeanType
     * Get the install values
     * @return The value
     */
-   public List<InstallType> getInstall()
+   public List<Install> getInstall()
    {
       if (install == null)
-         install = new ArrayList<InstallType>(1);
+         install = new ArrayList<Install>(1);
 
       return install;
    }
@@ -130,10 +131,10 @@ public class BeanType
     * Get the uninstall values
     * @return The value
     */
-   public List<UninstallType> getUninstall()
+   public List<Uninstall> getUninstall()
    {
       if (uninstall == null)
-         uninstall = new ArrayList<UninstallType>(1);
+         uninstall = new ArrayList<Uninstall>(1);
 
       return uninstall;
    }
@@ -142,10 +143,10 @@ public class BeanType
     * Get the incallback values
     * @return The value
     */
-   public List<IncallbackType> getIncallback()
+   public List<Incallback> getIncallback()
    {
       if (incallback == null)
-         incallback = new ArrayList<IncallbackType>(1);
+         incallback = new ArrayList<Incallback>(1);
 
       return incallback;
    }
@@ -154,10 +155,10 @@ public class BeanType
     * Get the uncallback values
     * @return The value
     */
-   public List<UncallbackType> getUncallback()
+   public List<Uncallback> getUncallback()
    {
       if (uncallback == null)
-         uncallback = new ArrayList<UncallbackType>(1);
+         uncallback = new ArrayList<Uncallback>(1);
 
       return uncallback;
    }
@@ -166,7 +167,7 @@ public class BeanType
     * Get the create value
     * @return The value
     */
-   public CreateType getCreate()
+   public Create getCreate()
    {
       return create;
    }
@@ -175,7 +176,7 @@ public class BeanType
     * Set the create value
     * @param value The value
     */
-   public void setCreate(CreateType value)
+   public void setCreate(Create value)
    {
       create = value;
    }
@@ -184,7 +185,7 @@ public class BeanType
     * Get the start value
     * @return The value
     */
-   public StartType getStart()
+   public Start getStart()
    {
       return start;
    }
@@ -193,7 +194,7 @@ public class BeanType
     * Set the start value
     * @param value The value
     */
-   public void setStart(StartType value)
+   public void setStart(Start value)
    {
       start = value;
    }
@@ -202,7 +203,7 @@ public class BeanType
     * Get the stop value
     * @return The value
     */
-   public StopType getStop()
+   public Stop getStop()
    {
       return stop;
    }
@@ -211,7 +212,7 @@ public class BeanType
     * Set the stop value
     * @param value The value
     */
-   public void setStop(StopType value)
+   public void setStop(Stop value)
    {
       stop = value;
    }
@@ -220,7 +221,7 @@ public class BeanType
     * Get the destroy value
     * @return The value
     */
-   public DestroyType getDestroy()
+   public Destroy getDestroy()
    {
       return destroy;
    }
@@ -229,7 +230,7 @@ public class BeanType
     * Set the destroy value
     * @param value The value
     */
-   public void setDestroy(DestroyType value)
+   public void setDestroy(Destroy value)
    {
       destroy = value;
    }
@@ -238,7 +239,7 @@ public class BeanType
     * Get the ignore create value
     * @return The value
     */
-   public IgnoreCreateType getIgnoreCreate()
+   public boolean isIgnoreCreate()
    {
       return ignoreCreate;
    }
@@ -247,7 +248,7 @@ public class BeanType
     * Set the ignore create value
     * @param value The value
     */
-   public void setIgnoreCreate(IgnoreCreateType value)
+   public void setIgnoreCreate(boolean value)
    {
       ignoreCreate = value;
    }
@@ -256,7 +257,7 @@ public class BeanType
     * Get the ignore start value
     * @return The value
     */
-   public IgnoreStartType getIgnoreStart()
+   public boolean isIgnoreStart()
    {
       return ignoreStart;
    }
@@ -265,7 +266,7 @@ public class BeanType
     * Set the ignore start value
     * @param value The value
     */
-   public void setIgnoreStart(IgnoreStartType value)
+   public void setIgnoreStart(boolean value)
    {
       ignoreStart = value;
    }
@@ -274,7 +275,7 @@ public class BeanType
     * Get the ignore stop value
     * @return The value
     */
-   public IgnoreStopType getIgnoreStop()
+   public boolean isIgnoreStop()
    {
       return ignoreStop;
    }
@@ -283,7 +284,7 @@ public class BeanType
     * Set the ignore stop value
     * @param value The value
     */
-   public void setIgnoreStop(IgnoreStopType value)
+   public void setIgnoreStop(boolean value)
    {
       ignoreStop = value;
    }
@@ -292,7 +293,7 @@ public class BeanType
     * Get the ignore destroy value
     * @return The value
     */
-   public IgnoreDestroyType getIgnoreDestroy()
+   public boolean isIgnoreDestroy()
    {
       return ignoreDestroy;
    }
@@ -301,7 +302,7 @@ public class BeanType
     * Set the ignore destroy value
     * @param value The value
     */
-   public void setIgnoreDestroy(IgnoreDestroyType value)
+   public void setIgnoreDestroy(boolean value)
    {
       ignoreDestroy = value;
    }
@@ -313,15 +314,6 @@ public class BeanType
    public String getName()
    {
       return name;
-   }
-   
-   /**
-    * Set the name
-    * @param value The value
-    */
-   public void setName(String value)
-   {
-      name = value;
    }
 
    /**

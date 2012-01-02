@@ -18,72 +18,58 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.github.fungal.deployment;
-
-import java.util.ArrayList;
-import java.util.List;
+package com.github.fungal.api.deployment;
 
 /**
- * Represents a parameter element
+ * Represents an entry
  */
-public class ParameterType
+public class Entry
 {
-   private List<Object> content;
-   private String clazz;
-
+   private Key key;
+   private Value value;
+   
    /**
     * Constructor
     */
-   public ParameterType()
+   public Entry()
    {
-      content = null;
-      clazz = null;
+      key = null;
+      value = null;
    }
 
    /**
-    * Get the content values
+    * Get the key
     * @return The value
     */
-   public List<Object> getContent()
+   public Key getKey()
    {
-      if (content == null)
-         content = new ArrayList<Object>(1);
-      
-      return this.content;
+      return key;
    }
-
+   
    /**
-    * Get the class
-    * @return The value
-    */
-   public String getClazz()
-   {
-      return clazz;
-   }
-
-   /**
-    * Set the class
+    * Set the key
     * @param value The value
     */
-   public void setClazz(String value)
+   public void setKey(Key value)
    {
-      clazz = value;
+      key = value;
    }
 
    /**
-    * String representation
-    * @return The string
+    * Get the value
+    * @return The value
     */
-   @Override
-   public String toString()
+   public Value getValue()
    {
-      StringBuilder sb = new StringBuilder();
-
-      sb.append("ParameterType@").append(Integer.toHexString(System.identityHashCode(this)));
-      sb.append("[clazz=").append(clazz);
-      sb.append(" content=").append(content);
-      sb.append("]");
-
-      return sb.toString();
+      return value;
+   }
+   
+   /**
+    * Set the value
+    * @param value The value
+    */
+   public void setValue(Value value)
+   {
+      this.value = value;
    }
 }

@@ -1,6 +1,6 @@
 /*
  * The Fungal kernel project
- * Copyright (C) 2010
+ * Copyright (C) 2012
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,6 +22,8 @@ package com.github.fungal.api;
 
 import com.github.fungal.api.classloading.KernelClassLoader;
 import com.github.fungal.api.deployer.MainDeployer;
+import com.github.fungal.api.deployment.Bean;
+import com.github.fungal.api.deployment.BeanDeployment;
 import com.github.fungal.spi.deployers.Deployment;
 
 import java.net.URL;
@@ -33,8 +35,9 @@ import javax.management.MBeanServer;
  *
  * @author <a href="mailto:jesper.pedersen@comcast.net">Jesper Pedersen</a>
  * @see com.github.fungal.api.classloading.KernelClassLoader
+ * @see com.github.fungal.api.deployment.Bean
  * @see com.github.fungal.api.deployer.MainDeployer
- * @see com.github.fungal.spi.deployers.Deployment;
+ * @see com.github.fungal.spi.deployers.Deployment
  */
 public interface Kernel
 {
@@ -83,6 +86,21 @@ public interface Kernel
     * @exception Throwable If an error occurs
     */
    public <T> T getBean(String name, Class<T> expectedType) throws Throwable;
+
+   /**
+    * Install beans
+    * @param beans The beans
+    * @return The deployment that represents the beans
+    * @exception Throwable If an error occurs
+    */
+   public BeanDeployment install(Bean... beans) throws Throwable;
+
+   /**
+    * Uninstall beans
+    * @param beans The bean deployment
+    * @exception Throwable If an error occurs
+    */
+   public void uninstall(BeanDeployment beans) throws Throwable;
 
    /**
     * Startup

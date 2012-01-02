@@ -20,6 +20,8 @@
 
 package com.github.fungal.deployment;
 
+import com.github.fungal.api.deployment.Bean;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +30,7 @@ import java.util.List;
  */
 public class Deployment
 {
-   private List<BeanType> bean;
+   private List<Bean> bean;
 
    /**
     * Constructor
@@ -42,10 +44,10 @@ public class Deployment
     * Get the bean values
     * @return The value
     */
-   public List<BeanType> getBean()
+   public List<Bean> getBean()
    {
       if (bean == null)
-         bean = new ArrayList<BeanType>(1);
+         bean = new ArrayList<Bean>(1);
 
       return bean;
    }

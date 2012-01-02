@@ -18,41 +18,45 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.github.fungal.deployment;
+package com.github.fungal.api.deployment;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
 /**
- * Represents a list
+ * Represents a map
  */
-public class ListType
+public class Map
 {
-   private List<ValueType> value;
+   private List<Entry> entry;
    private String clazz;
-   private String elementClass;
+   private String keyClass;
+   private String valueClass;
    
    /**
     * Constructor
+    * @param keyClass The key class
+    * @param valueClass The value class
     */
-   public ListType()
+   public Map(String keyClass, String valueClass)
    {
-      value = null;
-      clazz = null;
-      elementClass = null;
+      this.keyClass = keyClass;
+      this.valueClass = valueClass;
+      this.entry = null;
+      this.clazz = null;
    }
 
    /**
-    * Get the values
+    * Get the entries
     * @return The value
     */
-   public List<ValueType> getValue()
+   public List<Entry> getEntry()
    {
-      if (value == null)
-         value = new ArrayList<ValueType>(1);
+      if (entry == null)
+         entry = new ArrayList<Entry>(1);
 
-      return value;
+      return entry;
    }
 
    /**
@@ -74,20 +78,20 @@ public class ListType
    }
 
    /**
-    * Get the element class
+    * Get the key class
     * @return The value
     */
-   public String getElementClass()
+   public String getKeyClass()
    {
-      return elementClass;
+      return keyClass;
    }
 
    /**
-    * Set the element class
-    * @param value The value
+    * Get the value class
+    * @return The value
     */
-   public void setElementClass(String value)
+   public String getValueClass()
    {
-      elementClass = value;
+      return valueClass;
    }
 }

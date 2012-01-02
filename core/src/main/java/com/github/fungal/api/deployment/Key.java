@@ -18,19 +18,19 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.github.fungal.deployment;
+package com.github.fungal.api.deployment;
 
 /**
- * Represents a depends element
+ * Represents a key element
  */
-public class DependsType
+public class Key
 {
    private String value;
 
    /**
     * Constructor
     */
-   public DependsType()
+   public Key()
    {
       value = null;
    }

@@ -20,7 +20,7 @@
 
 package com.github.fungal.impl;
 
-import com.github.fungal.spi.deployers.Deployment;
+import com.github.fungal.api.deployment.BeanDeployment;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -36,7 +36,7 @@ import java.util.Set;
  * A bean deployment for Fungal
  * @author <a href="mailto:jesper.pedersen@comcast.net">Jesper Pedersen</a>
  */
-public class BeanDeployment implements Deployment
+public class BeanDeploymentImpl implements BeanDeployment
 {
    /** The deployment */
    private URL deployment;
@@ -73,18 +73,15 @@ public class BeanDeployment implements Deployment
     * @param ignoreDestroys Ignore destroy methods for beans
     * @param kernel The kernel
     */
-   public BeanDeployment(URL deployment, 
-                         List<String> beans, 
-                         Map<String, List<Method>> uninstall,
-                         Map<String, String> stops,
-                         Map<String, String> destroys,
-                         Set<String> ignoreStops,
-                         Set<String> ignoreDestroys,
-                         KernelImpl kernel)
+   public BeanDeploymentImpl(URL deployment, 
+                             List<String> beans, 
+                             Map<String, List<Method>> uninstall,
+                             Map<String, String> stops,
+                             Map<String, String> destroys,
+                             Set<String> ignoreStops,
+                             Set<String> ignoreDestroys,
+                             KernelImpl kernel)
    {
-      if (deployment == null)
-         throw new IllegalArgumentException("Deployment is null");
-
       if (beans == null)
          throw new IllegalArgumentException("Beans is null");
 
@@ -102,6 +99,15 @@ public class BeanDeployment implements Deployment
       this.ignoreStops = ignoreStops;
       this.ignoreDestroys = ignoreDestroys;
       this.kernel = kernel;
+   }
+
+   /**
+    * Get the bean names
+    * @return The values
+    */
+   public List<String> getBeans()
+   {
+      return beans;
    }
 
    /**

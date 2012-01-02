@@ -18,39 +18,38 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.github.fungal.deployment;
+package com.github.fungal.api.deployment;
 
 import java.util.ArrayList;
-import java.util.List;
-
 
 /**
- * Represents a set
+ * Represents a list
  */
-public class SetType
+public class List
 {
-   private List<ValueType> value;
+   private java.util.List<Value> value;
    private String clazz;
    private String elementClass;
    
    /**
     * Constructor
+    * @param elementClass The element class
     */
-   public SetType()
+   public List(String elementClass)
    {
-      value = null;
-      clazz = null;
-      elementClass = null;
+      this.value = null;
+      this.clazz = null;
+      this.elementClass = elementClass;
    }
 
    /**
     * Get the values
     * @return The value
     */
-   public List<ValueType> getValue()
+   public java.util.List<Value> getValue()
    {
       if (value == null)
-         value = new ArrayList<ValueType>(1);
+         value = new ArrayList<Value>(1);
 
       return value;
    }
@@ -80,14 +79,5 @@ public class SetType
    public String getElementClass()
    {
       return elementClass;
-   }
-
-   /**
-    * Set the element class
-    * @param value The value
-    */
-   public void setElementClass(String value)
-   {
-      elementClass = value;
    }
 }

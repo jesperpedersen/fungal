@@ -18,75 +18,38 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.github.fungal.deployment;
-
-import java.util.ArrayList;
-import java.util.List;
+package com.github.fungal.api.deployment;
 
 /**
- * Represents a property element
+ * Represents an incallback element
  */
-public class PropertyType
+public class Incallback
 {
-   private List<Object> content;
-   private String name;
-   private String clazz;
+   private String method;
 
    /**
     * Constructor
     */
-   public PropertyType()
+   public Incallback()
    {
-      content = null;
-      name = null;
-      clazz = null;
+      method = null;
    }
 
    /**
-    * Get the content values
+    * Get the method
     * @return The value
     */
-   public List<Object> getContent()
+   public String getMethod()
    {
-      if (content == null)
-         content = new ArrayList<Object>(1);
-      
-      return this.content;
+      return method;
    }
 
    /**
-    * Get the name
-    * @return The value
-    */
-   public String getName()
-   {
-      return name;
-   }
-
-   /**
-    * Set the name
+    * Set the method
     * @param value The value
     */
-   public void setName(String value)
+   public void setMethod(String value)
    {
-      name = value;
-   }
-
-   /**
-    * Get the class
-    * @return The value
-    */
-   public String getClazz()
-   {
-      return clazz;
-   }
-
-   /**
-    * Set the class
-    * @param value The value
-    */
-   public void setClazz(String value)
-   {
-      clazz = value;
+      method = value;
    }
 }

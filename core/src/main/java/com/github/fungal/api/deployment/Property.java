@@ -1,6 +1,6 @@
 /*
  * The Fungal kernel project
- * Copyright (C) 2011
+ * Copyright (C) 2010
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,55 +18,67 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.github.fungal.deployment;
+package com.github.fungal.api.deployment;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Represents a create element
+ * Represents a property element
  */
-public class CreateType
+public class Property
 {
-   /** The method attribute */
-   private String method;
+   private List<Object> content;
+   private String name;
+   private String clazz;
 
    /**
     * Constructor
+    * @param name The name
     */
-   public CreateType()
+   public Property(String name)
    {
-      this.method = null;
+      this.name = name;
+      this.content = null;
+      this.clazz = null;
    }
 
    /**
-    * Get the method
+    * Get the content values
     * @return The value
     */
-   public String getMethod()
+   public List<Object> getContent()
    {
-      return method;
+      if (content == null)
+         content = new ArrayList<Object>(1);
+      
+      return this.content;
    }
 
    /**
-    * Set the method
+    * Get the name
+    * @return The value
+    */
+   public String getName()
+   {
+      return name;
+   }
+
+   /**
+    * Get the class
+    * @return The value
+    */
+   public String getClazz()
+   {
+      return clazz;
+   }
+
+   /**
+    * Set the class
     * @param value The value
     */
-   public void setMethod(String value)
+   public void setClazz(String value)
    {
-      method = value;
-   }
-
-   /**
-    * String representation
-    * @return The string
-    */
-   @Override
-   public String toString()
-   {
-      StringBuilder sb = new StringBuilder();
-
-      sb.append("CreateType@").append(Integer.toHexString(System.identityHashCode(this)));
-      sb.append("[method=").append(method);
-      sb.append("]");
-
-      return sb.toString();
+      clazz = value;
    }
 }

@@ -18,18 +18,38 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.github.fungal.deployment;
+package com.github.fungal.api.deployment;
 
 /**
- * Represents an ignore stop element
+ * Represents an uncallback element
  */
-public class IgnoreStopType
+public class Uncallback
 {
+   private String method;
 
    /**
     * Constructor
     */
-   public IgnoreStopType()
+   public Uncallback()
    {
+      method = null;
+   }
+
+   /**
+    * Get the method
+    * @return The value
+    */
+   public String getMethod()
+   {
+      return method;
+   }
+
+   /**
+    * Set the method
+    * @param value The value
+    */
+   public void setMethod(String value)
+   {
+      method = value;
    }
 }

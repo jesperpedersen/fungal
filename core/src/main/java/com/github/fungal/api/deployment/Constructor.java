@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.github.fungal.deployment;
+package com.github.fungal.api.deployment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,17 +27,17 @@ import java.util.List;
 /**
  * Represents a constructor
  */
-public class ConstructorType
+public class Constructor
 {
-   private List<ParameterType> parameter;
-   private FactoryType factory;
+   private List<Parameter> parameter;
+   private Factory factory;
    private String factoryMethod;
    private String factoryClass;
    
    /**
     * Constructor
     */
-   public ConstructorType()
+   public Constructor()
    {
       parameter = null;
       factory = null;
@@ -49,10 +49,10 @@ public class ConstructorType
     * Get the parameter values
     * @return The value
     */
-   public List<ParameterType> getParameter()
+   public List<Parameter> getParameter()
    {
       if (parameter == null)
-         parameter = new ArrayList<ParameterType>(1);
+         parameter = new ArrayList<Parameter>(1);
 
       return parameter;
    }
@@ -61,7 +61,7 @@ public class ConstructorType
     * Get the factory
     * @return The value
     */
-   public FactoryType getFactory()
+   public Factory getFactory()
    {
       return factory;
    }
@@ -70,7 +70,7 @@ public class ConstructorType
     * Set the factory
     * @param value The value
     */
-   public void setFactory(FactoryType value)
+   public void setFactory(Factory value)
    {
       factory = value;
    }

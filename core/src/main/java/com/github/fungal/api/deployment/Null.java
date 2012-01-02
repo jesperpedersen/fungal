@@ -1,6 +1,6 @@
 /*
  * The Fungal kernel project
- * Copyright (C) 2011
+ * Copyright (C) 2010
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,55 +18,18 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.github.fungal.deployment;
+package com.github.fungal.api.deployment;
 
 /**
- * Represents a start element
+ * Represents a null element
  */
-public class StartType
+public class Null
 {
-   /** The method attribute */
-   private String method;
 
    /**
     * Constructor
     */
-   public StartType()
+   public Null()
    {
-      this.method = null;
-   }
-
-   /**
-    * Get the method
-    * @return The value
-    */
-   public String getMethod()
-   {
-      return method;
-   }
-
-   /**
-    * Set the method
-    * @param value The value
-    */
-   public void setMethod(String value)
-   {
-      method = value;
-   }
-
-   /**
-    * String representation
-    * @return The string
-    */
-   @Override
-   public String toString()
-   {
-      StringBuilder sb = new StringBuilder();
-
-      sb.append("StartType@").append(Integer.toHexString(System.identityHashCode(this)));
-      sb.append("[method=").append(method);
-      sb.append("]");
-
-      return sb.toString();
    }
 }
