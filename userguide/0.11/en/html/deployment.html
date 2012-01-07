@@ -1,0 +1,57 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Chapter&nbsp;8.&nbsp;Deployment</title><link rel="stylesheet" href="css/html.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.65.1"><link rel="home" href="index.html" title="Fungal User's Guide"><link rel="up" href="index.html" title="Fungal User's Guide"><link rel="previous" href="lifecycle.html" title="Chapter&nbsp;7.&nbsp;Lifecycle"><link rel="next" href="classloading.html" title="Chapter&nbsp;9.&nbsp;Classloading"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter&nbsp;8.&nbsp;Deployment</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="lifecycle.html">Prev</a>&nbsp;</td><th width="60%" align="center">&nbsp;</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="classloading.html">Next</a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="deployment"></a>Chapter&nbsp;8.&nbsp;Deployment</h2></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="fungal_deployers"></a>8.1.&nbsp;Deployers</h2></div></div><div></div></div><p>Fungal features a very simple deployer mechanism.</p><p>Each deployer is defined as a bean in a bean deployment XML file and they
+        must implement the</p><pre class="programlisting">
+com.github.fungal.spi.deployers.Deployer
+      </pre><p>interface.</p><p>The interface contains the</p><pre class="programlisting">
+/**
+ * Deploy
+ * @param url The URL for the deployment
+ * @param context The context
+ * @param parent The parent classloader
+ * @return The deployment; or null if no deployment was made
+ * @exception DeployException Thrown if an error occurs
+ */
+public Deployment deploy(URL url, Context context, ClassLoader parent) throws DeployException;
+      </pre><p>method which is invoked once with each of the files in the
+        $CONF_HOME/deploy/ directory.</p><p>The <tt class="code">Context</tt> is shared by all deployers in the chain for each
+      deployment. This enables creating shared data, or access to the kernel infrastructure.</p><p>The <tt class="code">Deployment</tt> interface returned represents the
+        deployment unit or <tt class="code">null</tt> if a deployment unit wasn't
+        created.</p><p>The method</p><pre class="programlisting">
+/**
+ * Accepts the URL of the deployment
+ * @param deployment The URL
+ * @return True if the deployer accepts the deployment; otherwise false
+ */
+public boolean accepts(URL deployment);
+      </pre><p>determines if the deployer is invoked.</p><p>The method</p><pre class="programlisting">
+/**
+ * Get the order for the deployer. The lower the number the sooner
+ * the deployer will be scheduled in the deployment chain
+ * @return The value
+ */
+public int getOrder();
+      </pre><p>determines the priority of the deployer. The lower the number the sooner the deployer
+      is invoked in the deployer chain.</p><p>The implementation of the deployer bean must be thread-safe. This can be done by
+        using the <tt class="code">synchronized</tt> keyword on the <tt class="code">deploy</tt> method.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="fungal_deployers_advanced"></a>8.1.1.&nbsp;Advanced deployers</h3></div></div><div></div></div><p>The kernel supports deploying multiple artifacts of the same type at the same time
+          for optimal performance.</p><p>If a deployer supports this mechanism it must implement the</p><pre class="programlisting">
+com.github.fungal.spi.deployers.CloneableDeployer
+          </pre><p>interface.</p><p>The interface contains the</p><pre class="programlisting">
+/**
+ * Clone the deployer
+ * @return A copy of the deployer
+ * @exception CloneNotSupportedException Thrown if the copy operation isn't supported
+ */
+public Deployer clone() throws CloneNotSupportedException;
+          </pre><p>method which constructs a new instance of the deployer.</p><p>Implementing this interface means that the <tt class="code">deploy</tt> method doesn't have
+            to be <tt class="code">synchronized</tt>. However any state that should be shared between
+            all the deployer instances should be <tt class="code">static</tt> and have atomic access.</p><p>In order to receive callbacks before deployment begins and after it has ended a bean
+            can implement the <tt class="code">com.github.fungal.spi.deployers.DeployerPhases</tt> interface.
+            Note that beans deployed as part of the <tt class="code">system</tt> and <tt class="code">deploy</tt> directories
+            will not receive the <tt class="code">preDeploy</tt> notification.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="archive_deployment"></a>8.2.&nbsp;Archive deployment</h2></div></div><div></div></div><p>Fungal uses multiple threads during the booting sequence.</p><p>When multiple threads are used in the kernel a dependency mechanism between beans is
+        needed. The kernel keeps track of each bean deployment and assigns a status</p><div class="itemizedlist"><ul type="disc"><li><p><tt class="code">NOT_STARTED</tt></p><p>The bean hasn't started.</p></li><li><p><tt class="code">STARTING</tt></p><p>The bean is starting.</p></li><li><p><tt class="code">STARTED</tt></p><p>The bean has fully started.</p></li><li><p><tt class="code">STOPPING</tt></p><p>The bean is stopping.</p></li><li><p><tt class="code">ERROR</tt></p><p>The bean is in error.</p></li></ul></div><p>Caveats: The kernel currently doesn't detect cyclic dependencies between deployment units.</p><p>Furthermore the dependencies between beans are recorded in order to be able to safely shutdown
+        deployments.</p><p>The Fungal kernel can deploy the archives in the <tt class="code">deploy</tt> directory in parallel if specified
+        by the <tt class="code">KernelConfiguration.parallelDeploy()</tt> method. The archives are scheduled for
+        deployment in the order defined by the <tt class="code">DeploymentOrder</tt> class specified in the configuration.</p><p>The Fungal kernel features a hot deployer, which scans the deployment directory at the specified
+        intervals for new, changed or removed deployment units. The properties of the hot deployer can
+        be controlled through the <tt class="code">KernelConfiguration</tt> object or through JMX.</p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="lifecycle.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="index.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="classloading.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;7.&nbsp;Lifecycle&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;9.&nbsp;Classloading</td></tr></table></div></body></html>
