@@ -5,7 +5,7 @@
     <section id="fungal_deployers">
       <title>Deployers</title>
 
-      <para>Fungal features a very simple deployers mechanism.</para>
+      <para>Fungal features a very simple deployer mechanism.</para>
 
       <para>Each deployer is defined as a bean in a bean deployment XML file and they
         must implement the</para>
@@ -19,18 +19,45 @@ com.github.fungal.spi.deployers.Deployer
 /**
  * Deploy
  * @param url The URL for the deployment
+ * @param context The context
  * @param parent The parent classloader
  * @return The deployment; or null if no deployment was made
  * @exception DeployException Thrown if an error occurs
  */
-public Deployment deploy(URL url, ClassLoader parent) throws DeployException;
+public Deployment deploy(URL url, Context context, ClassLoader parent) throws DeployException;
       </programlisting>
       <para>method which is invoked once with each of the files in the
         $CONF_HOME/deploy/ directory.</para>
 
+      <para>The <code>Context</code> is shared by all deployers in the chain for each
+      deployment. This enables creating shared data, or access to the kernel infrastructure.</para>
+
       <para>The <code>Deployment</code> interface returned represents the
         deployment unit or <code>null</code> if a deployment unit wasn't
         created.</para>
+
+      <para>The method</para>
+      <programlisting>
+/**
+ * Accepts the URL of the deployment
+ * @param deployment The URL
+ * @return True if the deployer accepts the deployment; otherwise false
+ */
+public boolean accepts(URL deployment);
+      </programlisting>
+      <para>determines if the deployer is invoked.</para>
+
+      <para>The method</para>
+      <programlisting>
+/**
+ * Get the order for the deployer. The lower the number the sooner
+ * the deployer will be scheduled in the deployment chain
+ * @return The value
+ */
+public int getOrder();
+      </programlisting>
+      <para>determines the priority of the deployer. The lower the number the sooner the deployer
+      is invoked in the deployer chain.</para>
 
       <para>The implementation of the deployer bean must be thread-safe. This can be done by
         using the <code>synchronized</code> keyword on the <code>deploy</code> method.</para>
@@ -66,32 +93,6 @@ public Deployer clone() throws CloneNotSupportedException;
             can implement the <code>com.github.fungal.spi.deployers.DeployerPhases</code> interface.
             Note that beans deployed as part of the <code>system</code> and <code>deploy</code> directories
             will not receive the <code>preDeploy</code> notification.</para>
-
-          <section id="fungal_deployers_advanced_multi">
-            <title>Multi stage deployers</title>
-
-            <para>A deployer chain can be split into multi stages by applying the
-              <code>com.github.fungal.spi.deployers.MultiStageDeployer</code> marker interface.</para>
-
-            <para>This will tell the kernel to keep processing the deployment until no more deployers
-              are found or a deployer which doesn't implement the marker interface is found.</para>
-
-            <para>In order to select which deployer is processed first the 
-              <code>com.github.fungal.spi.deployers.DeployerOrder</code> interface must be implemented.</para>
-
-            <para>The interface contains the method</para>
-            <programlisting>
-/**
- * Get the order for the deployer. The lower the number the sooner
- * the deployer will be scheduled in the deployment chain
- * @return The value
- */
-public int getOrder();
-            </programlisting>
-
-            <para>where the developer can return intergers which represent the order of the deployers.</para>
-
-          </section>
 
       </section>
 

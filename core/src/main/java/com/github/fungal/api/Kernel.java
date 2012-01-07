@@ -27,6 +27,7 @@ import com.github.fungal.api.deployment.BeanDeployment;
 import com.github.fungal.spi.deployers.Deployment;
 
 import java.net.URL;
+import java.util.List;
 
 import javax.management.MBeanServer;
 
@@ -72,11 +73,11 @@ public interface Kernel
    public KernelClassLoader getKernelClassLoader();
 
    /**
-    * Get a deployment unit
+    * Get the deployment units for a deployment
     * @param deployment The unique URL for a deployment
-    * @return The deployment unit; <code>null</code> if no unit is found
+    * @return The deployment units; <code>null</code> if no units is found
     */
-   public Deployment getDeployment(URL deployment);
+   public List<Deployment> getDeployments(URL deployment);
 
    /**
     * Get a bean

@@ -1,6 +1,6 @@
 /*
  * The Fungal kernel project
- * Copyright (C) 2010
+ * Copyright (C) 2012
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,35 +20,50 @@
 
 package com.github.fungal.spi.deployers;
 
-import java.net.URL;
+import com.github.fungal.api.Kernel;
 
 /**
- * The deployer interface for Fungal
+ * Context for a deployment.
+ *
+ * The context will be kept around for the entire length of the processing
+ * of the deployment
+ *
  * @author <a href="mailto:jesper.pedersen@comcast.net">Jesper Pedersen</a>
  */
-public interface Deployer
+public interface Context
 {
    /**
-    * Accepts the URL of the deployment
-    * @param deployment The URL
-    * @return True if the deployer accepts the deployment; otherwise false
+    * Get the kernel instance for the deployment
+    * @return The instance
     */
-   public boolean accepts(URL deployment);
+   public Kernel getKernel();
 
    /**
-    * Get the order for the deployer. The lower the number the sooner
-    * the deployer will be scheduled in the deployment chain
-    * @return The value
+    * Exists
+    * @param key The key of the resource
+    * @return True if the key/value pair exists; otherwise false
     */
-   public int getOrder();
+   public boolean exists(Object key);
 
    /**
-    * Deploy
-    * @param url The URL
-    * @param context The deployment context
-    * @param parent The parent classloader
-    * @return The deployment; or null if no deployment was made
-    * @exception DeployException Thrown if an error occurs during deployment
+    * Put
+    * @param key The key of the resource
+    * @param value The value of the resource
+    * @return The previous value for the key
     */
-   public Deployment deploy(URL url, Context context, ClassLoader parent) throws DeployException;
+   public Object put(Object key, Object value);
+
+   /**
+    * Get
+    * @param key The key of the resource
+    * @return The value of the resource
+    */
+   public Object get(Object key);
+
+   /**
+    * Remove
+    * @param key The key of the resource
+    * @return The value of the resource
+    */
+   public Object remove(Object key);
 }

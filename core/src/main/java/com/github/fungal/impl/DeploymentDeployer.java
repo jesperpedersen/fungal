@@ -23,6 +23,7 @@ package com.github.fungal.impl;
 import com.github.fungal.api.deployment.Bean;
 import com.github.fungal.deployment.Unmarshaller;
 import com.github.fungal.spi.deployers.CloneableDeployer;
+import com.github.fungal.spi.deployers.Context;
 import com.github.fungal.spi.deployers.DeployException;
 import com.github.fungal.spi.deployers.Deployer;
 import com.github.fungal.spi.deployers.Deployment;
@@ -70,23 +71,34 @@ public final class DeploymentDeployer implements CloneableDeployer
    }
 
    /**
-    * Deploy
-    * @param url The URL
-    * @param parent The parent classloader
-    * @return The deployment; or null if no deployment was made
-    * @exception DeployException Thrown if an error occurs during deployment
+    * {@inheritDoc}
     */
-   public Deployment deploy(URL url, ClassLoader parent) throws DeployException
+   public boolean accepts(URL deployment)
    {
-      if (url == null || !url.toString().endsWith(".xml"))
-         return null;
+      if (deployment != null)
+         return deployment.toString().endsWith(".xml");
 
+      return false;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public int getOrder()
+   {
+      return Integer.MIN_VALUE;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public Deployment deploy(URL url, Context context, ClassLoader parent) throws DeployException
+   {
       DeployException deployException = null;
       try
       {
          Unmarshaller deploymentU = new Unmarshaller();
-         com.github.fungal.deployment.Deployment deployment = 
-            deploymentU.unmarshal(url);
+         com.github.fungal.deployment.Deployment deployment = deploymentU.unmarshal(url);
 
          if (deployment != null && deployment.getBean().size() > 0)
          {

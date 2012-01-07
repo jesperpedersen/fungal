@@ -20,17 +20,17 @@
 
 package com.github.fungal.impl;
 
-import com.github.fungal.spi.deployers.DeployerOrder;
+import com.github.fungal.spi.deployers.Deployer;
 
 import java.io.Serializable;
 import java.util.Comparator;
 
 /**
- * DeploymentOrderComparator sorts DeployerOrder instances
+ * DeploymentComparator sorts Deployer instances
  *
  * @author <a href="mailto:jesper.pedersen@comcast.net">Jesper Pedersen</a>
  */
-public class DeployerOrderComparator implements Comparator<DeployerOrder>, Serializable
+public class DeployerComparator implements Comparator<Deployer>, Serializable
 {
    /** Serial version uid */
    private static final long serialVersionUID = 1L;
@@ -38,7 +38,7 @@ public class DeployerOrderComparator implements Comparator<DeployerOrder>, Seria
    /**
     * Constructor
     */
-   DeployerOrderComparator()
+   DeployerComparator()
    {
    }
 
@@ -49,7 +49,7 @@ public class DeployerOrderComparator implements Comparator<DeployerOrder>, Seria
     * @return <code>-1</code> if o1 should be invoked first, <code>1</code> if o2 should
     *         be invoked first, otherwise <code>0</code>
     */
-   public int compare(DeployerOrder o1, DeployerOrder o2)
+   public int compare(Deployer o1, Deployer o2)
    {
       if (o1.getOrder() < o2.getOrder())
       {
@@ -85,7 +85,7 @@ public class DeployerOrderComparator implements Comparator<DeployerOrder>, Seria
       if (o == null)
          return false;
 
-      if (!(o instanceof DeployerOrderComparator))
+      if (!(o instanceof DeployerComparator))
          return false;
 
       return true;

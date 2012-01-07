@@ -230,18 +230,41 @@ public class KernelImpl implements Kernel, KernelImplMBean
     * @param url The unique URL for a deployment
     * @return The deployment unit; <code>null</code> if no unit is found
     */
-   public Deployment getDeployment(URL url)
+   public List<Deployment> getDeployments(URL url)
    {
+      List<Deployment> result = null;
+
       if (deployments != null)
       {
-         for (Deployment deployment : deployments)
+         if (url == null)
          {
-            if (deployment.getURL().toString().equals(url.toString()))
-               return deployment;
+            for (Deployment deployment : deployments)
+            {
+               if (deployment.getURL() == null)
+               {
+                  if (result == null)
+                     result = new ArrayList<Deployment>(1);
+
+                  result.add(deployment);
+               }
+            }
+         }
+         else
+         {
+            for (Deployment deployment : deployments)
+            {
+               if (deployment.getURL() != null && deployment.getURL().toString().equals(url.toString()))
+               {
+                  if (result == null)
+                     result = new ArrayList<Deployment>(1);
+
+                  result.add(deployment);
+               }
+            }
          }
       }
 
-      return null;
+      return result;
    }
 
    /**

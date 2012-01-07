@@ -11,6 +11,8 @@
        <xsd:element name="depends" type="dependsType" maxOccurs="unbounded" minOccurs="0"/>
        <xsd:element name="install" type="installType" maxOccurs="unbounded" minOccurs="0"/>
        <xsd:element name="uninstall" type="uninstallType" maxOccurs="unbounded" minOccurs="0"/>
+       <xsd:element name="incallback" type="incallbackType" maxOccurs="unbounded" minOccurs="0"/>
+       <xsd:element name="uncallback" type="uncallbackType" maxOccurs="unbounded" minOccurs="0"/>
        <xsd:element name="create" type="createType" maxOccurs="1" minOccurs="0"/>
        <xsd:element name="start" type="startType" maxOccurs="1" minOccurs="0"/>
        <xsd:element name="stop" type="stopType" maxOccurs="1" minOccurs="0"/>

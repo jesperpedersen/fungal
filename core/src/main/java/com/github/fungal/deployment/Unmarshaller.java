@@ -114,6 +114,8 @@ public class Unmarshaller
 
          XMLStreamReader xmlStreamReader = xmlInputFactory.createXMLStreamReader(is);
 
+         boolean found = false;
+
          while (xmlStreamReader.hasNext())
          {
             int eventCode = xmlStreamReader.next();
@@ -122,8 +124,14 @@ public class Unmarshaller
             {
                case XMLStreamReader.START_ELEMENT :
 
-                  if ("bean".equals(xmlStreamReader.getLocalName()))
+                  if ("deployment".equals(xmlStreamReader.getLocalName()))
+                  {
+                     found = true;
+                  }
+                  else if (found && "bean".equals(xmlStreamReader.getLocalName()))
+                  {
                      deployment.getBean().add(readBean(xmlStreamReader));
+                  }
 
                   break;
                default :
