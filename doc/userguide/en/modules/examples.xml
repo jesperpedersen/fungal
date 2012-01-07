@@ -285,6 +285,27 @@
 
   </section>
 
+  <section id="example_callback">
+    <title>Incallback / Uncallback</title>
+
+    <para>Call <code>addPropertyBean</code> and <code>removePropertyBean</code> on <code>PropertyBeans</code>
+    during install / uninstall of <code>MyPropertyBean</code>.</para>
+
+    <programlisting>
+<![CDATA[
+<deployment>
+  <bean name="MyPropertyBean" class="com.mypackage.MyPropertyBean"/>
+
+  <bean name="PropertyBeans" class="com.mypackage.PropertyBeans">
+    <incallback method="addPropertyBean"/>
+    <uncallback method="removePropertyBean"/>
+  </bean>
+</deployment>
+ ]]>
+    </programlisting>
+
+  </section>
+
   <section id="example_lifecycle">
     <title>Create / Start / Stop / Destroy</title>
 

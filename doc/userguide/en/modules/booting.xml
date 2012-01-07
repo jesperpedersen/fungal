@@ -69,12 +69,12 @@ deployment.xsd
         <listitem>
           <code>&lt;incallback&gt;</code>
           <para>defines a method which is invoked with all beans that has the type of the first parameter
-            when the installed.</para>
+            when the bean is installed.</para>
         </listitem>
         <listitem>
           <code>&lt;uncallback&gt;</code>
           <para>defines a method which is invoked with all beans that has the type of the first parameter
-            when the uninstalled.</para>
+            when the bean is uninstalled.</para>
         </listitem>
         <listitem>
           <code>&lt;map&gt;</code>
