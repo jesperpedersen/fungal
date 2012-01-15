@@ -24,6 +24,8 @@ import com.github.fungal.spi.deployers.Deployer;
 
 import java.io.Serializable;
 import java.util.Comparator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * DeploymentComparator sorts Deployer instances
@@ -34,6 +36,9 @@ public class DeployerComparator implements Comparator<Deployer>, Serializable
 {
    /** Serial version uid */
    private static final long serialVersionUID = 1L;
+
+   /** The logger */
+   private Logger log = Logger.getLogger(DeployerComparator.class.getName());
 
    /**
     * Constructor
@@ -58,6 +63,12 @@ public class DeployerComparator implements Comparator<Deployer>, Serializable
       else if (o1.getOrder() > o2.getOrder())
       {
          return 1;
+      }
+
+      if (!o1.equals(o2))
+      {
+          log.log(Level.WARNING, "Deployer " + o1.getClass().getName() + " and deployer " +
+                  o2.getClass().getName() + " has same priority");
       }
 
       return 0;
