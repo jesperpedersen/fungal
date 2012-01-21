@@ -59,6 +59,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -693,47 +695,64 @@ public class KernelImpl implements Kernel, KernelImplMBean
    {
       if (urls != null && urls.length > 0)
       {
-         try
+         SortedMap<Integer, List<URL>> sm = new TreeMap<Integer, List<URL>>();
+
+         for (URL url : urls)
          {
-            List<UnitDeployer> unitDeployers = new ArrayList<UnitDeployer>(urls.length);
+            Integer index = Integer.valueOf(kernelConfiguration.getDeploymentOrder().getOrderIndex(url));
+            List<URL> l = sm.get(index);
 
-            final CountDownLatch unitLatch = new CountDownLatch(urls.length);
+            if (l == null)
+               l = new ArrayList<URL>(1);
 
-            for (URL url : urls)
-            {
-               try
-               {
-                  if (log.isLoggable(Level.FINE))
-                     log.fine("URL=" + url.toString());
-
-                  MainDeployerImpl deployer = (MainDeployerImpl)mainDeployer.clone();
-                  UnitDeployer unitDeployer = new UnitDeployer(url, deployer, kernelClassLoader, unitLatch);
-                  unitDeployers.add(unitDeployer);
-                  
-                  getExecutorService().execute(unitDeployer);
-               }
-               catch (Throwable deployThrowable)
-               {
-                  log.log(Level.SEVERE, deployThrowable.getMessage(), deployThrowable);
-               }
-            }
-
-            unitLatch.await();
-
-            Iterator<UnitDeployer> it = unitDeployers.iterator();
-            while (it.hasNext())
-            {
-               UnitDeployer deployer = it.next();
-               if (deployer.getThrowable() != null)
-               {
-                  Throwable t = deployer.getThrowable();
-                  log.log(Level.SEVERE, t.getMessage(), t);
-               }
-            }
+            l.add(url);
+            sm.put(index, l);
          }
-         catch (Throwable t)
+
+         for (List<URL> l : sm.values())
          {
-            log.log(Level.SEVERE, t.getMessage(), t);
+            try
+            {
+               List<UnitDeployer> unitDeployers = new ArrayList<UnitDeployer>(l.size());
+
+               final CountDownLatch unitLatch = new CountDownLatch(l.size());
+
+               for (URL url : l)
+               {
+                  try
+                  {
+                     if (log.isLoggable(Level.FINE))
+                        log.fine("URL=" + url.toString());
+
+                     MainDeployerImpl deployer = (MainDeployerImpl)mainDeployer.clone();
+                     UnitDeployer unitDeployer = new UnitDeployer(url, deployer, kernelClassLoader, unitLatch);
+                     unitDeployers.add(unitDeployer);
+                  
+                     getExecutorService().execute(unitDeployer);
+                  }
+                  catch (Throwable deployThrowable)
+                  {
+                     log.log(Level.SEVERE, deployThrowable.getMessage(), deployThrowable);
+                  }
+               }
+
+               unitLatch.await();
+
+               Iterator<UnitDeployer> it = unitDeployers.iterator();
+               while (it.hasNext())
+               {
+                  UnitDeployer deployer = it.next();
+                  if (deployer.getThrowable() != null)
+                  {
+                     Throwable t = deployer.getThrowable();
+                     log.log(Level.SEVERE, t.getMessage(), t);
+                  }
+               }
+            }
+            catch (Throwable t)
+            {
+               log.log(Level.SEVERE, t.getMessage(), t);
+            }
          }
       }
    }
