@@ -3,7 +3,7 @@
   <groupId>com.github.fungal</groupId>
   <artifactId>fungal-cli</artifactId>
   <versioning>
-    <release>0.11.0.Beta1</release>
+    <release>0.11.0.Beta2</release>
     <versions>
       <version>0.9.0.Beta7</version>
       <version>0.9.0.Beta6</version>
@@ -33,7 +33,8 @@
       <version>0.10.0.RC2</version>
       <version>0.10.0.Final</version>
       <version>0.11.0.Beta1</version>
+      <version>0.11.0.Beta2</version>
     </versions>
-    <lastUpdated>20120107165755</lastUpdated>
+    <lastUpdated>20120128164840</lastUpdated>
   </versioning>
 </metadata>
