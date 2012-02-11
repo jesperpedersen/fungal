@@ -908,8 +908,10 @@ public class KernelImpl implements Kernel, KernelImplMBean
    @SuppressWarnings("unchecked") 
    void shutdownDeployment(Deployment deployment) throws Throwable
    {
-      SecurityActions.setThreadContextClassLoader(kernelClassLoader);
+      ClassLoader currentCL = SecurityActions.getThreadContextClassLoader();
+      SecurityActions.setThreadContextClassLoader(deployment.getClassLoader());
 
+      Throwable throwable = null;
       try
       {
          Method stopMethod = deployment.getClass().getMethod("stop", (Class[])null);
@@ -922,7 +924,7 @@ public class KernelImpl implements Kernel, KernelImplMBean
       }
       catch (InvocationTargetException ite)
       {
-         throw ite.getCause();
+         throwable = ite.getCause();
       }
 
       try
@@ -937,10 +939,16 @@ public class KernelImpl implements Kernel, KernelImplMBean
       }
       catch (InvocationTargetException ite)
       {
-         throw ite.getCause();
+         if (throwable == null)
+            throwable = ite.getCause();
       }
 
+      SecurityActions.setThreadContextClassLoader(currentCL);
+
       deployments.remove(deployment);
+
+      if (throwable != null)
+         throw throwable;
    }
 
    /**
