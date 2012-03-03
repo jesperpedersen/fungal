@@ -393,7 +393,7 @@ class BeanDeployer implements Runnable
          }
       }
 
-      if (bt.isIgnoreCreate())
+      if (!bt.isIgnoreCreate())
       {
          try
          {
@@ -415,7 +415,7 @@ class BeanDeployer implements Runnable
          }
       }
 
-      if (bt.isIgnoreStart())
+      if (!bt.isIgnoreStart())
       {
          try
          {
