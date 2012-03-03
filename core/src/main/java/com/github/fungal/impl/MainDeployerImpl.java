@@ -28,6 +28,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The main deployer for Fungal
@@ -35,6 +37,12 @@ import java.util.List;
  */
 public final class MainDeployerImpl implements Cloneable, MainDeployerImplMBean
 {
+   /** The logger */
+   private Logger log = Logger.getLogger(MainDeployerImpl.class.getName());
+
+   /** Trace logging enabled */
+   private boolean trace = log.isLoggable(Level.FINER);
+
    private KernelImpl kernel;
    private Deployers deployers;
 
@@ -89,6 +97,9 @@ public final class MainDeployerImpl implements Cloneable, MainDeployerImplMBean
 
       if (classLoader == null)
          throw new IllegalArgumentException("ClassLoader is null");
+
+      if (trace)
+         log.log(Level.FINER, "Deploy: " + url.toExternalForm());
 
       List<Deployer> copy = new ArrayList<Deployer>(deployers.getDeployers().size());
 
@@ -172,6 +183,9 @@ public final class MainDeployerImpl implements Cloneable, MainDeployerImplMBean
       if (url == null)
          throw new IllegalArgumentException("URL is null");
 
+      if (trace)
+         log.log(Level.FINER, "Undeploy: " + url.toExternalForm());
+
       List<Deployment> deployments = kernel.getDeployments(url);
       if (deployments != null)
       {
@@ -211,6 +225,9 @@ public final class MainDeployerImpl implements Cloneable, MainDeployerImplMBean
       if (deployment == null)
          throw new IllegalArgumentException("Deployment is null");
 
+      if (trace)
+         log.log(Level.FINER, "RegisterDeployment: " + deployment);
+
       kernel.registerDeployment(deployment);
    }
 
@@ -223,6 +240,9 @@ public final class MainDeployerImpl implements Cloneable, MainDeployerImplMBean
    {
       if (deployment == null)
          throw new IllegalArgumentException("Deployment is null");
+
+      if (trace)
+         log.log(Level.FINER, "UnregisterDeployment: " + deployment);
 
       kernel.shutdownDeployment(deployment);
    }

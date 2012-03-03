@@ -684,7 +684,7 @@ public class KernelImpl implements Kernel, KernelImplMBean
    private void initKernelLogging()
    {
       log = Logger.getLogger("com.github.fungal.Fungal");
-      trace = log.isLoggable(Level.FINEST);
+      trace = log.isLoggable(Level.FINER);
    }
 
    /**
@@ -763,6 +763,8 @@ public class KernelImpl implements Kernel, KernelImplMBean
     */
    public void shutdown() throws Throwable
    {
+      Throwable throwable = null;
+
       List<EventListener> els = kernelConfiguration.getEventListeners();
       // STOPPING
       if (els != null && els.size() > 0)
@@ -806,7 +808,15 @@ public class KernelImpl implements Kernel, KernelImplMBean
             if (hotDeployer != null)
                hotDeployer.unregister(deployment.getURL());
 
-            shutdownDeployment(deployment);
+            try
+            {
+               shutdownDeployment(deployment);
+            }
+            catch (Throwable t)
+            {
+               if (throwable == null)
+                  throwable = t;
+            }
          }
       }
 
@@ -898,6 +908,9 @@ public class KernelImpl implements Kernel, KernelImplMBean
       }
 
       initialize();
+
+      if (throwable != null)
+         throw throwable;
    }
 
    /**
@@ -1012,6 +1025,9 @@ public class KernelImpl implements Kernel, KernelImplMBean
    {
       beanStatus.put(name, status);
 
+      if (trace)
+         log.log(Level.FINER, "Bean: " + name + ", Status: " + status);
+
       if (status == ServiceLifecycle.NOT_STARTED)
       {
          List<CountDownLatch> l = beanLatches.get(name);
@@ -1061,6 +1077,9 @@ public class KernelImpl implements Kernel, KernelImplMBean
     */
    void removeBean(String name)
    {
+      if (trace)
+         log.log(Level.FINER, "Removing bean: " + name);
+
       if (uncallbacks.size() > 0)
       {
          Object bean = beans.get(name);

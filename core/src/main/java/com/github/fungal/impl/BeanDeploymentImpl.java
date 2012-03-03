@@ -125,7 +125,20 @@ public class BeanDeploymentImpl implements BeanDeployment
     */
    public ClassLoader getClassLoader()
    {
-      return null;
+      ClassLoader cl = null;
+
+      if (beans != null && beans.size() > 0)
+      {
+         Object bean = kernel.getBean(beans.get(0));
+
+         if (bean != null)
+            cl = bean.getClass().getClassLoader();
+      }
+
+      if (cl == null)
+         cl = kernel.getKernelClassLoader();
+
+      return cl;
    }
 
    /**
@@ -162,80 +175,98 @@ public class BeanDeploymentImpl implements BeanDeployment
     */
    public void destroy() throws Throwable
    {
+      Throwable throwable = null;
+
       List<String> shutdownBeans = new LinkedList<String>(beans);
       Collections.reverse(shutdownBeans);
 
       for (String name : shutdownBeans)
       {
-         kernel.setBeanStatus(name, ServiceLifecycle.STOPPING);
-
-         Object bean = kernel.getBean(name);
-
-         if (bean != null)
+         try
          {
-            List<Method> l = uninstall.get(name);
-            if (l != null)
+            kernel.setBeanStatus(name, ServiceLifecycle.STOPPING);
+
+            Object bean = kernel.getBean(name);
+
+            if (bean != null)
             {
-               for (Method m : l)
+               List<Method> l = uninstall.get(name);
+               if (l != null)
+               {
+                  for (Method m : l)
+                  {
+                     try
+                     {
+                        m.setAccessible(true);
+                        m.invoke(bean, (Object[])null);
+                     }
+                     catch (InvocationTargetException ite)
+                     {
+                        if (throwable == null)
+                           throwable = ite.getTargetException();
+                     }
+                  }
+               }
+
+               if (ignoreStops == null || !ignoreStops.contains(name))
                {
                   try
                   {
-                     m.setAccessible(true);
-                     m.invoke(bean, (Object[])null);
+                     String methodName = "stop";
+                     if (stops != null && stops.containsKey(name))
+                        methodName = stops.get(name);
+
+                     Method stopMethod = bean.getClass().getMethod(methodName, (Class[])null);
+                     stopMethod.setAccessible(true);
+                     stopMethod.invoke(bean, (Object[])null);
+                  }
+                  catch (NoSuchMethodException nsme)
+                  {
+                     // No stop method
                   }
                   catch (InvocationTargetException ite)
                   {
-                     throw ite.getTargetException();
+                     if (throwable == null)
+                        throwable = ite.getTargetException();
+                  }
+               }
+
+               if (ignoreDestroys == null || !ignoreDestroys.contains(name))
+               {
+                  try
+                  {
+                     String methodName = "destroy";
+                     if (destroys != null && destroys.containsKey(name))
+                        methodName = destroys.get(name);
+
+                     Method destroyMethod = bean.getClass().getMethod(methodName, (Class[])null);
+                     destroyMethod.setAccessible(true);
+                     destroyMethod.invoke(bean, (Object[])null);
+                  }
+                  catch (NoSuchMethodException nsme)
+                  {
+                     // No destroy method
+                  }
+                  catch (InvocationTargetException ite)
+                  {
+                     if (throwable == null)
+                        throwable = ite.getTargetException();
                   }
                }
             }
-
-            if (ignoreStops == null || !ignoreStops.contains(name))
-            {
-               try
-               {
-                  String methodName = "stop";
-                  if (stops != null && stops.containsKey(name))
-                     methodName = stops.get(name);
-
-                  Method stopMethod = bean.getClass().getMethod(methodName, (Class[])null);
-                  stopMethod.setAccessible(true);
-                  stopMethod.invoke(bean, (Object[])null);
-               }
-               catch (NoSuchMethodException nsme)
-               {
-                  // No stop method
-               }
-               catch (InvocationTargetException ite)
-               {
-                  throw ite.getTargetException();
-               }
-            }
-
-            if (ignoreDestroys == null || !ignoreDestroys.contains(name))
-            {
-               try
-               {
-                  String methodName = "destroy";
-                  if (destroys != null && destroys.containsKey(name))
-                     methodName = destroys.get(name);
-
-                  Method destroyMethod = bean.getClass().getMethod(methodName, (Class[])null);
-                  destroyMethod.setAccessible(true);
-                  destroyMethod.invoke(bean, (Object[])null);
-               }
-               catch (NoSuchMethodException nsme)
-               {
-                  // No destroy method
-               }
-               catch (InvocationTargetException ite)
-               {
-                  throw ite.getTargetException();
-               }
-            }
          }
-
-         kernel.removeBean(name);
+         catch (Throwable t)
+         {
+            if (throwable == null)
+               throwable = t;
+         }
+         finally
+         {
+            kernel.removeBean(name);
+         }
       }
+
+      if (throwable != null)
+         throw throwable;
    }
 }
