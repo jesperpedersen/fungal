@@ -47,7 +47,7 @@ public final class MainDeployerImpl implements Cloneable, MainDeployerImplMBean
     * @param kernel The kernel
     * @param deployers The deployers
     */
-   public MainDeployerImpl(KernelImpl kernel, Deployers deployers)
+   MainDeployerImpl(KernelImpl kernel, Deployers deployers)
    {
       if (kernel == null)
          throw new IllegalArgumentException("Kernel is null");
@@ -64,7 +64,7 @@ public final class MainDeployerImpl implements Cloneable, MainDeployerImplMBean
     * Add deployer
     * @param deployer The deployer
     */
-   public void addDeployer(Deployer deployer)
+   void addDeployer(Deployer deployer)
    {
       deployers.addDeployer(deployer);
    }
@@ -87,7 +87,7 @@ public final class MainDeployerImpl implements Cloneable, MainDeployerImplMBean
     * @exception Throwable If an error occurs
     */
    @SuppressWarnings("unchecked")
-   public synchronized void deploy(URL url, boolean deployerPhases, ClassLoader classLoader) throws Throwable
+   synchronized void deploy(URL url, boolean deployerPhases, ClassLoader classLoader) throws Throwable
    {
       if (url == null)
          throw new IllegalArgumentException("URL is null");
@@ -160,22 +160,33 @@ public final class MainDeployerImpl implements Cloneable, MainDeployerImplMBean
       if (deployerPhases)
          kernel.preDeploy(true);
 
-      for (int i = 0; !done && i < copySize; i++)
+      Throwable throwable = null;
+      try
       {
-         Deployer deployer = copy.get(i);
-            
-         Deployment deployment = deployer.deploy(url, classLoader);
-         if (deployment != null)
+         for (int i = 0; !done && i < copySize; i++)
          {
-            registerDeployment(deployment);
+            Deployer deployer = copy.get(i);
+            
+            Deployment deployment = deployer.deploy(url, classLoader);
+            if (deployment != null)
+            {
+               registerDeployment(deployment);
 
-            if (!(deployer instanceof MultiStageDeployer))
-               done = true;
+               if (!(deployer instanceof MultiStageDeployer))
+                  done = true;
+            }
          }
       }
+      catch (Throwable t)
+      {
+         throwable = t;
+      }
 
-      if (deployerPhases)
+      if (deployerPhases && throwable == null)
          kernel.postDeploy(true);
+
+      if (throwable != null)
+         throw throwable;
    }
 
    /**
@@ -185,17 +196,41 @@ public final class MainDeployerImpl implements Cloneable, MainDeployerImplMBean
     */
    public synchronized void undeploy(URL url) throws Throwable
    {
+      undeploy(url, true);
+   }
+
+   /**
+    * Undeploy
+    * @param url The URL for the deployment
+    * @param deployerPhases Enable deployer phases
+    * @exception Throwable If an error occurs
+    */
+   synchronized void undeploy(URL url, boolean deployerPhases) throws Throwable
+   {
       if (url == null)
          throw new IllegalArgumentException("URL is null");
 
       Deployment deployment = kernel.getDeployment(url);
       if (deployment != null)
       {
-         kernel.preUndeploy(true);
+         if (deployerPhases)
+            kernel.preUndeploy(true);
 
-         unregisterDeployment(deployment);
+         Throwable throwable = null;
+         try
+         {
+            unregisterDeployment(deployment);
+         }
+         catch (Throwable t)
+         {
+            throwable = t;
+         }
 
-         kernel.postUndeploy(true);
+         if (deployerPhases && throwable == null)
+            kernel.postUndeploy(true);
+
+         if (throwable != null)
+            throw throwable;
       }
    }
 

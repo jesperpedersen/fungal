@@ -56,6 +56,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -656,7 +658,7 @@ public class KernelImpl implements Kernel, KernelImplMBean
    private void initKernelLogging()
    {
       log = Logger.getLogger("com.github.fungal.Fungal");
-      trace = log.isLoggable(Level.FINEST);
+      trace = log.isLoggable(Level.FINER);
    }
 
    /**
@@ -667,47 +669,64 @@ public class KernelImpl implements Kernel, KernelImplMBean
    {
       if (urls != null && urls.length > 0)
       {
-         try
+         SortedMap<Integer, List<URL>> sm = new TreeMap<Integer, List<URL>>();
+
+         for (URL url : urls)
          {
-            List<UnitDeployer> unitDeployers = new ArrayList<UnitDeployer>(urls.length);
+            Integer index = Integer.valueOf(kernelConfiguration.getDeploymentOrder().getOrderIndex(url));
+            List<URL> l = sm.get(index);
 
-            final CountDownLatch unitLatch = new CountDownLatch(urls.length);
+            if (l == null)
+               l = new ArrayList<URL>(1);
 
-            for (URL url : urls)
-            {
-               try
-               {
-                  if (log.isLoggable(Level.FINE))
-                     log.fine("URL=" + url.toString());
-
-                  MainDeployerImpl deployer = (MainDeployerImpl)mainDeployer.clone();
-                  UnitDeployer unitDeployer = new UnitDeployer(url, deployer, kernelClassLoader, unitLatch);
-                  unitDeployers.add(unitDeployer);
-                  
-                  getExecutorService().execute(unitDeployer);
-               }
-               catch (Throwable deployThrowable)
-               {
-                  log.log(Level.SEVERE, deployThrowable.getMessage(), deployThrowable);
-               }
-            }
-
-            unitLatch.await();
-
-            Iterator<UnitDeployer> it = unitDeployers.iterator();
-            while (it.hasNext())
-            {
-               UnitDeployer deployer = it.next();
-               if (deployer.getThrowable() != null)
-               {
-                  Throwable t = deployer.getThrowable();
-                  log.log(Level.SEVERE, t.getMessage(), t);
-               }
-            }
+            l.add(url);
+            sm.put(index, l);
          }
-         catch (Throwable t)
+
+         for (List<URL> l : sm.values())
          {
-            log.log(Level.SEVERE, t.getMessage(), t);
+            try
+            {
+               List<UnitDeployer> unitDeployers = new ArrayList<UnitDeployer>(l.size());
+
+               final CountDownLatch unitLatch = new CountDownLatch(l.size());
+
+               for (URL url : l)
+               {
+                  try
+                  {
+                     if (log.isLoggable(Level.FINE))
+                        log.fine("URL=" + url.toString());
+
+                     MainDeployerImpl deployer = (MainDeployerImpl)mainDeployer.clone();
+                     UnitDeployer unitDeployer = new UnitDeployer(url, deployer, kernelClassLoader, unitLatch);
+                     unitDeployers.add(unitDeployer);
+                  
+                     getExecutorService().execute(unitDeployer);
+                  }
+                  catch (Throwable deployThrowable)
+                  {
+                     log.log(Level.SEVERE, deployThrowable.getMessage(), deployThrowable);
+                  }
+               }
+
+               unitLatch.await();
+
+               Iterator<UnitDeployer> it = unitDeployers.iterator();
+               while (it.hasNext())
+               {
+                  UnitDeployer deployer = it.next();
+                  if (deployer.getThrowable() != null)
+                  {
+                     Throwable t = deployer.getThrowable();
+                     log.log(Level.SEVERE, t.getMessage(), t);
+                  }
+               }
+            }
+            catch (Throwable t)
+            {
+               log.log(Level.SEVERE, t.getMessage(), t);
+            }
          }
       }
    }
@@ -718,6 +737,8 @@ public class KernelImpl implements Kernel, KernelImplMBean
     */
    public void shutdown() throws Throwable
    {
+      Throwable throwable = null;
+
       List<EventListener> els = kernelConfiguration.getEventListeners();
       // STOPPING
       if (els != null && els.size() > 0)
@@ -761,7 +782,15 @@ public class KernelImpl implements Kernel, KernelImplMBean
             if (hotDeployer != null)
                hotDeployer.unregister(deployment.getURL());
 
-            shutdownDeployment(deployment);
+            try
+            {
+               shutdownDeployment(deployment);
+            }
+            catch (Throwable t)
+            {
+               if (throwable == null)
+                  throwable = t;
+            }
          }
       }
 
@@ -853,6 +882,9 @@ public class KernelImpl implements Kernel, KernelImplMBean
       }
 
       initialize();
+
+      if (throwable != null)
+         throw throwable;
    }
 
    /**
@@ -863,7 +895,9 @@ public class KernelImpl implements Kernel, KernelImplMBean
    @SuppressWarnings("unchecked") 
    void shutdownDeployment(Deployment deployment) throws Throwable
    {
-      SecurityActions.setThreadContextClassLoader(kernelClassLoader);
+      ClassLoader currentCL = SecurityActions.getThreadContextClassLoader();
+      SecurityActions.setThreadContextClassLoader(deployment.getClassLoader());
+      Throwable throwable = null;
 
       try
       {
@@ -877,7 +911,7 @@ public class KernelImpl implements Kernel, KernelImplMBean
       }
       catch (InvocationTargetException ite)
       {
-         throw ite.getCause();
+         throwable = ite.getCause();
       }
 
       try
@@ -892,10 +926,14 @@ public class KernelImpl implements Kernel, KernelImplMBean
       }
       catch (InvocationTargetException ite)
       {
-         throw ite.getCause();
+         if (throwable == null)
+            throwable = ite.getCause();
       }
 
       deployments.remove(deployment);
+      
+      if (throwable != null)
+         throw throwable;
    }
 
    /**

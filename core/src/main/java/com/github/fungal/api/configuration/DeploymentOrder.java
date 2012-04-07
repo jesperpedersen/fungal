@@ -23,6 +23,7 @@ package com.github.fungal.api.configuration;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -58,7 +59,43 @@ public class DeploymentOrder implements Comparator<URL>, Serializable
       if (extensions == null)
          throw new IllegalArgumentException("Extensions is null");
 
+      if (extensions.size() == 0)
+         throw new IllegalArgumentException("Extensions is empty");
+
       this.order = new ArrayList<String>(extensions);
+   }
+
+   /**
+    * Get the order of the extensions
+    * @return The order
+    */
+   public List<String> getOrder()
+   {
+      return Collections.unmodifiableList(order);
+   }
+
+   /**
+    * Get the order index of an url
+    * @param url The URL
+    * @return The index; <code>Integer.MAX_VALUE</code> if not defined
+    */
+   public int getOrderIndex(URL url)
+   {
+      if (url == null)
+         throw new IllegalArgumentException("URL is null");
+
+      String file = url.getFile();
+      int index = Integer.MAX_VALUE;
+
+      for (int i = 0; i < order.size(); i++)
+      {
+         String extension = order.get(i);
+
+         if (file.endsWith(extension))
+            index = i;
+      }
+
+      return index;
    }
 
    /**
