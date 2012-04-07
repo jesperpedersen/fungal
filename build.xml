@@ -31,7 +31,7 @@
   <property name="name" value="fungal"/>
   <property name="major" value="0"/>
   <property name="minor" value="10"/>
-  <property name="patch" value="0"/>
+  <property name="patch" value="1"/>
   <property name="type" value="Final"/>
 
   <condition property="version" value="${major}.${minor}.${patch}-SNAPSHOT">
