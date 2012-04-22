@@ -30,6 +30,7 @@ import com.github.fungal.api.deployment.BeanDeployment;
 import com.github.fungal.api.events.Event;
 import com.github.fungal.api.events.EventListener;
 import com.github.fungal.api.remote.Command;
+import com.github.fungal.api.util.JMX;
 import com.github.fungal.bootstrap.Bootstrap;
 import com.github.fungal.impl.netboot.Netboot;
 import com.github.fungal.impl.remote.CommunicationServer;
@@ -443,7 +444,7 @@ public class KernelImpl implements Kernel, KernelImplMBean
       mainDeployer.addDeployer(new DeploymentDeployer(this));
 
       // Add the kernel bean reference
-      addBean("Kernel", this);
+      addBean("Kernel", this, false);
       setBeanStatus("Kernel", ServiceLifecycle.STARTED);
 
       if (kernelConfiguration.isManagement())
@@ -824,7 +825,7 @@ public class KernelImpl implements Kernel, KernelImplMBean
       // We are removing all deployments including all DeployerPhases beans => no postUndeploy call
 
       // Remove kernel bean
-      removeBean("Kernel");
+      removeBean("Kernel", false);
 
       // Check for additional beans
       if (beans.size() > 0)
@@ -1060,9 +1061,33 @@ public class KernelImpl implements Kernel, KernelImplMBean
     */
    void addBean(String name, Object bean)
    {
+      addBean(name, bean, true);
+   }
+
+   /**
+    * Add a bean
+    * @param name The name of the bean
+    * @param bean The bean
+    * @param mgt Add management
+    */
+   private void addBean(String name, Object bean, boolean mgt)
+   {
       if (!beans.containsKey(name))
       {
          beans.put(name, bean);
+
+         if (mgt && kernelConfiguration.isManagement() && kernelConfiguration.isBeanManagement())
+         {
+            try
+            {
+               ObjectName on = new ObjectName(kernelConfiguration.getName() + ":name=" + name + ",type=Bean");
+               mbeanServer.registerMBean(JMX.createMBean(bean), on);
+            }
+            catch (Throwable t)
+            {
+               log.log(Level.WARNING, "Error during management registering of bean [" + name + "]", t);
+            }
+         }
       }
       else
       {
@@ -1076,6 +1101,16 @@ public class KernelImpl implements Kernel, KernelImplMBean
     * @param name The name of the bean
     */
    void removeBean(String name)
+   {
+      removeBean(name, true);
+   }
+
+   /**
+    * Remove a bean
+    * @param name The name of the bean
+    * @param mgt Remove management
+    */
+   void removeBean(String name, boolean mgt)
    {
       if (trace)
          log.log(Level.FINER, "Removing bean: " + name);
@@ -1126,6 +1161,20 @@ public class KernelImpl implements Kernel, KernelImplMBean
       beans.remove(name);
       beanStatus.remove(name);
       beanLatches.remove(name);
+
+      if (mgt && kernelConfiguration.isManagement() && kernelConfiguration.isBeanManagement())
+      {
+         try
+         {
+            ObjectName on = new ObjectName(kernelConfiguration.getName() + ":name=" + name + ",type=Bean");
+            if (mbeanServer.isRegistered(on))
+               mbeanServer.unregisterMBean(on);
+         }
+         catch (Throwable t)
+         {
+            log.log(Level.FINER, "Error during management unregistering of bean [" + name + "]", t);
+         }
+      }
    }
 
    /**

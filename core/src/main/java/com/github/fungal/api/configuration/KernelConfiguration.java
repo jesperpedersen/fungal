@@ -92,7 +92,7 @@ public class KernelConfiguration
    /** Deployment order */
    private DeploymentOrder deploymentOrder;
 
-   /**Enable management */
+   /** Enable management */
    private boolean management;
 
    /** Use platform MBeanServer */
@@ -100,6 +100,9 @@ public class KernelConfiguration
 
    /** Remote JMX access */
    private boolean remoteJmxAccess;
+
+   /** Bean management */
+   private boolean beanManagement;
 
    /** RMI registry port */
    private int rmiRegistryPort;
@@ -132,6 +135,7 @@ public class KernelConfiguration
       deploymentOrder = null;
       management = true;
       usePlatformMBeanServer = false;
+      beanManagement = false;
       remoteJmxAccess = false;
       rmiRegistryPort = 1203;
       rmiServerPort = 1204;
@@ -593,6 +597,27 @@ public class KernelConfiguration
    public boolean isRemoteJmxAccess()
    {
       return remoteJmxAccess;
+   }
+
+   /**
+    * Enable management of deployed beans; default <code>false</code>
+    * @param v The value
+    * @return The configuration
+    */
+   public KernelConfiguration beanManagement(boolean v)
+   {
+      this.beanManagement = v;
+
+      return this;
+   }
+
+   /**
+    * Is bean management enabled ?
+    * @return The value
+    */
+   public boolean isBeanManagement()
+   {
+      return beanManagement;
    }
 
    /**
