@@ -1312,7 +1312,7 @@ public class KernelImpl implements Kernel, KernelImplMBean
       List<Callback> callbacks = incallbacks.get(cb.getType());
       if (callbacks == null)
       {
-         List<Callback> newCallbacks = new ArrayList<Callback>(1);
+         List<Callback> newCallbacks = Collections.synchronizedList(new ArrayList<Callback>(1));
          callbacks = incallbacks.putIfAbsent(cb.getType(), newCallbacks);
          if (callbacks == null)
          {
@@ -1332,7 +1332,7 @@ public class KernelImpl implements Kernel, KernelImplMBean
       List<Callback> callbacks = uncallbacks.get(cb.getType());
       if (callbacks == null)
       {
-         List<Callback> newCallbacks = new ArrayList<Callback>(1);
+         List<Callback> newCallbacks = Collections.synchronizedList(new ArrayList<Callback>(1));
          callbacks = uncallbacks.putIfAbsent(cb.getType(), newCallbacks);
          if (callbacks == null)
          {
