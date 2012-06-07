@@ -104,7 +104,7 @@ public class Callback
          
          result += 7 * type.hashCode();
          result += 7 * method.hashCode();
-         result += 7 * instance.hashCode();
+         result += 7 * System.identityHashCode(instance);
          
          hashCode = Integer.valueOf(result);
       }
@@ -136,7 +136,7 @@ public class Callback
          result = method.equals(cb.getMethod());
 
       if (result)
-         result = instance.equals(cb.getInstance());
+         result = System.identityHashCode(instance) == System.identityHashCode(cb.getInstance());
 
       return result;
    }

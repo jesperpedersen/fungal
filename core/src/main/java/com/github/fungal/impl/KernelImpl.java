@@ -158,6 +158,9 @@ public class KernelImpl implements Kernel, KernelImplMBean
    /** Remote JMX access */
    private JmxRemote jmxRemote;
 
+   /** Started */
+   private boolean started;
+
    /**
     * Constructor
     * @param kc The kernel configuration
@@ -198,6 +201,7 @@ public class KernelImpl implements Kernel, KernelImplMBean
       this.newDeployerPhasesBeans.clear();
       this.hotDeployer = null;
       this.jmxRemote = null;
+      this.started = false;
    }
 
    /**
@@ -677,6 +681,8 @@ public class KernelImpl implements Kernel, KernelImplMBean
             el.event(this, Event.STARTED);
          }
       }
+
+      started = true;
    }
 
    /**
@@ -1358,6 +1364,9 @@ public class KernelImpl implements Kernel, KernelImplMBean
    void registerDeployment(Deployment deployment)
    {
       deployments.add(deployment);
+      
+      if (started && deployment instanceof BeanDeployment)
+         incallback();
    }
 
    /**
@@ -1537,7 +1546,7 @@ public class KernelImpl implements Kernel, KernelImplMBean
                   for (Callback cb : callbacks)
                   {
                      List<Callback> registeredCallbacks = callbackBeans.get(bean);
-                     if (registeredCallbacks == null || !registeredCallbacks.contains(bean))
+                     if (registeredCallbacks == null || !registeredCallbacks.contains(cb))
                      {
                         if (registeredCallbacks == null)
                            registeredCallbacks = new ArrayList<Callback>(1);
