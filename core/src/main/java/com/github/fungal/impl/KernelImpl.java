@@ -52,6 +52,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -234,6 +235,25 @@ public class KernelImpl implements Kernel, KernelImplMBean
    }
 
    /**
+    * {@inheritDoc}
+    */
+   public Collection<Deployment> getDeployments()
+   {
+      Collection<Deployment> result = null;
+
+      if (deployments != null)
+      {
+         result = new ArrayList<Deployment>(deployments.size());
+         result.addAll(deployments);
+      }
+
+      if (result == null)
+         return null;
+
+      return Collections.unmodifiableCollection(result);
+   }
+
+   /**
     * Get a deployment unit
     * @param url The unique URL for a deployment
     * @return The deployment unit; <code>null</code> if no unit is found
@@ -272,7 +292,10 @@ public class KernelImpl implements Kernel, KernelImplMBean
          }
       }
 
-      return result;
+      if (result == null)
+         return null;
+
+      return Collections.unmodifiableList(result);
    }
 
    /**
