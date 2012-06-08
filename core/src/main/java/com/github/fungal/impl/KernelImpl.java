@@ -111,7 +111,8 @@ public class KernelImpl implements Kernel, KernelImplMBean
    private ConcurrentMap<String, Set<String>> beanDependants = new ConcurrentHashMap<String, Set<String>>(1);
 
    /** Bean latches */
-   private Map<String, List<CountDownLatch>> beanLatches = new HashMap<String, List<CountDownLatch>>(1);
+   private Map<String, List<CountDownLatch>> beanLatches =
+      Collections.synchronizedMap(new HashMap<String, List<CountDownLatch>>(1));
 
    /** Bean deployments */
    private AtomicInteger beanDeployments;
