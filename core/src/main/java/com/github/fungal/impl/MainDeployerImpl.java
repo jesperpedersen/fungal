@@ -186,7 +186,7 @@ public final class MainDeployerImpl implements Cloneable, MainDeployerImplMBean
       if (trace)
          log.log(Level.FINER, "Undeploy: " + url.toExternalForm());
 
-      List<Deployment> deployments = kernel.getDeployments(url);
+      List<Deployment> deployments = kernel.getDeployments(url, false);
       if (deployments != null)
       {
          if (deployerPhases)

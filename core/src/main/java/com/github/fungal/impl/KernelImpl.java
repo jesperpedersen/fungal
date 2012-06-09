@@ -254,11 +254,20 @@ public class KernelImpl implements Kernel, KernelImplMBean
    }
 
    /**
-    * Get a deployment unit
-    * @param url The unique URL for a deployment
-    * @return The deployment unit; <code>null</code> if no unit is found
+    * {@inheritDoc}
     */
    public List<Deployment> getDeployments(URL url)
+   {
+      return getDeployments(url, true);
+   }
+
+   /**
+    * Get a deployment unit
+    * @param url The unique URL for a deployment
+    * @param readonly Should the result be read only
+    * @return The deployment unit; <code>null</code> if no unit is found
+    */
+   List<Deployment> getDeployments(URL url, boolean readonly)
    {
       List<Deployment> result = null;
 
@@ -295,7 +304,10 @@ public class KernelImpl implements Kernel, KernelImplMBean
       if (result == null)
          return null;
 
-      return Collections.unmodifiableList(result);
+      if (readonly)
+         return Collections.unmodifiableList(result);
+
+      return result;
    }
 
    /**
