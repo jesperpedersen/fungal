@@ -1116,6 +1116,9 @@ public class KernelImpl implements Kernel, KernelImplMBean
       if (expectedType == null)
          throw new IllegalArgumentException("ExpectedType is null");
 
+      if (!beans.containsKey(name))
+         throw new IllegalArgumentException("Bean '" + name + "' doesn't exist");
+
       return expectedType.cast(getBean(name));
    }
 
