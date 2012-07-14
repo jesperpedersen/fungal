@@ -100,6 +100,21 @@ public class CommunicationServer implements Runnable
    }
 
    /**
+    * Unregister command
+    * @param command The command
+    */
+   public void unregisterCommand(Command command)
+   {
+      if (command == null)
+         throw new IllegalArgumentException("Command is null");
+
+      if (commands.containsKey(command.getName()))
+      {
+         commands.remove(command.getName());
+      }
+   }
+
+   /**
     * Get command names
     * @return The command names
     */

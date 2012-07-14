@@ -34,6 +34,7 @@ import com.github.fungal.api.util.JMX;
 import com.github.fungal.bootstrap.Bootstrap;
 import com.github.fungal.impl.netboot.Netboot;
 import com.github.fungal.impl.remote.CommunicationServer;
+import com.github.fungal.impl.remote.CommunicatorImpl;
 import com.github.fungal.impl.remote.commands.Deploy;
 import com.github.fungal.impl.remote.commands.GetCommand;
 import com.github.fungal.impl.remote.commands.Help;
@@ -686,6 +687,10 @@ public class KernelImpl implements Kernel, KernelImplMBean
          remote.start();
 
          getExecutorService().submit(remote);
+
+         // Add the communicator bean reference
+         addBean("Communicator", new CommunicatorImpl(remote), false);
+         setBeanStatus("Communicator", ServiceLifecycle.STARTED);
       }
 
       // JMX Remote
@@ -829,6 +834,10 @@ public class KernelImpl implements Kernel, KernelImplMBean
       // Stop the remote connector
       if (remote != null)
       {
+         // Remove Communicator bean
+         setBeanStatus("Communicator", ServiceLifecycle.STOPPING);
+         removeBean("Communicator", false);
+
          remote.stop();
       }
 
