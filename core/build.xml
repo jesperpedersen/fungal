@@ -99,7 +99,7 @@
              additionalparam="-author -version"
              classpath="${build.core.dir}/impl"
              classpathref="fungal.lib.path.id"
-             bottom="Copyright &#169; 2010 The Fungal Project (http://jesperpedersen.github.com/fungal/)">
+             bottom="Copyright &amp;#169; 2012 The Fungal project (&lt;a href='http://jesperpedersen.github.com/fungal/'&gt;http://jesperpedersen.github.com/fungal/&lt;/a&gt;)">
       <packageset dir="src/main/java" defaultexcludes="yes">
         <include name="com/github/fungal/**"/>
         <exclude name="com/github/fungal/bootstrap/**"/>
@@ -108,7 +108,7 @@
         <exclude name="com/github/fungal/impl/**"/>
       </packageset>
 
-      <link offline="true" href="http://java.sun.com/j2se/5/docs/api/" packagelistLoc="${java.home}/../docs/api"/>
+      <link offline="true" href="http://docs.oracle.com/javase/6/docs/api/" packagelistLoc="${java.home}/../docs/api"/>
     </javadoc>
     <copy todir="${target.dir}/docs/core" overwrite="true">
       <fileset dir="${tools.dir}/api"/>
@@ -127,12 +127,12 @@
              additionalparam="-author -version"
              classpath="${build.core.dir}/impl"
              classpathref="fungal.lib.path.id"
-             bottom="Copyright &#169; 2010 The Fungal Project (http://jesperpedersen.github.com/fungal/)">
+             bottom="Copyright &amp;#169; 2012 The Fungal project (&lt;a href='http://jesperpedersen.github.com/fungal/'&gt;http://jesperpedersen.github.com/fungal/&lt;/a&gt;)">
       <packageset dir="src/main/java" defaultexcludes="yes">
         <include name="com/github/fungal/cli/**"/>
       </packageset>
 
-      <link offline="true" href="http://java.sun.com/j2se/5/docs/api/" packagelistLoc="${java.home}/../docs/api"/>
+      <link offline="true" href="http://docs.oracle.com/javase/6/docs/api/" packagelistLoc="${java.home}/../docs/api"/>
     </javadoc>
     <copy todir="${target.dir}/docs/core-cli" overwrite="true">
       <fileset dir="${tools.dir}/api"/>
