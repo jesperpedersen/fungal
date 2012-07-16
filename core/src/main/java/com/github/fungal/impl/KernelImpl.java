@@ -494,6 +494,47 @@ public class KernelImpl implements Kernel, KernelImplMBean
          mbeanServer.registerMBean(this, kernelObjectName);
       }
 
+      // Define hot deployer
+      if (deployDirectory != null && deployDirectory.exists() && deployDirectory.isDirectory() &&
+          kernelConfiguration.isHotDeployment())
+      {
+         hotDeployer = new HotDeployer(kernelConfiguration.getHotDeploymentInterval(),
+                                       deployDirectory,
+                                       this);
+
+         if (kernelConfiguration.isManagement())
+         {
+            ObjectName hotDeployerObjectName = new ObjectName(kernelConfiguration.getName() + ":name=HotDeployer");
+            mbeanServer.registerMBean(hotDeployer, hotDeployerObjectName);
+         }
+      }
+
+      // Define remote access
+      if (kernelConfiguration.isRemoteAccess())
+      {
+         remote = new CommunicationServer(this,
+                                          kernelConfiguration.getBindAddress(),
+                                          kernelConfiguration.getRemotePort());
+
+         remote.registerCommand(new Help(remote));
+         remote.registerCommand(new GetCommand(remote));
+         remote.registerCommand(new Deploy(getMainDeployer(), getHotDeployer()));
+         remote.registerCommand(new Undeploy(getMainDeployer(), getHotDeployer()));
+
+         List<Command> commands = kernelConfiguration.getCommands();
+         if (commands != null && commands.size() > 0)
+         {
+            for (Command command : commands)
+            {
+               remote.registerCommand(command);
+            }
+         }
+
+         // Add the communicator bean reference
+         addBean("Communicator", new CommunicatorImpl(remote), false);
+         setBeanStatus("Communicator", ServiceLifecycle.STARTED);
+      }
+
       // Log version information
       log.info(VERSION + " started");
 
@@ -600,20 +641,6 @@ public class KernelImpl implements Kernel, KernelImplMBean
       // Deploy all files in deploy/
       if (deployDirectory != null && deployDirectory.exists() && deployDirectory.isDirectory())
       {
-         // Hot deployer
-         if (kernelConfiguration.isHotDeployment())
-         {
-            hotDeployer = new HotDeployer(kernelConfiguration.getHotDeploymentInterval(),
-                                          deployDirectory,
-                                          this);
-
-            if (kernelConfiguration.isManagement())
-            {
-               ObjectName hotDeployerObjectName = new ObjectName(kernelConfiguration.getName() + ":name=HotDeployer");
-               mbeanServer.registerMBean(hotDeployer, hotDeployerObjectName);
-            }
-         }
-
          File[] files = deployDirectory.listFiles();
 
          if (files != null)
@@ -655,42 +682,20 @@ public class KernelImpl implements Kernel, KernelImplMBean
             if (counter > 0)
                incallback();
          }
-
-         if (hotDeployer != null)
-            hotDeployer.start();
       }
 
       // PostDeploy
       postDeploy(false);
 
-      // Remote access
+      // Start hot deployer
+      if (hotDeployer != null)
+         hotDeployer.start();
+
+      // Start remote access
       if (kernelConfiguration.isRemoteAccess())
       {
-         remote = new CommunicationServer(this,
-                                          kernelConfiguration.getBindAddress(),
-                                          kernelConfiguration.getRemotePort());
-
-         remote.registerCommand(new Help(remote));
-         remote.registerCommand(new GetCommand(remote));
-         remote.registerCommand(new Deploy(getMainDeployer(), getHotDeployer()));
-         remote.registerCommand(new Undeploy(getMainDeployer(), getHotDeployer()));
-
-         List<Command> commands = kernelConfiguration.getCommands();
-         if (commands != null && commands.size() > 0)
-         {
-            for (Command command : commands)
-            {
-               remote.registerCommand(command);
-            }
-         }
-
          remote.start();
-
          getExecutorService().submit(remote);
-
-         // Add the communicator bean reference
-         addBean("Communicator", new CommunicatorImpl(remote), false);
-         setBeanStatus("Communicator", ServiceLifecycle.STARTED);
       }
 
       // JMX Remote
