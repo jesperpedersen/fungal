@@ -83,7 +83,7 @@ import javax.management.ObjectName;
 public class KernelImpl implements Kernel, KernelImplMBean
 {
    /** Version information */
-   private static final String VERSION = "Fungal 0.10.2.Final";
+   private static final String VERSION = "Fungal 0.10.3.Final";
 
    /** Kernel configuration */
    private KernelConfiguration kernelConfiguration;
