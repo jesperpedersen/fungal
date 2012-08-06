@@ -21,7 +21,6 @@
 package com.github.fungal.impl;
 
 import java.io.File;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -86,16 +85,22 @@ public final class HotDeployer implements HotDeployerMBean, Runnable
       if (deployment == null)
          throw new IllegalArgumentException("Deployment is null");
 
-      deployments.add(deployment);
-
       try
       {
-         File f = new File(deployment.toURI());
-         modifiedTimestamp.put(deployment.toString(), Long.valueOf(f.lastModified()));
+         if (!deployment.toExternalForm().startsWith(directory.toURI().toURL().toExternalForm()))
+            return;
+
+         synchronized (deployments)
+         {
+            deployments.add(deployment);
+
+            File f = new File(deployment.toURI());
+            modifiedTimestamp.put(deployment.toString(), Long.valueOf(f.lastModified()));
+         }
       }
-      catch (URISyntaxException use)
+      catch (Throwable t)
       {
-         // Ignore
+         // Nothing to do
       }
    }
 
@@ -108,8 +113,21 @@ public final class HotDeployer implements HotDeployerMBean, Runnable
       if (deployment == null)
          throw new IllegalArgumentException("Deployment is null");
 
-      deployments.remove(deployment);
-      modifiedTimestamp.remove(deployment.toString());
+      try
+      {
+         if (!deployment.toExternalForm().startsWith(directory.toURI().toURL().toExternalForm()))
+            return;
+
+         synchronized (deployments)
+         {
+            deployments.remove(deployment);
+            modifiedTimestamp.remove(deployment.toString());
+         }
+      }
+      catch (Throwable t)
+      {
+         // Nothing to do
+      }
    }
 
    /**
@@ -166,25 +184,25 @@ public final class HotDeployer implements HotDeployerMBean, Runnable
          long start = System.currentTimeMillis();
          try
          {
-            List<URL> removeDeployments = new ArrayList<URL>(deployments);
+            List<URL> removeDeployments = null;
+            synchronized (deployments)
+            {
+               removeDeployments = new ArrayList<URL>(deployments);
+            }
             List<URL> changedDeployments = null;
             List<URL> newDeployments = null;
             boolean postDeploy = false;
 
             File[] files = directory.listFiles();
-
             for (File f : files)
             {
                URL url = f.toURI().toURL();
+
                if (removeDeployments.contains(url))
                {
                   long modified = modifiedTimestamp.get(url.toString()).longValue();
 
-                  if (f.lastModified() == modified)
-                  {
-                     removeDeployments.remove(url);
-                  }
-                  else
+                  if (f.lastModified() != modified)
                   {
                      if (changedDeployments == null)
                         changedDeployments = new ArrayList<URL>(1);
@@ -192,6 +210,8 @@ public final class HotDeployer implements HotDeployerMBean, Runnable
                      changedDeployments.add(url);
                      postDeploy = true;
                   }
+
+                  removeDeployments.remove(url);
                }
                else
                {
