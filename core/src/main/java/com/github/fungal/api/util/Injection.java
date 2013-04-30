@@ -25,8 +25,15 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
+import java.util.StringTokenizer;
 
 /**
  * Injection utility which can inject values into objects
@@ -108,8 +115,6 @@ public class Injection
 
       if (method != null)
       {
-         method.setAccessible(true);
-
          Class<?> parameterClass = method.getParameterTypes()[0];
          Object parameterValue = null;
          try
@@ -136,8 +141,6 @@ public class Injection
 
          if (field != null)
          {
-            field.setAccessible(true);
-
             Class<?> fieldClass = field.getType();
             Object fieldValue = null;
             try
@@ -173,6 +176,7 @@ public class Injection
 
       while (c != null)
       {
+         List<Method> hits = null;
          Method[] methods = c.getDeclaredMethods();
          for (int i = 0; i < methods.length; i++)
          {
@@ -180,7 +184,35 @@ public class Injection
             if (methodName.equals(method.getName()) && method.getParameterTypes().length == 1)
             {
                if (propertyType == null || propertyType.equals(method.getParameterTypes()[0].getName()))
-                  return method;
+               {
+                  if (hits == null)
+                     hits = new ArrayList<Method>(1);
+
+                  method.setAccessible(true);
+                  hits.add(method);
+               }
+            }
+         }
+
+         if (hits != null)
+         {
+            if (hits.size() == 1)
+            {
+               return hits.get(0);
+            }
+            else
+            {
+               Collections.sort(hits, new MethodSorter());
+               if (propertyType != null)
+               {
+                  for (Method m : hits)
+                  {
+                     if (propertyType.equals(m.getParameterTypes()[0].getName()))
+                        return m;
+                  }
+               }
+
+               return hits.get(0);
             }
          }
 
@@ -203,6 +235,7 @@ public class Injection
 
       while (c != null)
       {
+         List<Field> hits = null;
          Field[] fields = c.getDeclaredFields();
          for (int i = 0; i < fields.length; i++)
          {
@@ -210,7 +243,35 @@ public class Injection
             if (fieldName.equals(field.getName()))
             {
                if (fieldType == null || fieldType.equals(field.getType().getName()))
-                  return field;
+               {
+                  if (hits == null)
+                     hits = new ArrayList<Field>(1);
+
+                  field.setAccessible(true);
+                  hits.add(field);
+               }
+            }
+         }
+
+         if (hits != null)
+         {
+            if (hits.size() == 1)
+            {
+               return hits.get(0);
+            }
+            else
+            {
+               Collections.sort(hits, new FieldSorter());
+               if (fieldType != null)
+               {
+                  for (Field f : hits)
+                  {
+                     if (fieldType.equals(f.getType().getName()))
+                        return f;
+                  }
+               }
+
+               return hits.get(0);
             }
          }
 
@@ -286,6 +347,36 @@ public class Injection
          else if (clz.equals(Class.class))
          {
             v = Class.forName(substituredValue, true, cl);
+         }
+         else if (clz.equals(Properties.class))
+         {
+            Properties prop = new Properties();
+
+            StringTokenizer st = new StringTokenizer(substituredValue, " ,");
+            while (st.hasMoreTokens())
+            {
+               String token = st.nextToken();
+               String key = "";
+               String value = "";
+
+               int index = token.indexOf("=");
+               if (index != -1)
+               {
+                  key = token.substring(0, index);
+
+                  if (token.length() > index + 1)
+                     value = token.substring(index + 1);
+               }
+               else
+               {
+                  key = token;
+               }
+
+               if (!"".equals(key))
+                  prop.setProperty(key, value);
+            }
+
+            v = prop;
          }
          else
          {
@@ -385,5 +476,133 @@ public class Injection
          }
       }
       return input;
+   }
+
+   /**
+    * Method sorter
+    */
+   static class MethodSorter implements Comparator<Method>
+   {
+      /**
+       * Constructor
+       */
+      MethodSorter()
+      {
+      }
+
+      /**
+       * {@inheritDoc}
+       */
+      public int compare(Method o1, Method o2)
+      {
+         int m1 = o1.getModifiers();
+         int m2 = o2.getModifiers();
+
+         if (Modifier.isPublic(m1))
+            return -1;
+
+         if (Modifier.isPublic(m2))
+            return 1;
+
+         if (Modifier.isProtected(m1))
+            return -1;
+
+         if (Modifier.isProtected(m2))
+            return 1;
+
+         if (Modifier.isPrivate(m1))
+            return -1;
+
+         if (Modifier.isPrivate(m2))
+            return 1;
+
+         return 0;
+      }
+
+      /**
+       * {@inheritDoc}
+       */
+      public boolean equals(Object o)
+      {
+         if (this == o)
+            return true;
+
+         if (o == null || !(o instanceof MethodSorter))
+            return false;
+
+         return true;
+      }
+
+      /**
+       * {@inheritDoc}
+       */
+      public int hashCode()
+      {
+         return 42;
+      }
+   }
+
+   /**
+    * Field sorter
+    */
+   static class FieldSorter implements Comparator<Field>
+   {
+      /**
+       * Constructor
+       */
+      FieldSorter()
+      {
+      }
+
+      /**
+       * {@inheritDoc}
+       */
+      public int compare(Field o1, Field o2)
+      {
+         int m1 = o1.getModifiers();
+         int m2 = o2.getModifiers();
+
+         if (Modifier.isPublic(m1))
+            return -1;
+
+         if (Modifier.isPublic(m2))
+            return 1;
+
+         if (Modifier.isProtected(m1))
+            return -1;
+
+         if (Modifier.isProtected(m2))
+            return 1;
+
+         if (Modifier.isPrivate(m1))
+            return -1;
+
+         if (Modifier.isPrivate(m2))
+            return 1;
+
+         return 0;
+      }
+
+      /**
+       * {@inheritDoc}
+       */
+      public boolean equals(Object o)
+      {
+         if (this == o)
+            return true;
+
+         if (o == null || !(o instanceof FieldSorter))
+            return false;
+
+         return true;
+      }
+
+      /**
+       * {@inheritDoc}
+       */
+      public int hashCode()
+      {
+         return 42;
+      }
    }
 }
