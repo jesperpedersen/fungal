@@ -23,6 +23,7 @@ package com.github.fungal.impl.classloader;
 import com.github.fungal.api.classloading.KernelClassLoader;
 
 import java.net.URL;
+import java.util.Arrays;
 
 /**
  * Parent first class loader
@@ -64,5 +65,20 @@ public class ParentFirstClassLoader extends KernelClassLoader
       }
 
       return getParent().loadClass(name);
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public String toString()
+   {
+      StringBuilder sb = new StringBuilder();
+
+      sb.append("ParentFirstClassLoader@").append(Integer.toHexString(System.identityHashCode(this)));
+      sb.append("[parent=").append(getParent());
+      sb.append(" urls=").append(Arrays.toString(getURLs()));
+      sb.append("]");
+
+      return sb.toString();
    }
 }

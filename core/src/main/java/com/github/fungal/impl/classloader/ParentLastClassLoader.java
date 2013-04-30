@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
@@ -252,5 +253,20 @@ public class ParentLastClassLoader extends KernelClassLoader
          return new URL[0];
 
       return result.toArray(new URL[result.size()]);
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public String toString()
+   {
+      StringBuilder sb = new StringBuilder();
+
+      sb.append("ParentLastClassLoader@").append(Integer.toHexString(System.identityHashCode(this)));
+      sb.append("[parent=").append(getParent());
+      sb.append(" urls=").append(Arrays.toString(getURLs()));
+      sb.append("]");
+
+      return sb.toString();
    }
 }
