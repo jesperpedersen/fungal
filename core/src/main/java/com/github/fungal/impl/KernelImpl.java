@@ -89,7 +89,7 @@ import javax.management.ObjectName;
 public class KernelImpl implements Kernel, KernelImplMBean
 {
    /** Version information */
-   private static final String VERSION = "Fungal 0.11.0.Beta13";
+   private static final String VERSION = "Fungal 0.11.0.RC1";
 
    /** Kernel configuration */
    private KernelConfiguration kernelConfiguration;
@@ -881,6 +881,7 @@ public class KernelImpl implements Kernel, KernelImplMBean
       // We are removing all deployments including all DeployerPhases beans => no postUndeploy call
 
       // Remove kernel bean
+      setBeanStatus("Kernel", ServiceLifecycle.STOPPING);
       removeBean("Kernel", false);
 
       // Check for additional beans
@@ -929,6 +930,15 @@ public class KernelImpl implements Kernel, KernelImplMBean
       SecurityActions.setSystemProperty(kernelConfiguration.getName() + ".home", "");
       SecurityActions.setSystemProperty(kernelConfiguration.getName() + ".bindaddress", "");
 
+      // STOPPED
+      if (els != null && els.size() > 0)
+      {
+         for (EventListener el : els)
+         {
+            el.event(this, Event.STOPPED);
+         }
+      }
+
       // Log shutdown
       if (log != null)
       {
@@ -954,15 +964,6 @@ public class KernelImpl implements Kernel, KernelImplMBean
 
       // Reset to the old class loader
       SecurityActions.setThreadContextClassLoader(oldClassLoader);
-
-      // STOPPED
-      if (els != null && els.size() > 0)
-      {
-         for (EventListener el : els)
-         {
-            el.event(this, Event.STOPPED);
-         }
-      }
 
       initialize();
 
