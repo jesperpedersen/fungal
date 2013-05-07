@@ -86,5 +86,6 @@ public abstract class KernelClassLoader extends URLClassLoader implements Closea
     */
    public void shutdown() throws IOException
    {
+      super.close();
    }
 }
