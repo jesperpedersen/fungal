@@ -24,6 +24,7 @@
 
   <available classname="java.lang.Enum" property="HAVE_JDK_1.5"/>
   <available classname="java.lang.management.LockInfo" property="HAVE_JDK_1.6"/>
+  <available classname="java.util.concurrent.ForkJoinPool" property="HAVE_JDK_1.7"/>
 
   <!-- ================================= 
        Project              
@@ -144,7 +145,7 @@
        Target: init              
        ================================= -->
   <target name="init">
-    <fail message="Fungal requires JDK6+" unless="HAVE_JDK_1.6"/>
+    <fail message="Fungal requires JDK7+" unless="HAVE_JDK_1.7"/>
 
     <ivy:settings file="${basedir}/ivy.settings.xml"/>
 
