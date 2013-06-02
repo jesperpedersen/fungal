@@ -83,7 +83,7 @@
        Versions              
        ================================= -->
   <property name="version.ant" value="1.7.1"/>
-  <property name="version.apiviz" value="1.3.0.GA"/>
+  <property name="version.apiviz" value="1.3.2.GA"/>
   <property name="version.junit" value="4.8.1"/>
 
   <!-- ================================= 
