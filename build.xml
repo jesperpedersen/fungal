@@ -226,6 +226,7 @@
     <mkdir dir="${build.dir}/${name}-${major}.${minor}.${patch}.${type}" />
     <mkdir dir="${build.dir}/${name}-${major}.${minor}.${patch}.${type}/doc" />
     <mkdir dir="${build.dir}/${name}-${major}.${minor}.${patch}.${type}/doc/api" />
+    <mkdir dir="${build.dir}/${name}-${major}.${minor}.${patch}.${type}/doc/licenses" />
 
     <ant dir="doc/userguide" target="pdf"/>
     <ant dir="doc/developerguide" target="pdf"/>
@@ -256,6 +257,11 @@
     <copy todir="${build.dir}/${name}-${major}.${minor}.${patch}.${type}/doc">
       <fileset dir="${basedir}">
         <include name="README"/>
+      </fileset>
+    </copy>
+    <copy todir="${build.dir}/${name}-${major}.${minor}.${patch}.${type}/doc/licenses">
+      <fileset dir="${basedir}/doc/licenses">
+        <include name="*"/>
       </fileset>
     </copy>
 
