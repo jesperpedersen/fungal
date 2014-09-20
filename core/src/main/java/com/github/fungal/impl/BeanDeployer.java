@@ -318,7 +318,7 @@ class BeanDeployer implements Runnable
          clz = Class.forName(bt.getClazz(), true, cl);
          
          java.lang.reflect.Constructor<?> con = findConstructor(clz, null, cl);
-         con.setAccessible(true);
+         SecurityActions.setAccessible(con);
          
          instance = con.newInstance();
       }
@@ -349,7 +349,7 @@ class BeanDeployer implements Runnable
             if (ct.getParameter() == null || ct.getParameter().size() == 0)
             {
                java.lang.reflect.Constructor<?> con = findConstructor(factoryClass, null, cl);
-               con.setAccessible(true);
+               SecurityActions.setAccessible(con);
 
                instance = con.newInstance();
                clz = instance.getClass();
@@ -360,7 +360,7 @@ class BeanDeployer implements Runnable
                   findConstructor(factoryClass, ct.getParameter(), cl);
                Object[] args = getArguments(ct.getParameter(), factoryConstructor.getParameterTypes(), cl);
 
-               factoryConstructor.setAccessible(true);
+               SecurityActions.setAccessible(factoryConstructor);
                instance = factoryConstructor.newInstance(args);
                clz = instance.getClass();
             }
@@ -368,7 +368,7 @@ class BeanDeployer implements Runnable
          else
          {
             Method factoryMethod = findMethod(factoryClass, ct.getFactoryMethod(), ct.getParameter(), cl);
-            factoryMethod.setAccessible(true);
+            SecurityActions.setAccessible(factoryMethod);
 
             if (ct.getParameter() == null || ct.getParameter().size() == 0)
             {
@@ -401,8 +401,8 @@ class BeanDeployer implements Runnable
             if (bt.getCreate() != null && bt.getCreate().getMethod() != null)
                methodName = bt.getCreate().getMethod();
 
-            Method createMethod = clz.getMethod(methodName, (Class[])null);
-            createMethod.setAccessible(true);
+            Method createMethod = SecurityActions.getMethod(clz, methodName, (Class[])null);
+            SecurityActions.setAccessible(createMethod);
             createMethod.invoke(instance);
          }
          catch (NoSuchMethodException nsme)
@@ -423,8 +423,8 @@ class BeanDeployer implements Runnable
             if (bt.getStart() != null && bt.getStart().getMethod() != null)
                methodName = bt.getStart().getMethod();
 
-            Method startMethod = clz.getMethod(methodName, (Class[])null);
-            startMethod.setAccessible(true);
+            Method startMethod = SecurityActions.getMethod(clz, methodName, (Class[])null);
+            SecurityActions.setAccessible(startMethod);
             startMethod.invoke(instance);
          }
          catch (NoSuchMethodException nsme)
@@ -456,8 +456,8 @@ class BeanDeployer implements Runnable
          {
             try
             {
-               Method method = clz.getMethod(it.getMethod(), (Class[])null);
-               method.setAccessible(true);
+               Method method = SecurityActions.getMethod(clz, it.getMethod(), (Class[])null);
+               SecurityActions.setAccessible(method);
                method.invoke(instance);
             }
             catch (InvocationTargetException ite)
@@ -475,8 +475,8 @@ class BeanDeployer implements Runnable
          {
             try
             {
-               Method method = clz.getMethod(ut.getMethod(), (Class[])null);
-               method.setAccessible(true);
+               Method method = SecurityActions.getMethod(clz, ut.getMethod(), (Class[])null);
+               SecurityActions.setAccessible(method);
                methods.add(method);
             }
             catch (NoSuchMethodException nsme)
@@ -493,7 +493,7 @@ class BeanDeployer implements Runnable
          for (Incallback it : bt.getIncallback())
          {
             java.util.List<Method> candidates = new ArrayList<Method>(1);
-            Method[] methods = clz.getMethods();
+            Method[] methods = SecurityActions.getMethods(clz);
 
             for (Method m : methods)
             {
@@ -504,7 +504,7 @@ class BeanDeployer implements Runnable
             if (candidates.size() > 0)
             {
                Method method = candidates.get(0);
-               method.setAccessible(true);
+               SecurityActions.setAccessible(method);
 
                Class<?> parameter = method.getParameterTypes()[0];
                
@@ -521,7 +521,7 @@ class BeanDeployer implements Runnable
          for (Uncallback ut : bt.getUncallback())
          {
             java.util.List<Method> candidates = new ArrayList<Method>(1);
-            Method[] methods = clz.getMethods();
+            Method[] methods = SecurityActions.getMethods(clz);
 
             for (Method m : methods)
             {
@@ -532,7 +532,7 @@ class BeanDeployer implements Runnable
             if (candidates.size() > 0)
             {
                Method method = candidates.get(0);
-               method.setAccessible(true);
+               SecurityActions.setAccessible(method);
 
                Class<?> parameter = method.getParameterTypes()[0];
                
@@ -576,7 +576,7 @@ class BeanDeployer implements Runnable
          
          while (constructorClass != null)
          {
-            java.lang.reflect.Constructor[] constructors = constructorClass.getDeclaredConstructors();
+            java.lang.reflect.Constructor[] constructors = SecurityActions.getDeclaredConstructors(constructorClass);
 
             if (constructors != null)
             {
@@ -597,7 +597,7 @@ class BeanDeployer implements Runnable
 
          while (constructorClass != null)
          {
-            java.lang.reflect.Constructor[] constructors = constructorClass.getDeclaredConstructors();
+            java.lang.reflect.Constructor[] constructors = SecurityActions.getDeclaredConstructors(constructorClass);
 
             for (java.lang.reflect.Constructor<?> c : constructors)
             {
@@ -657,7 +657,7 @@ class BeanDeployer implements Runnable
 
          while (methodClass != null)
          {
-            Method[] methods = methodClass.getDeclaredMethods();
+            Method[] methods = SecurityActions.getDeclaredMethods(methodClass);
 
             if (methods != null)
             {
@@ -678,7 +678,7 @@ class BeanDeployer implements Runnable
 
          while (methodClass != null)
          {
-            Method[] methods = methodClass.getDeclaredMethods();
+            Method[] methods = SecurityActions.getDeclaredMethods(methodClass);
 
             for (Method m : methods)
             {
@@ -788,29 +788,29 @@ class BeanDeployer implements Runnable
          try
          {
             String getMethodName = "get" + baseName;
-            method = injectionObject.getClass().getMethod(getMethodName, (Class[])null);
+            method = SecurityActions.getMethod(injectionObject.getClass(), getMethodName, (Class[])null);
          }
          catch (NoSuchMethodException nsme)
          {
             try
             {
                String isMethodName = "is" + baseName;
-               method = injectionObject.getClass().getMethod(isMethodName, (Class[])null);
+               method = SecurityActions.getMethod(injectionObject.getClass(), isMethodName, (Class[])null);
             }
             catch (NoSuchMethodException insme)
             {
-               field = injectionObject.getClass().getField(it.getProperty());
+               field = SecurityActions.getField(injectionObject.getClass(), it.getProperty());
             }
          }
 
          if (method != null)
          {
-            method.setAccessible(true);
+            SecurityActions.setAccessible(method);
             return method.invoke(injectionObject);
          }
          else
          {
-            field.setAccessible(true);
+            SecurityActions.setAccessible(field);
             return field.get(injectionObject);
          }
       }
@@ -841,7 +841,7 @@ class BeanDeployer implements Runnable
       if (m == null)
          throw new Exception("Property " + pt.getName() + " not found on " + instance.getClass().getName());
 
-      m.setAccessible(true);
+      SecurityActions.setAccessible(m);
 
       Class<?> parameterClass = m.getParameterTypes()[0];
       
@@ -874,8 +874,8 @@ class BeanDeployer implements Runnable
                 mt.getClazz().equals("java.util.LinkedHashMap") ||
                 mt.getClazz().equals("java.util.WeakHashMap"))
             {
-               java.lang.reflect.Constructor<?> con = mapClass.getConstructor(int.class);
-               con.setAccessible(true);
+               java.lang.reflect.Constructor<?> con = SecurityActions.getConstructor(mapClass, int.class);
+               SecurityActions.setAccessible(con);
                map = (java.util.Map)con.newInstance(mt.getEntry().size());
             }
             else
@@ -914,8 +914,8 @@ class BeanDeployer implements Runnable
             if (lt.getClazz().equals("java.util.ArrayList") ||
                 lt.getClazz().equals("java.util.Vector"))
             {
-               java.lang.reflect.Constructor<?> con = listClass.getConstructor(int.class);
-               con.setAccessible(true);
+               java.lang.reflect.Constructor<?> con = SecurityActions.getConstructor(listClass, int.class);
+               SecurityActions.setAccessible(con);
                list = (java.util.List)con.newInstance(lt.getValue().size());
             }
             else
@@ -950,8 +950,8 @@ class BeanDeployer implements Runnable
 
             if (st.getClazz().equals("java.util.HashSet"))
             {
-               java.lang.reflect.Constructor<?> con = setClass.getConstructor(int.class);
-               con.setAccessible(true);
+               java.lang.reflect.Constructor<?> con = SecurityActions.getConstructor(setClass, int.class);
+               SecurityActions.setAccessible(con);
                set = (java.util.Set)con.newInstance(st.getValue().size());
             }
             else

@@ -20,6 +20,10 @@
 
 package com.github.fungal.impl;
 
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
@@ -34,6 +38,25 @@ class SecurityActions
     */
    private SecurityActions()
    {
+   }
+
+   /**
+    * Get the classloader.
+    * @param c The class
+    * @return The classloader
+    */
+   static ClassLoader getClassLoader(final Class<?> c)
+   {
+      if (System.getSecurityManager() == null)
+         return c.getClassLoader();
+
+      return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>()
+      {
+         public ClassLoader run()
+         {
+            return c.getClassLoader();
+         }
+      });
    }
 
    /**
@@ -122,5 +145,184 @@ class SecurityActions
             }
          });
       }
+   }
+
+   /**
+    * Get the method
+    * @param c The class
+    * @param name The name
+    * @param params The parameters
+    * @return The method
+    * @exception NoSuchMethodException If a matching method is not found.
+    */
+   static Method getMethod(final Class<?> c, final String name, final Class<?>... params)
+      throws NoSuchMethodException
+   {
+      if (System.getSecurityManager() == null)
+         return c.getMethod(name, params);
+
+      Method result = AccessController.doPrivileged(new PrivilegedAction<Method>()
+      {
+         public Method run()
+         {
+            try
+            {
+               return c.getMethod(name, params);
+            }
+            catch (NoSuchMethodException e)
+            {
+               return null;
+            }
+         }
+      });
+
+      if (result != null)
+         return result;
+
+      throw new NoSuchMethodException();
+   }
+
+   /**
+    * Get the methods
+    * @param c The class
+    * @return The methods
+    */
+   static Method[] getMethods(final Class<?> c)
+   {
+      if (System.getSecurityManager() == null)
+         return c.getMethods();
+
+      return AccessController.doPrivileged(new PrivilegedAction<Method[]>()
+      {
+         public Method[] run()
+         {
+            return c.getMethods();
+         }
+      });
+   }
+
+   /**
+    * Get the declared methods
+    * @param c The class
+    * @return The methods
+    */
+   static Method[] getDeclaredMethods(final Class<?> c)
+   {
+      if (System.getSecurityManager() == null)
+         return c.getDeclaredMethods();
+
+      return AccessController.doPrivileged(new PrivilegedAction<Method[]>()
+      {
+         public Method[] run()
+         {
+            return c.getDeclaredMethods();
+         }
+      });
+   }
+
+   /**
+    * Get the fields
+    * @param c The class
+    * @param name The name
+    * @return The field
+    * @exception NoSuchFieldException If a matching field is not found.
+    */
+   static Field getField(final Class<?> c, final String name)
+      throws NoSuchFieldException
+   {
+      if (System.getSecurityManager() == null)
+         return c.getField(name);
+
+      Field result = AccessController.doPrivileged(new PrivilegedAction<Field>()
+      {
+         public Field run()
+         {
+            try
+            {
+               return c.getField(name);
+            }
+            catch (NoSuchFieldException e)
+            {
+               return null;
+            }
+         }
+      });
+
+      if (result != null)
+         return result;
+
+      throw new NoSuchFieldException();
+   }
+
+   /**
+    * Set accessible
+    * @param ao The object
+    */
+   static void setAccessible(final AccessibleObject ao)
+   {
+      if (System.getSecurityManager() == null)
+         ao.setAccessible(true);
+
+      AccessController.doPrivileged(new PrivilegedAction<Object>()
+      {
+         public Object run()
+         {
+            ao.setAccessible(true);
+            return null;
+         }
+      });
+   }
+
+   /**
+    * Get the constructor
+    * @param c The class
+    * @param params The parameters
+    * @return The constructor
+    * @exception NoSuchMethodException If a matching method is not found.
+    */
+   static Constructor<?> getConstructor(final Class<?> c, final Class<?>... params)
+      throws NoSuchMethodException
+   {
+      if (System.getSecurityManager() == null)
+         return c.getConstructor(params);
+
+      Constructor<?> result = AccessController.doPrivileged(new PrivilegedAction<Constructor<?>>()
+      {
+         public Constructor<?> run()
+         {
+            try
+            {
+               return c.getConstructor(params);
+            }
+            catch (NoSuchMethodException e)
+            {
+               return null;
+            }
+         }
+      });
+
+      if (result != null)
+         return result;
+
+      throw new NoSuchMethodException();
+   }
+
+   /**
+    * Get the declared constructors
+    * @param c The class
+    * @return The constructors
+    */
+   static Constructor<?>[] getDeclaredConstructors(final Class<?> c)
+   {
+      if (System.getSecurityManager() == null)
+         return c.getDeclaredConstructors();
+
+      return AccessController.doPrivileged(new PrivilegedAction<Constructor<?>[]>()
+      {
+         public Constructor<?>[] run()
+         {
+            return c.getDeclaredConstructors();
+         }
+      });
    }
 }

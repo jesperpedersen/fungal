@@ -53,7 +53,7 @@ class ArchiveClassLoader extends KernelClassLoader
     */
    ArchiveClassLoader(Integer id, URL url, Set<String> exportPackages, ExportClassLoaderRepository eclr)
    {
-      super(new URL[] {url}, ClassLoader.getSystemClassLoader());
+      super(new URL[] {url}, SecurityActions.getSystemClassLoader());
 
       if (id == null)
          throw new IllegalArgumentException("Id is null");
@@ -109,7 +109,7 @@ class ArchiveClassLoader extends KernelClassLoader
       {
          try
          {
-            return Class.forName(name, true, ClassLoader.getSystemClassLoader());
+            return Class.forName(name, true, SecurityActions.getSystemClassLoader());
          }
          catch (ClassNotFoundException cnfe)
          {

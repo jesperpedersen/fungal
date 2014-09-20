@@ -21,6 +21,7 @@
 package com.github.fungal.api.util;
 
 import java.io.File;
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -120,7 +121,7 @@ public class Injection
          try
          {
             parameterValue = getValue(propertyName, parameterClass, propertyValue, 
-                                      object.getClass().getClassLoader());
+                                      SecurityActions.getClassLoader(object.getClass()));
          }
          catch (Throwable t)
          {
@@ -146,7 +147,7 @@ public class Injection
             try
             {
                fieldValue = getValue(propertyName, fieldClass, propertyValue,
-                                     object.getClass().getClassLoader());
+                                     SecurityActions.getClassLoader(object.getClass()));
             }
             catch (Throwable t)
             {
@@ -164,6 +165,25 @@ public class Injection
    }
 
    /**
+    * Compare the type of a class with the actual value
+    * @param classType The class type
+    * @param propertyType The property type
+    * @return True if they match, or if there is a primitive mapping
+    */
+   private boolean argumentMatches(String classType, String propertyType)
+   {
+      return (classType.equals(propertyType))
+         || (classType.equals("java.lang.Byte") && propertyType.equals("byte"))
+         || (classType.equals("java.lang.Short") && propertyType.equals("short"))
+         || (classType.equals("java.lang.Integer") && propertyType.equals("int"))
+         || (classType.equals("java.lang.Long") && propertyType.equals("long"))
+         || (classType.equals("java.lang.Float") && propertyType.equals("float"))
+         || (classType.equals("java.lang.Double") && propertyType.equals("double"))
+         || (classType.equals("java.lang.Boolean") && propertyType.equals("boolean"))
+         || (classType.equals("java.lang.Character") && propertyType.equals("char"));
+   }
+
+   /**
     * Find a method
     * @param clz The class
     * @param methodName The method name
@@ -177,18 +197,19 @@ public class Injection
       while (c != null)
       {
          List<Method> hits = null;
-         Method[] methods = c.getDeclaredMethods();
+         Method[] methods = SecurityActions.getDeclaredMethods(c);
          for (int i = 0; i < methods.length; i++)
          {
-            Method method = methods[i];
+            final Method method = methods[i];
             if (methodName.equals(method.getName()) && method.getParameterTypes().length == 1)
             {
-               if (propertyType == null || propertyType.equals(method.getParameterTypes()[0].getName()))
+               if (propertyType == null || argumentMatches(propertyType, method.getParameterTypes()[0].getName()))
                {
                   if (hits == null)
                      hits = new ArrayList<Method>(1);
 
-                  method.setAccessible(true);
+                  SecurityActions.setAccessible(method);
+
                   hits.add(method);
                }
             }
@@ -236,18 +257,19 @@ public class Injection
       while (c != null)
       {
          List<Field> hits = null;
-         Field[] fields = c.getDeclaredFields();
+         Field[] fields = SecurityActions.getDeclaredFields(c);
          for (int i = 0; i < fields.length; i++)
          {
-            Field field = fields[i];
+            final Field field = fields[i];
             if (fieldName.equals(field.getName()))
             {
-               if (fieldType == null || fieldType.equals(field.getType().getName()))
+               if (fieldType == null || argumentMatches(fieldType, field.getType().getName()))
                {
                   if (hits == null)
                      hits = new ArrayList<Field>(1);
 
-                  field.setAccessible(true);
+                  SecurityActions.setAccessible(field);
+
                   hits.add(field);
                }
             }
@@ -382,7 +404,7 @@ public class Injection
          {
             try
             {
-               Constructor<?> constructor = clz.getConstructor(String.class);
+               Constructor<?> constructor = SecurityActions.getConstructor(clz, String.class);
                v = constructor.newInstance(substituredValue);
             }
             catch (Throwable t)
@@ -390,7 +412,7 @@ public class Injection
                // Try static String valueOf method
                try
                {
-                  Method valueOf = clz.getMethod("valueOf", String.class);
+                  Method valueOf = SecurityActions.getMethod(clz, "valueOf", String.class);
                   v = valueOf.invoke((Object)null, substituredValue);
                }
                catch (Throwable inner)
@@ -466,7 +488,7 @@ public class Injection
          {
             input = prefix + systemProperty + postfix;
          }
-         else if (defaultValue != null && !defaultValue.trim().equals(""))
+         else if (!defaultValue.trim().equals(""))
          {
             input = prefix + defaultValue + postfix;
          }
@@ -481,8 +503,10 @@ public class Injection
    /**
     * Method sorter
     */
-   static class MethodSorter implements Comparator<Method>
+   static class MethodSorter implements Comparator<Method>, Serializable
    {
+      private static final long serialVersionUID = 1L;
+
       /**
        * Constructor
        */
@@ -545,8 +569,10 @@ public class Injection
    /**
     * Field sorter
     */
-   static class FieldSorter implements Comparator<Field>
+   static class FieldSorter implements Comparator<Field>, Serializable
    {
+      private static final long serialVersionUID = 1L;
+
       /**
        * Constructor
        */

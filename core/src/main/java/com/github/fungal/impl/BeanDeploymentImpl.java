@@ -132,7 +132,7 @@ public class BeanDeploymentImpl implements BeanDeployment
          Object bean = kernel.getBean(beans.get(0));
 
          if (bean != null)
-            cl = bean.getClass().getClassLoader();
+            cl = SecurityActions.getClassLoader(bean.getClass());
       }
 
       if (cl == null)
@@ -197,7 +197,7 @@ public class BeanDeploymentImpl implements BeanDeployment
                   {
                      try
                      {
-                        m.setAccessible(true);
+                        SecurityActions.setAccessible(m);
                         m.invoke(bean, (Object[])null);
                      }
                      catch (InvocationTargetException ite)
@@ -216,8 +216,8 @@ public class BeanDeploymentImpl implements BeanDeployment
                      if (stops != null && stops.containsKey(name))
                         methodName = stops.get(name);
 
-                     Method stopMethod = bean.getClass().getMethod(methodName, (Class[])null);
-                     stopMethod.setAccessible(true);
+                     Method stopMethod = SecurityActions.getMethod(bean.getClass(), methodName, (Class[])null);
+                     SecurityActions.setAccessible(stopMethod);
                      stopMethod.invoke(bean, (Object[])null);
                   }
                   catch (NoSuchMethodException nsme)
@@ -239,8 +239,8 @@ public class BeanDeploymentImpl implements BeanDeployment
                      if (destroys != null && destroys.containsKey(name))
                         methodName = destroys.get(name);
 
-                     Method destroyMethod = bean.getClass().getMethod(methodName, (Class[])null);
-                     destroyMethod.setAccessible(true);
+                     Method destroyMethod = SecurityActions.getMethod(bean.getClass(), methodName, (Class[])null);
+                     SecurityActions.setAccessible(destroyMethod);
                      destroyMethod.invoke(bean, (Object[])null);
                   }
                   catch (NoSuchMethodException nsme)

@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Pattern;
 
 import javax.management.Attribute;
@@ -158,8 +160,22 @@ public class JMX
     */
    static class ManagementDelegator implements DynamicMBean
    {
+      private static ConcurrentMap<String, Class<?>> simpleTypes = new ConcurrentHashMap<String, Class<?>>(9);
       private WeakReference<Object> ref;
       private MBeanInfo info;
+
+      static
+      {
+         simpleTypes.put(void.class.getName(), void.class);
+         simpleTypes.put(byte.class.getName(), byte.class);
+         simpleTypes.put(short.class.getName(), short.class);
+         simpleTypes.put(int.class.getName(), int.class);
+         simpleTypes.put(long.class.getName(), long.class);
+         simpleTypes.put(char.class.getName(), char.class);
+         simpleTypes.put(boolean.class.getName(), boolean.class);
+         simpleTypes.put(float.class.getName(), float.class);
+         simpleTypes.put(double.class.getName(), double.class);
+      }
 
       /**
        * Constructor
@@ -220,7 +236,7 @@ public class JMX
             }
          }
 
-         Method[] methods = instance.getClass().getMethods();
+         Method[] methods = SecurityActions.getMethods(instance.getClass());
          for (Method method : methods)
          {
             if (!method.getDeclaringClass().getName().startsWith("java."))
@@ -449,14 +465,14 @@ public class JMX
 
                   if (!mai.isIs())
                   {
-                     method = instance.getClass().getMethod("get" + name, (Class[])null);
+                     method = SecurityActions.getMethod(instance.getClass(), "get" + name, (Class[])null);
                   }
                   else
                   {
-                     method = instance.getClass().getMethod("is" + name, (Class[])null);
+                     method = SecurityActions.getMethod(instance.getClass(), "is" + name, (Class[])null);
                   }
 
-                  method.setAccessible(true);
+                  SecurityActions.setAccessible(method);
 
                   return method.invoke(instance, (Object[])null);
                }
@@ -553,15 +569,17 @@ public class JMX
 
                         for (String paramType : signature)
                         {
-                           Class<?> clz = Class.forName(paramType, true, instance.getClass().getClassLoader());
+                           Class<?> clz = simpleTypes.get(paramType);
+                           if (clz == null)
+                              clz = resolveClass(paramType, SecurityActions.getClassLoader(instance.getClass()));
                            l.add(clz);
                         }
 
                         paramTypes = l.toArray(new Class<?>[l.size()]);
                      }
 
-                     Method method = instance.getClass().getMethod(actionName, paramTypes);
-                     method.setAccessible(true);
+                     Method method = SecurityActions.getMethod(instance.getClass(), actionName, paramTypes);
+                     SecurityActions.setAccessible(method);
 
                      return method.invoke(instance, params);
                   }
@@ -602,9 +620,13 @@ public class JMX
             {
                try
                {
-                  Class<?> type = Class.forName(mai.getType(), true, instance.getClass().getClassLoader());
-                  Method method = instance.getClass().getMethod("set" + name, new Class<?>[] {type});
-                  method.setAccessible(true);
+                  Class<?> type = simpleTypes.get(mai.getType());
+
+                  if (type == null)
+                     type = resolveClass(mai.getType(), SecurityActions.getClassLoader(instance.getClass()));
+
+                  Method method = SecurityActions.getMethod(instance.getClass(), "set" + name, new Class<?>[] {type});
+                  SecurityActions.setAccessible(method);
 
                   method.invoke(instance, new Object[] {attribute.getValue()});
                }
@@ -642,6 +664,50 @@ public class JMX
          }
 
          return null;
+      }
+
+      /**
+       * Resolve the class
+       * @param clzName The class name
+       * @param cl The initial classloader to use
+       * @return The class
+       * @exception MBeanException Thrown if the class can't be resolved
+       */
+      private Class<?> resolveClass(String clzName, ClassLoader cl) throws MBeanException
+      {
+         try
+         {
+            Class<?> c = Class.forName(clzName, true, cl);
+            return c;
+         }
+         catch (Exception e)
+         {
+            try
+            {
+               Class<?> c = Class.forName(clzName, true, SecurityActions.getThreadContextClassLoader());
+               return c;
+            }
+            catch (Exception e2)
+            {
+               try
+               {
+                  Class<?> c = Class.forName(clzName, true, SecurityActions.getClassLoader(JMX.class));
+                  return c;
+               }
+               catch (Exception e3)
+               {
+                  try
+                  {
+                     Class<?> c = Class.forName(clzName, true, SecurityActions.getSystemClassLoader());
+                     return c;
+                  }
+                  catch (Exception e4)
+                  {
+                     throw new MBeanException(e, "Exception during loading class: " + clzName);
+                  }
+               }
+            }
+         }
       }
    }
 

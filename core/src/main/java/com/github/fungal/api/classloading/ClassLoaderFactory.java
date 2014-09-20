@@ -73,8 +73,10 @@ public class ClassLoaderFactory
       {
          try
          {
-            Class<?> clz = Class.forName(CLASSLOADER_PARENT_FIRST, true, ClassLoaderFactory.class.getClassLoader());
-            Constructor<?> constructor = clz.getDeclaredConstructor(URL[].class, ClassLoader.class);
+            Class<?> clz = Class.forName(CLASSLOADER_PARENT_FIRST, true,
+                                         SecurityActions.getClassLoader(ClassLoaderFactory.class));
+            Constructor<?> constructor = SecurityActions.getDeclaredConstructor(clz, URL[].class, ClassLoader.class);
+            SecurityActions.setAccessible(constructor);
 
             return (KernelClassLoader)constructor.newInstance(urls, parent);
          }
@@ -87,8 +89,10 @@ public class ClassLoaderFactory
       {
          try
          {
-            Class<?> clz = Class.forName(CLASSLOADER_PARENT_LAST, true, ClassLoaderFactory.class.getClassLoader());
-            Constructor<?> constructor = clz.getDeclaredConstructor(URL[].class, ClassLoader.class);
+            Class<?> clz = Class.forName(CLASSLOADER_PARENT_LAST, true,
+                                         SecurityActions.getClassLoader(ClassLoaderFactory.class));
+            Constructor<?> constructor = SecurityActions.getDeclaredConstructor(clz, URL[].class, ClassLoader.class);
+            SecurityActions.setAccessible(constructor);
 
             return (KernelClassLoader)constructor.newInstance(urls, parent);
          }
@@ -101,8 +105,10 @@ public class ClassLoaderFactory
       {
          try
          {
-            Class<?> clz = Class.forName(CLASSLOADER_EXPORT, true, ClassLoaderFactory.class.getClassLoader());
-            Constructor<?> constructor = clz.getDeclaredConstructor(URL[].class, ClassLoader.class);
+            Class<?> clz = Class.forName(CLASSLOADER_EXPORT, true,
+                                         SecurityActions.getClassLoader(ClassLoaderFactory.class));
+            Constructor<?> constructor = SecurityActions.getDeclaredConstructor(clz, URL[].class, ClassLoader.class);
+            SecurityActions.setAccessible(constructor);
 
             return (KernelClassLoader)constructor.newInstance(urls, parent);
          }

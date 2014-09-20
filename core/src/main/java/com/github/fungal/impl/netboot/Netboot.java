@@ -104,7 +104,16 @@ public class Netboot
                   if (pt.getClassName() == null || pt.getClassName().trim().equals(""))
                      throw new IllegalArgumentException("Protocol class name must be defined");
 
-                  Class<?> clz = Class.forName(pt.getClassName(), true, Thread.currentThread().getContextClassLoader());
+                  Class<?> clz = null;
+                  try
+                  {
+                     clz = Class.forName(pt.getClassName(), true, SecurityActions.getThreadContextClassLoader());
+                  }
+                  catch (Exception e)
+                  {
+                     clz = Class.forName(pt.getClassName(), true, SecurityActions.getClassLoader(Netboot.class));
+                  }
+
                   Protocol p = (Protocol)clz.newInstance();
 
                   for (PropertyType property : pt.getProperty())

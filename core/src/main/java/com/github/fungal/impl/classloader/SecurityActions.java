@@ -40,6 +40,24 @@ class SecurityActions
    }
 
    /**
+    * Get the system classloader
+    * @return The classloader
+    */
+   static ClassLoader getSystemClassLoader()
+   {
+      if (System.getSecurityManager() == null)
+         return ClassLoader.getSystemClassLoader();
+
+      return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>()
+      {
+         public ClassLoader run()
+         {
+            return ClassLoader.getSystemClassLoader();
+         }
+      });
+   }
+
+   /**
     * Create an ArchiveClassLoader
     * @param id The class loader id
     * @param url The URL

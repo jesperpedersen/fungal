@@ -985,8 +985,8 @@ public class KernelImpl implements Kernel, KernelImplMBean
       Throwable throwable = null;
       try
       {
-         Method stopMethod = deployment.getClass().getMethod("stop", (Class[])null);
-         stopMethod.setAccessible(true);
+         Method stopMethod = SecurityActions.getMethod(deployment.getClass(), "stop", (Class[])null);
+         SecurityActions.setAccessible(stopMethod);
          stopMethod.invoke(deployment, (Object[])null);
       }
       catch (NoSuchMethodException nsme)
@@ -1000,8 +1000,8 @@ public class KernelImpl implements Kernel, KernelImplMBean
 
       try
       {
-         Method destroyMethod = deployment.getClass().getMethod("destroy", (Class[])null);
-         destroyMethod.setAccessible(true);
+         Method destroyMethod = SecurityActions.getMethod(deployment.getClass(), "destroy", (Class[])null);
+         SecurityActions.setAccessible(destroyMethod);
          destroyMethod.invoke(deployment, (Object[])null);
       }
       catch (NoSuchMethodException nsme)
@@ -1197,7 +1197,7 @@ public class KernelImpl implements Kernel, KernelImplMBean
                            Method m = cb.getMethod();
                            Object instance = cb.getInstance();
 
-                           m.setAccessible(true);
+                           SecurityActions.setAccessible(m);
                            m.invoke(instance, new Object[] {bean});
                         }
                         catch (Throwable t)
@@ -1610,7 +1610,7 @@ public class KernelImpl implements Kernel, KernelImplMBean
                            Method m = cb.getMethod();
                            Object instance = cb.getInstance();
                            
-                           m.setAccessible(true);
+                           SecurityActions.setAccessible(m);
                            m.invoke(instance, new Object[] {bean});
 
                            registeredCallbacks.add(cb);

@@ -55,7 +55,8 @@ public final class KernelFactory
          throw new IllegalArgumentException("KernelConfiguration is null");
 
       Class<?> clz = Class.forName(KERNEL_IMPL);
-      Constructor<?> c = clz.getConstructor(KernelConfiguration.class);
+      Constructor<?> c = SecurityActions.getConstructor(clz, KernelConfiguration.class);
+      SecurityActions.setAccessible(c);
 
       return (Kernel)c.newInstance(kc);
    }
