@@ -499,7 +499,7 @@ public class JMX
             {
                try
                {
-                  result.add(getAttribute(attr));
+                  result.add(new Attribute(attr, getAttribute(attr)));
                }
                catch (Throwable t)
                {
